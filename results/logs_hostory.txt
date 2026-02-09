@@ -1,0 +1,575 @@
+09/02/26 runs
+🔍 HFSS - Frequency Filtering Test
+======================================================================
+📊 Batch Analysis with HFSS
+======================================================================
+Device: cpu
+Processing: 100 samples per test set
+Test sets: ['test1', 'test2', 'test3']
+Filters: ['original', 'low', 'high']
+======================================================================
+
+======================================================================
+PROCESSING TEST1 - FMAE
+======================================================================
+Using model: models/FMAE_BP4D_fold1.pth
+
+📈 Metrics Summary:
+   original  : F1=0.140 | Acc=0.985
+   low       : F1=0.060 | Acc=0.939
+   high      : F1=0.027 | Acc=0.777
+
+📉 Per-AU F1 Drops from Original:
+   LOW:
+      AU 1:   +0.0%
+      AU 2:   +0.0%
+      AU 4:  +40.7%
+      AU 6:   +0.0%
+      AU 7:   +0.0%
+      AU10:   +0.0%
+      AU12:   +0.0%
+      AU14:   +0.0%
+      AU15:   +0.0%
+      AU17:   +0.0%
+      AU23:  +55.7%
+      AU24:   +0.0%
+   HIGH:
+      AU 1:   +0.0%
+      AU 2:   +0.0%
+      AU 4:  +70.9%
+      AU 6:   +0.0%
+      AU 7:   +0.0%
+      AU10:   +0.0%
+      AU12:   +0.0%
+      AU14:   +0.0%
+      AU15:   +0.0%
+      AU17:   -5.8%
+      AU23:  +70.0%
+      AU24:   +0.0%
+   💾 Saved metrics to results/test1_FMAE_metrics.csv
+
+📊 Creating visualizations for test1...
+   ✓ Saved visualization to results/test1_analysis.png
+
+======================================================================
+PROCESSING TEST2 - FMAE
+======================================================================
+Using model: models/FMAE_BP4D_fold2.pth
+
+📈 Metrics Summary:
+   original  : F1=0.553 | Acc=0.941
+   low       : F1=0.521 | Acc=0.902
+   high      : F1=0.321 | Acc=0.762
+
+📉 Per-AU F1 Drops from Original:
+   LOW:
+      AU 1:   +0.0%
+      AU 2:   +0.0%
+      AU 4:   +0.0%
+      AU 6:  -16.8%
+      AU 7:   +9.8%
+      AU10:   +3.6%
+      AU12:   -2.1%
+      AU14:   +7.6%
+      AU15:   +0.0%
+      AU17:  +36.6%
+      AU23:   +0.0%
+      AU24:   +0.0%
+   HIGH:
+      AU 1:   +0.0%
+      AU 2:   +0.0%
+      AU 4: +100.0%
+      AU 6:  -16.9%
+      AU 7:  +27.1%
+      AU10:   +1.5%
+      AU12:  +39.0%
+      AU14:  +15.6%
+      AU15:   +0.0%
+      AU17:  +88.2%
+      AU23:   +0.0%
+      AU24:  +24.2%
+   💾 Saved metrics to results/test2_FMAE_metrics.csv
+
+📊 Creating visualizations for test2...
+   ✓ Saved visualization to results/test2_analysis.png
+
+======================================================================
+PROCESSING TEST3 - FMAE
+======================================================================
+Using model: models/FMAE_BP4D_fold3.pth
+
+📈 Metrics Summary:
+   original  : F1=0.798 | Acc=0.977
+   low       : F1=0.724 | Acc=0.942
+   high      : F1=0.302 | Acc=0.599
+
+📉 Per-AU F1 Drops from Original:
+   LOW:
+      AU 1:   +0.0%
+      AU 2:   +4.0%
+      AU 4:   +0.0%
+      AU 6:   +0.0%
+      AU 7:   +0.0%
+      AU10:   +0.0%
+      AU12:  +35.1%
+      AU14:   +3.9%
+      AU15:   +0.0%
+      AU17:   +6.1%
+      AU23:   +0.0%
+      AU24:  +40.0%
+   HIGH:
+      AU 1:  +91.5%
+      AU 2:  +94.7%
+      AU 4:  +91.5%
+      AU 6:  +91.5%
+      AU 7:  +11.1%
+      AU10:   +5.9%
+      AU12:  +29.9%
+      AU14:  +17.6%
+      AU15:   +0.0%
+      AU17:  +81.2%
+      AU23:   +0.0%
+      AU24:  +80.0%
+   💾 Saved metrics to results/test3_FMAE_metrics.csv
+
+📊 Creating visualizations for test3...
+   ✓ Saved visualization to results/test3_analysis.png
+
+======================================================================
+✅ Batch Analysis Complete!
+======================================================================
+
+
+🔍 HFSS - Frequency Filtering Test
+======================================================================
+📊 Batch Analysis with HFSS
+======================================================================
+Device: cpu
+Processing: 100 samples per test set
+Test sets: ['test1', 'test2', 'test3']
+Filters: ['original', 'low', 'high']
+======================================================================
+
+======================================================================
+PROCESSING TEST1 - IAT
+======================================================================
+Using model: models/FMAE_IAT_BP4D_fold1.pth
+
+📈 Metrics Summary:
+   original  : F1=0.154 | Acc=0.949
+   low       : F1=0.014 | Acc=0.885
+   high      : F1=0.015 | Acc=0.862
+
+📉 Per-AU F1 Drops from Original:
+   LOW:
+      AU 1:   +0.0%
+      AU 2:   +0.0%
+      AU 4:  +93.5%
+      AU 6:   +0.0%
+      AU 7:   +0.0%
+      AU10:   +0.0%
+      AU12:   +0.0%
+      AU14:   +0.0%
+      AU15:   +0.0%
+      AU17:   +0.0%
+      AU23:  +74.6%
+      AU24:   +0.0%
+   HIGH:
+      AU 1:   +0.0%
+      AU 2:   +0.0%
+      AU 4:  +77.6%
+      AU 6:   +0.0%
+      AU 7:   +0.0%
+      AU10:   +0.0%
+      AU12:   +0.0%
+      AU14:   +0.0%
+      AU15:   +0.0%
+      AU17:   +0.0%
+      AU23:  +88.9%
+      AU24:   +0.0%
+   💾 Saved metrics to results/test1_IAT_metrics.csv
+
+📊 Creating visualizations for test1...
+   ✓ Saved visualization to results/test1_analysis.png
+
+======================================================================
+PROCESSING TEST2 - IAT
+======================================================================
+Using model: models/FMAE_IAT_BP4D_fold2.pth
+
+📈 Metrics Summary:
+   original  : F1=0.541 | Acc=0.907
+   low       : F1=0.530 | Acc=0.861
+   high      : F1=0.336 | Acc=0.749
+
+📉 Per-AU F1 Drops from Original:
+   LOW:
+      AU 1:   +0.0%
+      AU 2:   +0.0%
+      AU 4:   +2.6%
+      AU 6:   -1.9%
+      AU 7:  +10.5%
+      AU10:   +5.9%
+      AU12:  +26.9%
+      AU14:   +1.0%
+      AU15:   +0.0%
+      AU17:   +2.0%
+      AU23:   +0.0%
+      AU24:  -34.0%
+   HIGH:
+      AU 1:   +0.0%
+      AU 2:   +0.0%
+      AU 4: +100.0%
+      AU 6:  -10.2%
+      AU 7:  +49.9%
+      AU10:   -1.0%
+      AU12:  +40.8%
+      AU14:   +4.3%
+      AU15:   +0.0%
+      AU17:  +10.5%
+      AU23:   +0.0%
+      AU24:  +51.3%
+   💾 Saved metrics to results/test2_IAT_metrics.csv
+
+📊 Creating visualizations for test2...
+   ✓ Saved visualization to results/test2_analysis.png
+
+======================================================================
+PROCESSING TEST3 - IAT
+======================================================================
+Using model: models/FMAE_IAT_BP4D_fold3.pth
+
+📈 Metrics Summary:
+   original  : F1=0.775 | Acc=0.934
+   low       : F1=0.613 | Acc=0.824
+   high      : F1=0.453 | Acc=0.644
+
+📉 Per-AU F1 Drops from Original:
+   LOW:
+      AU 1:   +0.0%
+      AU 2:  +44.2%
+      AU 4:   +0.0%
+      AU 6:   +4.0%
+      AU 7:   +2.1%
+      AU10:   +0.0%
+      AU12:  +19.7%
+      AU14:  +34.6%
+      AU15:  +13.3%
+      AU17:  +13.0%
+      AU23:   +0.0%
+      AU24:  +63.5%
+   HIGH:
+      AU 1:  +55.2%
+      AU 2:  +44.2%
+      AU 4:  +93.5%
+      AU 6:  +37.4%
+      AU 7:  +29.9%
+      AU10:   +3.4%
+      AU12:  +34.2%
+      AU14:   +7.6%
+      AU15:   -4.8%
+      AU17:  +40.8%
+      AU23:   +0.0%
+      AU24:  +45.7%
+   💾 Saved metrics to results/test3_IAT_metrics.csv
+
+📊 Creating visualizations for test3...
+   ✓ Saved visualization to results/test3_analysis.png
+
+======================================================================
+✅ Batch Analysis Complete!
+======================================================================
+
+######################################################################
+Analysis of results:
+Alright. I’m going to be blunt and **simple**, exactly as you asked.
+
+---
+
+## First: ignore accuracy
+
+Your accuracies are **lying to you**.
+0.98 accuracy with **F1 = 0.14** is classic AU imbalance nonsense.
+
+From now on:
+👉 **Only F1 matters**
+👉 Accuracy = background noise
+
+If you argue from accuracy in the thesis, reviewers will eat you alive.
+
+---
+
+## Big picture (this is the core story)
+
+**Both FMAE and FMAE+IAT are strongly LOW-FREQUENCY dominant.**
+High-frequency information is doing almost nothing for them.
+
+This is not subtle. It’s brutal.
+
+---
+
+## Let’s look at patterns, not numbers
+
+### 1. FMAE (no IAT)
+
+Across all folds:
+
+* **Original → Low**:
+
+  * Small F1 drop
+  * Sometimes barely changes
+* **Original → High**:
+
+  * Massive F1 collapse
+  * Fold 1: 0.140 → 0.027 (dead)
+  * Fold 3: 0.798 → 0.302 (wrecked)
+
+**Interpretation (simple):**
+FMAE mostly ignores texture.
+It relies on **global facial structure and shape**.
+
+High-frequency removal kills wrinkles, edges, fine muscle cues → model can’t cope.
+
+---
+
+### 2. FMAE + IAT (this is the interesting part)
+
+You probably *expected* IAT to help.
+It mostly **does not**.
+
+#### Fold 1 (important):
+
+* Original F1 already low (0.154)
+* Both **low and high are almost zero**
+
+  * 0.014 / 0.015 → model is blind
+
+This screams:
+👉 **Over-regularization**
+👉 IAT destroyed weak but useful cues
+
+#### Folds 2 & 3:
+
+* Same trend as FMAE:
+
+  * Low-frequency ≈ original
+  * High-frequency much worse
+* BUT:
+
+  * High-frequency F1 is **slightly better** than plain FMAE
+
+Example fold 3:
+
+* FMAE high: 0.302
+* FMAE+IAT high: **0.453**
+
+So IAT:
+
+* ❌ does NOT remove LF reliance
+* ✅ slightly improves HF robustness (but still bad)
+
+---
+
+## Your original hypothesis vs reality
+
+### Hypothesis:
+
+* LF for brow AUs
+* HF for texture AUs
+
+### Reality (from aggregated results):
+
+* **LF dominates almost everything**
+* HF alone is insufficient for reliable AU detection
+* Even “texture AUs” are **not HF-only** in practice
+
+This is a **very strong finding**, not a failure.
+
+---
+
+## What is ACTUALLY going on (one sentence)
+
+> These AU detectors primarily exploit low-frequency, global facial structure, while high-frequency texture cues alone are insufficient; IAT slightly improves robustness but does not fundamentally change frequency reliance.
+
+That sentence is thesis-safe.
+
+---
+
+## Why fold 1 is weird (don’t ignore this)
+
+Fold 1 has:
+
+* Very low original F1 for both models
+* HFSS completely kills performance
+
+Likely causes:
+
+* Harder subjects
+* Different AU distribution
+* Fewer active AUs
+
+👉 You **must** mention fold variability
+👉 This strengthens your credibility, not weakens it
+
+---
+
+## What you should do next (no extra coding hell)
+
+**Mandatory next analyses:**
+
+1. **Per-AU F1 drops**
+
+   * Original → Low
+   * Original → High
+     This will validate (or kill) the brow-vs-lip story.
+
+2. **Delta plots, not raw scores**
+
+   * ΔF1_low
+   * ΔF1_high
+     Absolute F1 is misleading.
+
+3. **One sentence on accuracy**
+
+   * “Accuracy remains high due to class imbalance”
+   * Then never talk about it again.
+
+---
+
+## Final verdict (ruthless)
+
+* ❌ This is NOT “frequency disentanglement”
+* ✅ This IS **frequency reliance analysis**
+* ✅ Results are **consistent, interpretable, and publishable**
+* ❌ IAT is **not the silver bullet** you might have hoped for
+
+Send per-AU deltas next.
+That’s where the real paper lives.
+
+
+Good. Now this is **real analysis**, not hand-waving. I’ll keep it **simple, blunt, and memorable**.
+
+---
+
+## First: how to read these numbers (lock this in)
+
+* **Big drop in HIGH** → AU needs **low-frequency**
+* **Big drop in LOW** → AU needs **high-frequency**
+* **Small drop in both** → robust / mixed
+* **0.0% everywhere** → AU already weak or rarely active (don’t over-interpret)
+
+---
+
+## FMAE — what’s going on
+
+### Global pattern (very clear)
+
+* **LOW-frequency removal** → small or moderate damage
+* **HIGH-frequency removal** → catastrophic damage for many AUs
+
+👉 **FMAE is strongly LOW-frequency dependent**
+
+This is consistent across folds, especially **fold 3**, which is the cleanest.
+
+---
+
+### AU-wise (important, simple)
+
+#### Brow / geometry AUs (1, 2, 4, 6)
+
+* Fold 3 HIGH drops: **~90%**
+* LOW drops: ~0%
+
+👉 These AUs are **purely low-frequency**
+👉 Exactly muscle + geometry as expected
+
+This strongly **confirms your hypothesis**.
+
+---
+
+#### Mouth / texture-related AUs (12, 17, 24)
+
+* Still large **HIGH drops**
+* Some **LOW drops**, but smaller
+
+👉 Even “texture” AUs are **not HF-only**
+👉 They still rely on **global shape + motion**
+
+This kills the naive “wrinkles = HF” assumption. Good insight.
+
+---
+
+## FMAE + IAT — what changed
+
+### Global pattern
+
+* Still **LOW-frequency dominant**
+* BUT high-frequency drops are **less extreme** in folds 2 & 3
+
+Example (fold 3):
+
+* AU1 HIGH drop: 91% → **55%**
+* AU6 HIGH drop: 91% → **37%**
+
+👉 IAT **reduces** frequency sensitivity
+👉 But does **not remove** it
+
+---
+
+### Fold 1 (say this clearly in thesis)
+
+Fold 1 is **bad everywhere**:
+
+* Original F1 already trash
+* LOW and HIGH both collapse
+
+👉 This is **not a frequency effect**
+👉 This is a **hard fold / data issue**
+
+You should explicitly say:
+
+> “Fold 1 shows unstable behavior across all conditions and is analyzed separately.”
+
+That protects you.
+
+---
+
+## The real takeaway (one paragraph version)
+
+> Across both FMAE and FMAE+IAT models, AU detection performance degrades substantially when low-frequency information is removed, while high-frequency information alone is insufficient to support reliable AU prediction. This effect is consistent across most AUs and folds, particularly for geometry-driven AUs such as AU1, AU2, and AU4. Incorporating IAT slightly improves robustness to high-frequency removal but does not fundamentally alter the model’s reliance on low-frequency facial structure.
+
+That’s your **core claim**.
+
+---
+
+## Two sharp insights reviewers will like
+
+1. **AUs are not texture detectors**
+
+   * Even “texture” AUs fail without LF
+   * AU detection ≠ wrinkle detection
+
+2. **IAT ≠ frequency disentanglement**
+
+   * It smooths reliance
+   * It does not shift representations to HF
+
+---
+
+## What NOT to say (important)
+
+❌ “Model uses high frequencies for texture AUs”
+❌ “IAT makes model frequency invariant”
+
+Both are **false** given your data.
+
+---
+
+## What you SHOULD say
+
+✅ “Low-frequency cues dominate AU representations”
+✅ “High-frequency cues alone are insufficient”
+✅ “IAT provides limited robustness, not disentanglement”
+
+######################################################################
+

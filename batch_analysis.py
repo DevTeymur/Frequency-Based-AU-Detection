@@ -22,13 +22,28 @@ from hfss import apply_frequency_mask, create_low_freq_mask, create_high_freq_ma
 # ============================================================================
 # CONFIGURATION - ADJUST THESE PARAMETERS
 # ============================================================================
+MODEL_TYPE = 'IAT'  # Choose: 'FMAE' or 'IAT'
+
 NUM_SAMPLES = 100  # Set to None to process ALL images, or a number like 50 for testing
 TEST_SETS = ['test1', 'test2', 'test3']  # Which test sets to process
 FILTERS = ['original', 'low', 'high']  # Which filters to apply
 
 IMG_SIZE = 224
 DATA_ROOT = Path("BP4D/BP4D_cropped")
-MODEL_PATH = Path("models/FMAE_ViT_base.pth")
+
+# Map each test set to its corresponding model (trained on matching train set)
+MODEL_PATHS = {
+    'test1': Path("models/FMAE_BP4D_fold1.pth"),  # fold1 trained on train1
+    'test2': Path("models/FMAE_BP4D_fold2.pth"),  # fold2 trained on train2
+    'test3': Path("models/FMAE_BP4D_fold3.pth"),  # fold3 trained on train3
+}
+
+IAT_MODEL_PATHS = {
+    'test1': Path("models/FMAE_IAT_BP4D_fold1.pth"),  # fold1 trained on train1
+    'test2': Path("models/FMAE_IAT_BP4D_fold2.pth"),  # fold2 trained on train2
+    'test3': Path("models/FMAE_IAT_BP4D_fold3.pth"),  # fold3 trained on train3
+}
+
 OUTPUT_DIR = Path("results")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -94,7 +109,7 @@ def load_model(model_path):
     print(f"\n🤖 Loading model...")
     
     model = timm.create_model(
-        'vit_base_patch16_224',
+        'vit_large_patch16_224',  # Changed to large (1024 hidden size)
         pretrained=False,
         num_classes=12,
         global_pool='avg'
@@ -235,6 +250,29 @@ def save_results_to_csv(all_results, filename):
     print(f"\n💾 Saved results to {output_file}")
     return df
 
+def save_metrics_to_csv(metrics, test_set_name, model_type):
+    """Save metrics summary to CSV"""
+    rows = []
+    for filter_type, metric_data in metrics.items():
+        row = {
+            'test_set': test_set_name,
+            'model_type': model_type,
+            'filter_type': filter_type,
+            'mean_accuracy': metric_data['mean_accuracy'],
+            'mean_f1': metric_data['mean_f1']
+        }
+        # Add per-AU metrics
+        for au, au_metrics in metric_data['au_metrics'].items():
+            row[f'{au}_precision'] = au_metrics['precision']
+            row[f'{au}_recall'] = au_metrics['recall']
+            row[f'{au}_f1'] = au_metrics['f1']
+        rows.append(row)
+    
+    df_metrics = pd.DataFrame(rows)
+    output_file = OUTPUT_DIR / f'{test_set_name}_{model_type}_metrics.csv'
+    df_metrics.to_csv(output_file, index=False)
+    print(f"   💾 Saved metrics to {output_file}")
+
 # ============================================================================
 # ANALYSIS & VISUALIZATION
 # ============================================================================
@@ -273,34 +311,25 @@ def compute_metrics(df):
                     'recall': recall
                 }
         
+        # Compute mean F1 across all AUs
+        mean_f1 = np.mean([m['f1'] for m in au_metrics.values()])
+        
         metrics[filter_type] = {
             'mean_accuracy': mean_acc,
+            'mean_f1': mean_f1,
             'au_metrics': au_metrics
         }
     
     return metrics
 
 def visualize_results(df, test_set_name):
-    """Create comprehensive visualization"""
+    """Create comprehensive visualization with delta plots"""
     print(f"\n📊 Creating visualizations for {test_set_name}...")
     
     fig = plt.figure(figsize=(20, 12))
     
-    # Plot 1: Overall Accuracy Comparison
-    ax1 = plt.subplot(2, 3, 1)
-    acc_by_filter = df.groupby('filter_type')['accuracy'].mean()
-    bars = ax1.bar(acc_by_filter.index, acc_by_filter.values)
-    ax1.set_ylabel('Mean Accuracy')
-    ax1.set_title('Overall Performance by Filter Type')
-    ax1.set_ylim([0, 1])
-    for bar in bars:
-        height = bar.get_height()
-        ax1.text(bar.get_x() + bar.get_width()/2., height,
-                f'{height:.3f}', ha='center', va='bottom')
-    
-    # Plot 2: F1-Score per AU
-    ax2 = plt.subplot(2, 3, 2)
-    f1_data = []
+    # Compute F1 scores for all filters
+    f1_by_filter = {}
     for filter_type in df['filter_type'].unique():
         df_filter = df[df['filter_type'] == filter_type]
         f1_scores = []
@@ -312,65 +341,79 @@ def visualize_results(df, test_set_name):
             fn = ((y_true == 1) & (y_pred == 0)).sum()
             f1 = 2*tp / (2*tp + fp + fn + 1e-6)
             f1_scores.append(f1)
-        f1_data.append(f1_scores)
+        f1_by_filter[filter_type] = f1_scores
     
-    x = np.arange(len(AU_LABELS))
-    width = 0.25
-    for i, (filter_type, f1_scores) in enumerate(zip(df['filter_type'].unique(), f1_data)):
-        ax2.bar(x + i*width, f1_scores, width, label=filter_type, alpha=0.8)
-    
-    ax2.set_ylabel('F1-Score')
-    ax2.set_xlabel('Action Unit')
-    ax2.set_title('F1-Score per AU by Filter Type')
-    ax2.set_xticks(x + width)
-    ax2.set_xticklabels([f'AU{au}' for au in AU_LABELS], rotation=45)
-    ax2.legend()
-    ax2.grid(True, alpha=0.3)
-    
-    # Plot 3: Performance Degradation
-    ax3 = plt.subplot(2, 3, 3)
-    if 'original' in df['filter_type'].unique():
-        original_acc = df[df['filter_type'] == 'original']['accuracy'].mean()
-        degradation = []
+    # Plot 1: Overall F1 Delta from Original
+    ax1 = plt.subplot(2, 3, 1)
+    if 'original' in f1_by_filter:
+        orig_f1 = np.mean(f1_by_filter['original'])
+        deltas = []
         labels = []
-        for filter_type in ['low', 'high']:
-            if filter_type in df['filter_type'].unique():
-                filter_acc = df[df['filter_type'] == filter_type]['accuracy'].mean()
-                deg = (original_acc - filter_acc) / (original_acc + 1e-6) * 100
-                degradation.append(deg)
-                labels.append(filter_type)
+        for ft in ['low', 'high']:
+            if ft in f1_by_filter:
+                delta = (np.mean(f1_by_filter[ft]) - orig_f1) * 100
+                deltas.append(delta)
+                labels.append(ft)
         
-        bars = ax3.bar(labels, degradation, color=['blue', 'red'], alpha=0.7)
-        ax3.set_ylabel('Performance Drop (%)')
-        ax3.set_title('Performance Degradation vs Original')
-        ax3.axhline(y=0, color='black', linestyle='--', alpha=0.3)
+        colors = ['blue' if d < 0 else 'green' for d in deltas]
+        bars = ax1.bar(labels, deltas, color=colors, alpha=0.7)
+        ax1.axhline(y=0, color='black', linestyle='--', linewidth=2)
+        ax1.set_ylabel('F1 Change (%)')
+        ax1.set_title('Mean F1 Drop from Original')
         for bar in bars:
             height = bar.get_height()
-            ax3.text(bar.get_x() + bar.get_width()/2., height,
+            ax1.text(bar.get_x() + bar.get_width()/2., height,
                     f'{height:.1f}%', ha='center', va='bottom' if height > 0 else 'top')
     
-    # Plot 4: AU Frequency Heatmap
-    ax4 = plt.subplot(2, 3, 4)
-    heatmap_data = []
-    for au in AU_LABELS:
-        row = []
-        for filter_type in ['original', 'low', 'high']:
-            if filter_type in df['filter_type'].unique():
-                df_filter = df[df['filter_type'] == filter_type]
-                y_true = df_filter[f'AU{au}_true'].values
-                y_pred = df_filter[f'AU{au}_pred'].values
-                tp = ((y_true == 1) & (y_pred == 1)).sum()
-                fp = ((y_true == 0) & (y_pred == 1)).sum()
-                fn = ((y_true == 1) & (y_pred == 0)).sum()
-                f1 = 2*tp / (2*tp + fp + fn + 1e-6)
-                row.append(f1)
-        heatmap_data.append(row)
+    # Plot 2: Per-AU F1 Delta (Low Freq)
+    ax2 = plt.subplot(2, 3, 2)
+    if 'original' in f1_by_filter and 'low' in f1_by_filter:
+        deltas_low = [(f1_by_filter['low'][i] - f1_by_filter['original'][i]) * 100 
+                      for i in range(len(AU_LABELS))]
+        colors = ['blue' if d < 0 else 'green' for d in deltas_low]
+        ax2.bar(range(len(AU_LABELS)), deltas_low, color=colors, alpha=0.7)
+        ax2.axhline(y=0, color='black', linestyle='--', linewidth=1)
+        ax2.set_ylabel('F1 Change (%)')
+        ax2.set_xlabel('Action Unit')
+        ax2.set_title('Per-AU F1 Drop: Low Frequency')
+        ax2.set_xticks(range(len(AU_LABELS)))
+        ax2.set_xticklabels([f'AU{au}' for au in AU_LABELS], rotation=45)
+        ax2.grid(True, alpha=0.3, axis='y')
     
-    sns.heatmap(heatmap_data, annot=True, fmt='.2f', cmap='YlOrRd',
-                xticklabels=['Original', 'Low', 'High'],
-                yticklabels=[f'AU{au}' for au in AU_LABELS],
-                ax=ax4, cbar_kws={'label': 'F1-Score'})
-    ax4.set_title('AU Performance Heatmap')
+    # Plot 3: Per-AU F1 Delta (High Freq)
+    ax3 = plt.subplot(2, 3, 3)
+    if 'original' in f1_by_filter and 'high' in f1_by_filter:
+        deltas_high = [(f1_by_filter['high'][i] - f1_by_filter['original'][i]) * 100 
+                       for i in range(len(AU_LABELS))]
+        colors = ['red' if d < 0 else 'green' for d in deltas_high]
+        ax3.bar(range(len(AU_LABELS)), deltas_high, color=colors, alpha=0.7)
+        ax3.axhline(y=0, color='black', linestyle='--', linewidth=1)
+        ax3.set_ylabel('F1 Change (%)')
+        ax3.set_xlabel('Action Unit')
+        ax3.set_title('Per-AU F1 Drop: High Frequency')
+        ax3.set_xticks(range(len(AU_LABELS)))
+        ax3.set_xticklabels([f'AU{au}' for au in AU_LABELS], rotation=45)
+        ax3.grid(True, alpha=0.3, axis='y')
+    
+    # Plot 4: Delta Heatmap
+    ax4 = plt.subplot(2, 3, 4)
+    if 'original' in f1_by_filter:
+        heatmap_data = []
+        for au_idx in range(len(AU_LABELS)):
+            row = []
+            for ft in ['low', 'high']:
+                if ft in f1_by_filter:
+                    delta = (f1_by_filter[ft][au_idx] - f1_by_filter['original'][au_idx]) * 100
+                    row.append(delta)
+                else:
+                    row.append(0)
+            heatmap_data.append(row)
+        
+        sns.heatmap(heatmap_data, annot=True, fmt='.1f', cmap='RdYlGn', center=0,
+                    xticklabels=['Low', 'High'],
+                    yticklabels=[f'AU{au}' for au in AU_LABELS],
+                    ax=ax4, cbar_kws={'label': 'F1 Change (%)'})
+        ax4.set_title('F1 Delta Heatmap')
     
     # Plot 5: Sample Distribution
     ax5 = plt.subplot(2, 3, 5)
@@ -378,13 +421,26 @@ def visualize_results(df, test_set_name):
     ax5.pie(filter_counts.values, labels=filter_counts.index, autopct='%1.1f%%')
     ax5.set_title(f'Processed Samples Distribution\n(Total: {len(df)})')
     
-    # Plot 6: Accuracy Distribution
+    # Plot 6: Low vs High Comparison
     ax6 = plt.subplot(2, 3, 6)
-    for filter_type in df['filter_type'].unique():
-        df_filter = df[df['filter_type'] == filter_type]
-        ax6.hist(df_filter['accuracy'], bins=20, alpha=0.5, label=filter_type)
-    ax6.set_xlabel('Accuracy')
-    ax6.set_ylabel('Frequency')
+    if 'original' in f1_by_filter and 'low' in f1_by_filter and 'high' in f1_by_filter:
+        deltas_low = [(f1_by_filter['low'][i] - f1_by_filter['original'][i]) * 100 
+                      for i in range(len(AU_LABELS))]
+        deltas_high = [(f1_by_filter['high'][i] - f1_by_filter['original'][i]) * 100 
+                       for i in range(len(AU_LABELS))]
+        
+        x = np.arange(len(AU_LABELS))
+        width = 0.35
+        ax6.bar(x - width/2, deltas_low, width, label='Low', alpha=0.7, color='blue')
+        ax6.bar(x + width/2, deltas_high, width, label='High', alpha=0.7, color='red')
+        ax6.axhline(y=0, color='black', linestyle='--', linewidth=1)
+        ax6.set_ylabel('F1 Change (%)')
+        ax6.set_xlabel('Action Unit')
+        ax6.set_title('Low vs High Frequency Impact')
+        ax6.set_xticks(x)
+        ax6.set_xticklabels([f'AU{au}' for au in AU_LABELS], rotation=45)
+        ax6.legend()
+        ax6.grid(True, alpha=0.3, axis='y')
     ax6.set_title('Accuracy Distribution by Filter')
     ax6.legend()
     ax6.grid(True, alpha=0.3)
@@ -399,14 +455,16 @@ def visualize_results(df, test_set_name):
 # MAIN
 # ============================================================================
 def main():
-    # Load model once
-    model = load_model(MODEL_PATH)
-    
-    # Process each test set
+    # Process each test set with its corresponding model
     for test_set in TEST_SETS:
         print(f"\n{'='*70}")
-        print(f"PROCESSING {test_set.upper()}")
+        print(f"PROCESSING {test_set.upper()} - {MODEL_TYPE}")
         print(f"{'='*70}")
+        
+        # Load the correct model for this test set
+        model_path = MODEL_PATHS[test_set] if MODEL_TYPE == 'FMAE' else IAT_MODEL_PATHS[test_set]
+        print(f"Using model: {model_path}")
+        model = load_model(model_path)
         
         # Load dataset
         dataset = load_dataset(test_set, num_samples=NUM_SAMPLES)
@@ -419,13 +477,29 @@ def main():
             all_results.extend(results)
         
         # Save results
-        df = save_results_to_csv(all_results, f'{test_set}_results.csv')
+        df = save_results_to_csv(all_results, f'{test_set}_{MODEL_TYPE}_results.csv')
         
         # Compute and display metrics
         metrics = compute_metrics(df)
         print(f"\n📈 Metrics Summary:")
         for filter_type, metric_data in metrics.items():
-            print(f"   {filter_type:10s}: Accuracy = {metric_data['mean_accuracy']:.4f}")
+            print(f"   {filter_type:10s}: F1={metric_data['mean_f1']:.3f} | Acc={metric_data['mean_accuracy']:.3f}")
+        
+        # Show per-AU F1 drops
+        if 'original' in metrics:
+            print(f"\n📉 Per-AU F1 Drops from Original:")
+            orig = metrics['original']['au_metrics']
+            for filter_type in ['low', 'high']:
+                if filter_type in metrics:
+                    print(f"   {filter_type.upper()}:")
+                    for au in AU_LABELS:
+                        au_key = f'AU{au}'
+                        if au_key in orig and au_key in metrics[filter_type]['au_metrics']:
+                            drop = (orig[au_key]['f1'] - metrics[filter_type]['au_metrics'][au_key]['f1']) * 100
+                            print(f"      AU{au:2d}: {drop:+6.1f}%")
+        
+        # Save metrics to CSV
+        save_metrics_to_csv(metrics, test_set, MODEL_TYPE)
         
         # Visualize
         visualize_results(df, test_set)
