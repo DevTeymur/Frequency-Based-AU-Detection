@@ -13,6 +13,7 @@ import seaborn as sns
 from pathlib import Path
 from tqdm import tqdm
 import timm
+from sklearn.metrics import roc_auc_score
 from warnings import filterwarnings
 filterwarnings("ignore")
 
@@ -22,11 +23,12 @@ from hfss import apply_frequency_mask, create_low_freq_mask, create_high_freq_ma
 # ============================================================================
 # CONFIGURATION - ADJUST THESE PARAMETERS
 # ============================================================================
-MODEL_TYPE = 'IAT'  # Choose: 'FMAE' or 'IAT'
+MODEL_TYPE = 'FMAE'  # Choose: 'FMAE' or 'IAT'
 
-NUM_SAMPLES = 100  # Set to None to process ALL images, or a number like 50 for testing
-TEST_SETS = ['test1', 'test2', 'test3']  # Which test sets to process
-FILTERS = ['original', 'low', 'high']  # Which filters to apply
+NUM_SAMPLES = 50  # Set to None to process ALL images, or a number like 50 for testing
+
+TEST_SETS = ['test1']  # Which test sets to process
+FILTERS = ['original']  # Which filters to apply
 
 IMG_SIZE = 224
 DATA_ROOT = Path("BP4D/BP4D_cropped")
@@ -47,7 +49,13 @@ IAT_MODEL_PATHS = {
 OUTPUT_DIR = Path("results")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+DEVICE = 'mps' if torch.backends.mps.is_available() else 'cpu'
+
+# Subject IDs for identity prediction (FMAE-IAT only)
+SUBJECT_IDS = ['F001', 'F002', 'F003', 'F004', 'F005', 'F006', 'F007', 'F008', 'F009', 'F010',
+               'F011', 'F012', 'F013', 'F014', 'F015', 'F016', 'F017', 'F018', 'F019', 'F020',
+               'F021', 'F022', 'F023', 'M001', 'M002', 'M003', 'M004', 'M005', 'M006', 'M007',
+               'M008', 'M009', 'M010', 'M011', 'M012', 'M013', 'M014', 'M015', 'M016', 'M017', 'M018']
 
 # Action Units
 AU_LABELS = [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23, 24]
@@ -89,7 +97,7 @@ def load_and_preprocess_image(img_path):
     full_path = DATA_ROOT / img_path
     img = Image.open(full_path).convert('RGB')
     img = img.resize((IMG_SIZE, IMG_SIZE))
-    
+
     # Convert to tensor and normalize
     img_array = np.array(img).astype(np.float32) / 255.0
     img_tensor = torch.from_numpy(img_array).permute(2, 0, 1)
@@ -109,7 +117,7 @@ def load_model(model_path):
     print(f"\n🤖 Loading model...")
     
     model = timm.create_model(
-        'vit_large_patch16_224',  # Changed to large (1024 hidden size)
+        'vit_large_patch16_224',
         pretrained=False,
         num_classes=12,
         global_pool='avg'
@@ -124,34 +132,48 @@ def load_model(model_path):
     
     print(f"   ✓ Model ready")
     return model
+    return model
 
 # ============================================================================
 # PREDICT
 # ============================================================================
 @torch.no_grad()
-def predict_batch(model, images):
+def predict_batch(model, images, predict_identity=False):
     """
     Predict AU labels for a batch of images
     
     Args:
         model: Loaded model
         images: Batch of images [B, 3, 224, 224]
+        predict_identity: If True, return identity predictions (FMAE-IAT only)
     
     Returns:
         probabilities: [B, 12] AU probabilities
         predictions: [B, 12] binary predictions
+        identity_probs: [B, 41] identity probabilities (if predict_identity=True)
     """
     images = images.to(DEVICE)
     outputs = model(images)
-    probs = torch.sigmoid(outputs).cpu()
-    preds = (probs >= 0.5).float()
     
-    return probs, preds
+    # IAT models return tuple (au_output, id_output), FMAE returns single tensor
+    if predict_identity and isinstance(outputs, tuple):
+        au_outputs, id_outputs = outputs
+        au_probs = torch.sigmoid(au_outputs).cpu()
+        au_preds = (au_probs >= 0.5).float()
+        id_probs = torch.softmax(id_outputs, dim=1).cpu()
+        return au_probs, au_preds, id_probs
+    else:
+        # FMAE or not predicting identity
+        if isinstance(outputs, tuple):
+            outputs = outputs[0]  # Take AU head only
+        au_probs = torch.sigmoid(outputs).cpu()
+        au_preds = (au_probs >= 0.5).float()
+        return au_probs, au_preds, None
 
 # ============================================================================
 # BATCH PROCESSING
 # ============================================================================
-def process_dataset(model, dataset, test_set_name, filter_type='original', batch_size=16):
+def process_dataset(model, dataset, test_set_name, filter_type='original', batch_size=16, predict_identity=False):
     """
     Process entire dataset with specified filter
     
@@ -161,6 +183,7 @@ def process_dataset(model, dataset, test_set_name, filter_type='original', batch
         test_set_name: Name of test set (for logging)
         filter_type: 'original', 'low', or 'high'
         batch_size: Batch size for processing
+        predict_identity: If True, predict identity (FMAE-IAT only)
     
     Returns:
         List of result dictionaries
@@ -208,16 +231,16 @@ def process_dataset(model, dataset, test_set_name, filter_type='original', batch
         images = torch.stack(images)
         true_labels = torch.stack(true_labels)
         
-        probs, preds = predict_batch(model, images)
+        au_probs, au_preds, id_probs = predict_batch(model, images, predict_identity=predict_identity)
         
         # Store results
         for i, sample in enumerate(batch_samples):
             # Get predicted AUs
-            predicted_au_indices = torch.where(preds[i] == 1)[0].tolist()
+            predicted_au_indices = torch.where(au_preds[i] == 1)[0].tolist()
             predicted_aus = [AU_LABELS[idx] for idx in predicted_au_indices]
             
             # Compute accuracy
-            accuracy = (preds[i] == true_labels[i]).float().mean().item()
+            accuracy = (au_preds[i] == true_labels[i]).float().mean().item()
             
             # Store result
             result = {
@@ -231,9 +254,21 @@ def process_dataset(model, dataset, test_set_name, filter_type='original', batch
             
             # Add individual AU probabilities
             for au_idx, au_label in enumerate(AU_LABELS):
-                result[f'AU{au_label}_prob'] = probs[i, au_idx].item()
-                result[f'AU{au_label}_pred'] = int(preds[i, au_idx].item())
+                result[f'AU{au_label}_prob'] = au_probs[i, au_idx].item()
+                result[f'AU{au_label}_pred'] = int(au_preds[i, au_idx].item())
                 result[f'AU{au_label}_true'] = int(true_labels[i, au_idx].item())
+            
+            # Add identity prediction if available
+            if predict_identity and id_probs is not None:
+                # Extract true subject ID from path (e.g., "F001/T1/1.jpg" -> "F001")
+                true_subject = sample['img_path'].split('/')[0]
+                predicted_subject_idx = torch.argmax(id_probs[i]).item()
+                predicted_subject = SUBJECT_IDS[predicted_subject_idx]
+                
+                result['true_subject'] = true_subject
+                result['predicted_subject'] = predicted_subject
+                result['identity_correct'] = int(true_subject == predicted_subject)
+                result['identity_confidence'] = id_probs[i, predicted_subject_idx].item()
             
             results.append(result)
     
@@ -259,13 +294,16 @@ def save_metrics_to_csv(metrics, test_set_name, model_type):
             'model_type': model_type,
             'filter_type': filter_type,
             'mean_accuracy': metric_data['mean_accuracy'],
-            'mean_f1': metric_data['mean_f1']
+            'mean_f1': metric_data['mean_f1'],
+            'mean_auc': metric_data['mean_auc'],
+            'optimal_threshold': metric_data['optimal_threshold']
         }
         # Add per-AU metrics
         for au, au_metrics in metric_data['au_metrics'].items():
             row[f'{au}_precision'] = au_metrics['precision']
             row[f'{au}_recall'] = au_metrics['recall']
             row[f'{au}_f1'] = au_metrics['f1']
+            row[f'{au}_auc'] = au_metrics['auc']
         rows.append(row)
     
     df_metrics = pd.DataFrame(rows)
@@ -277,7 +315,9 @@ def save_metrics_to_csv(metrics, test_set_name, model_type):
 # ANALYSIS & VISUALIZATION
 # ============================================================================
 def compute_metrics(df):
-    """Compute evaluation metrics from results dataframe"""
+    """Compute evaluation metrics from results dataframe using optimal threshold search"""
+    from sklearn.metrics import f1_score
+    
     metrics = {}
     
     for filter_type in df['filter_type'].unique():
@@ -286,37 +326,74 @@ def compute_metrics(df):
         # Overall metrics
         mean_acc = df_filter['accuracy'].mean()
         
-        # Per-AU metrics
-        au_metrics = {}
+        # Prepare data for threshold search
+        y_true_all = []
+        y_prob_all = []
         for au in AU_LABELS:
-            true_col = f'AU{au}_true'
-            pred_col = f'AU{au}_pred'
-            
-            if true_col in df_filter.columns:
-                y_true = df_filter[true_col].values
-                y_pred = df_filter[pred_col].values
-                
-                # Compute F1, Precision, Recall
-                tp = ((y_true == 1) & (y_pred == 1)).sum()
-                fp = ((y_true == 0) & (y_pred == 1)).sum()
-                fn = ((y_true == 1) & (y_pred == 0)).sum()
-                
-                precision = tp / (tp + fp + 1e-6)
-                recall = tp / (tp + fn + 1e-6)
-                f1 = 2 * precision * recall / (precision + recall + 1e-6)
-                
-                au_metrics[f'AU{au}'] = {
-                    'f1': f1,
-                    'precision': precision,
-                    'recall': recall
-                }
+            y_true_all.append(df_filter[f'AU{au}_true'].values)
+            y_prob_all.append(df_filter[f'AU{au}_prob'].values)
         
-        # Compute mean F1 across all AUs
-        mean_f1 = np.mean([m['f1'] for m in au_metrics.values()])
+        y_true = np.array(y_true_all).T  # Shape: [samples, 12]
+        y_prob = np.array(y_prob_all).T  # Shape: [samples, 12]
+        
+        # Search for optimal threshold (matching supervisor's method)
+        f1_score_ls = []
+        for i in range(1, 100):
+            threshold = i * 0.01
+            y_pred = np.zeros(y_prob.shape)
+            y_pred[np.where(y_prob >= threshold)] = 1
+            
+            f1_scores = []
+            for class_idx in range(y_true.shape[1]):
+                f1_scores.append(f1_score(y_true[:, class_idx], y_pred[:, class_idx]))
+            f1_score_ls.append(f1_scores)
+        
+        f1_score_arr = np.array(f1_score_ls)
+        max_f1_row_index = np.argmax(np.mean(f1_score_arr, axis=1))
+        max_mean_row = f1_score_arr[max_f1_row_index]
+        optimal_threshold = (max_f1_row_index + 1) / 100
+        
+        # Compute per-AU metrics at optimal threshold
+        au_metrics = {}
+        y_pred_optimal = np.zeros(y_prob.shape)
+        y_pred_optimal[np.where(y_prob >= optimal_threshold)] = 1
+        
+        for au_idx, au in enumerate(AU_LABELS):
+            y_true_au = y_true[:, au_idx]
+            y_pred_au = y_pred_optimal[:, au_idx]
+            y_prob_au = y_prob[:, au_idx]
+            
+            # Compute metrics
+            tp = ((y_true_au == 1) & (y_pred_au == 1)).sum()
+            fp = ((y_true_au == 0) & (y_pred_au == 1)).sum()
+            fn = ((y_true_au == 1) & (y_pred_au == 0)).sum()
+            
+            precision = tp / (tp + fp + 1e-6)
+            recall = tp / (tp + fn + 1e-6)
+            f1 = max_mean_row[au_idx]
+            
+            # Compute AUC
+            try:
+                auc = roc_auc_score(y_true_au, y_prob_au) if len(np.unique(y_true_au)) > 1 else 0.5
+            except:
+                auc = 0.5
+            
+            au_metrics[f'AU{au}'] = {
+                'f1': f1,
+                'precision': precision,
+                'recall': recall,
+                'auc': auc
+            }
+        
+        # Compute mean F1 and AUC across all AUs
+        mean_f1 = max_mean_row.mean()
+        mean_auc = np.mean([m['auc'] for m in au_metrics.values()])
         
         metrics[filter_type] = {
             'mean_accuracy': mean_acc,
             'mean_f1': mean_f1,
+            'mean_auc': mean_auc,
+            'optimal_threshold': optimal_threshold,
             'au_metrics': au_metrics
         }
     
@@ -472,8 +549,10 @@ def main():
         
         # Process with each filter
         all_results = []
+        predict_identity = (MODEL_TYPE == 'IAT')  # Only predict identity for IAT models
+        
         for filter_type in FILTERS:
-            results = process_dataset(model, dataset, test_set, filter_type)
+            results = process_dataset(model, dataset, test_set, filter_type, predict_identity=predict_identity)
             all_results.extend(results)
         
         # Save results
@@ -483,7 +562,15 @@ def main():
         metrics = compute_metrics(df)
         print(f"\n📈 Metrics Summary:")
         for filter_type, metric_data in metrics.items():
-            print(f"   {filter_type:10s}: F1={metric_data['mean_f1']:.3f} | Acc={metric_data['mean_accuracy']:.3f}")
+            print(f"   {filter_type:10s}: F1={metric_data['mean_f1']:.3f} | AUC={metric_data['mean_auc']:.3f} | Threshold={metric_data['optimal_threshold']:.2f}")
+        
+        # Display identity accuracy if available (IAT only)
+        if predict_identity and 'identity_correct' in df.columns:
+            print(f"\n🆔 Identity Prediction Accuracy:")
+            for filter_type in df['filter_type'].unique():
+                df_filter = df[df['filter_type'] == filter_type]
+                identity_acc = df_filter['identity_correct'].mean()
+                print(f"   {filter_type:10s}: {identity_acc*100:.2f}%")
         
         # Show per-AU F1 drops
         if 'original' in metrics:

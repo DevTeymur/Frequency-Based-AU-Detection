@@ -1,0 +1,42 @@
+True results:
+
+===================================
+FMAE:
+Pre-trained on 33 epochs
+
+Fold 1:
+AUC - 82.407
+F1 - 67.108
+
+Fold 2:
+AUC - 82.143
+F1 - 65.317
+
+Fold 3:
+AUC - 82.768
+F1 - 67.705
+
+===================================
+FMAE-IAT:
+Pre-trained on 33 epochs
+
+Fold 1:
+AUC
+F1 - 66.209
+
+Fold 2:
+AUC
+F1 - 69.566
+
+Fold 3:
+AUC
+F1 - 65.385
+======================================================================
+
+My results: 
+
+Fold 1:
+📈 Metrics Summary:
+   original  : F1=0.800 | AUC=0.926 | Acc=0.887
+
+    original  : F1=0.810 | AUC=0.926 | Threshold=0.33

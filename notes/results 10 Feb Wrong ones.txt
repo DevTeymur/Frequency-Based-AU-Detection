@@ -573,3 +573,35 @@ Both are **false** given your data.
 
 ######################################################################
 
+
+
+
+
+Test 1:
+   original  : F1=0.140 | Acc=0.985
+   low       : F1=0.060 | Acc=0.939
+   high      : F1=0.027 | Acc=0.777
+
+   original  : F1=0.154 | Acc=0.949
+   low       : F1=0.014 | Acc=0.885
+   high      : F1=0.015 | Acc=0.862
+
+
+Test 2:
+   original  : F1=0.553 | Acc=0.941
+   low       : F1=0.521 | Acc=0.902
+   high      : F1=0.321 | Acc=0.762
+      
+   original  : F1=0.541 | Acc=0.907
+   low       : F1=0.530 | Acc=0.861
+   high      : F1=0.336 | Acc=0.749
+
+
+Test 3:
+   original  : F1=0.798 | Acc=0.977
+   low       : F1=0.724 | Acc=0.942
+   high      : F1=0.302 | Acc=0.599
+
+   original  : F1=0.775 | Acc=0.934
+   low       : F1=0.613 | Acc=0.824
+   high      : F1=0.453 | Acc=0.644
