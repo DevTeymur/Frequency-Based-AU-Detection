@@ -95,12 +95,10 @@ def train_bp4d(model_path, fold, model_type=None, device='auto'):
     
     # Set parameters
     if model_type == 'FMAE':
-        grad_reverse = 0  # No identity adversarial
         blr = 0.0002
         epochs = 20
         warmup = 2
     else:  # IAT
-        grad_reverse = 2  # Identity adversarial lambda=2
         blr = 0.0005
         epochs = 30
         warmup = 3
@@ -138,7 +136,6 @@ def train_bp4d(model_path, fold, model_type=None, device='auto'):
     print(f"   • Epochs: {epochs}")
     print(f"   • Batch size: {batch_size}")
     print(f"   • Learning rate: {blr}")
-    print(f"   • Identity adversarial: {'Yes (λ=2)' if grad_reverse > 0 else 'No'}")
     print()
     
     # Execute

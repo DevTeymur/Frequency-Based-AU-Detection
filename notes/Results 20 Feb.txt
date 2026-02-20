@@ -1,0 +1,31 @@
+REFERENCE_RESULTS = {
+    'FMAE': {
+        'test1': {'F1': 67.108, 'AUC': 82.407},
+        'test2': {'F1': 65.317, 'AUC': 82.143},
+        'test3': {'F1': 67.705, 'AUC': 82.768},
+    },
+    'IAT': {
+        'test1': {'F1': 66.209, 'AUC': None},
+        'test2': {'F1': 69.566, 'AUC': None},
+        'test3': {'F1': 65.385, 'AUC': None},
+    }
+}
+
+💾 Saved results to results/test1_FMAE_results.csv
+📈 Metrics Summary:
+   original  : F1=51.671% | AUC=38.801% | Threshold=0.01 | ΔF1=-15.437% | ΔAUC=-43.606%
+🎯 Reference Results (33 epochs):
+   original  : F1=67.108% | AUC=82.407%
+
+💾 Saved results to results/test2_FMAE_results.csv
+📈 Metrics Summary:
+   original  : F1=0.490 | AUC=0.411 | Threshold=0.01
+
+
+
+💾 Saved results to results/test2_FMAE_results.csv
+📈 Metrics Summary:
+   original  : F1=79.354% | AUC=92.735% | Threshold=0.40 | ΔF1=+14.037% | ΔAUC=+10.592%
+
+🎯 Reference Results (33 epochs):
+   original  : F1=65.317% | AUC=82.143%

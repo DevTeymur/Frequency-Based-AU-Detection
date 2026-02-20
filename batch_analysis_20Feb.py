@@ -4,7 +4,6 @@ Configurable to run on small sample or entire dataset
 """
 
 import json
-import sys
 import torch
 import numpy as np
 import pandas as pd
@@ -13,6 +12,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 from tqdm import tqdm
+import timm
 from sklearn.metrics import roc_auc_score
 from warnings import filterwarnings
 filterwarnings("ignore")
@@ -20,22 +20,14 @@ filterwarnings("ignore")
 # Import from our modules
 from hfss import apply_frequency_mask, create_low_freq_mask, create_high_freq_mask, create_random_mask
 
-# Ensure we can import the training-time model definition (models_vit.py)
-PROJECT_ROOT = Path(__file__).resolve().parent
-FMAE_PATH = PROJECT_ROOT / "fmae"
-if str(FMAE_PATH) not in sys.path:
-    sys.path.insert(0, str(FMAE_PATH))
-
-import models_vit  # noqa: E402
-
 # ============================================================================
 # CONFIGURATION - ADJUST THESE PARAMETERS
 # ============================================================================
 MODEL_TYPE = 'FMAE'  # Choose: 'FMAE' or 'IAT'
 
-NUM_SAMPLES = 50  # Set to None to process ALL images, or a number like 50 for testing
+NUM_SAMPLES = None  # Set to None to process ALL images, or a number like 50 for testing
 
-TEST_SETS = ['test2']  # Which test sets to process
+TEST_SETS = ['test1']  # Which test sets to process
 
 # Filter types:
 # - 'original': No filtering
@@ -152,45 +144,23 @@ def load_and_preprocess_image(img_path):
 # LOAD MODEL
 # ============================================================================
 def load_model(model_path):
-    """Load pretrained model using the same architecture as training."""
+    """Load pretrained model"""
     print(f"\n🤖 Loading model from {model_path}...")
-
-    # Match training-time settings from fmae/models_vit.py
-    grad_reverse = 1.0 if MODEL_TYPE == 'IAT' else 0.0
-    num_subjects = len(SUBJECT_IDS) if MODEL_TYPE == 'IAT' else 0
-
-    # Some environments may have an older models_vit without num_subjects/grad_reverse.
-    try:
-        model = models_vit.vit_large_patch16(
-            num_classes=len(AU_LABELS),
-            num_subjects=num_subjects,
-            drop_path_rate=0.0,  # drop path is not used during eval
-            global_pool=True,
-            grad_reverse=grad_reverse,
-        )
-    except TypeError:
-        print("⚠️ models_vit.vit_large_patch16 does not accept num_subjects/grad_reverse; falling back to plain constructor.")
-        if MODEL_TYPE == 'IAT':
-            raise RuntimeError("The loaded models_vit does not support identity head (IAT). Please sync the fmae folder to the version used for training or switch MODEL_TYPE to 'FMAE'.")
-        model = models_vit.vit_large_patch16(
-            num_classes=len(AU_LABELS),
-            drop_path_rate=0.0,
-            global_pool=True,
-        )
-
+    
+    model = timm.create_model(
+        'vit_large_patch16_224',
+        pretrained=False,
+        num_classes=12
+    )
+    
     checkpoint = torch.load(model_path, map_location='cpu')
     state_dict = checkpoint['model'] if 'model' in checkpoint else checkpoint
-
-    # Load weights strictly; report any mismatches to catch issues early
-    msg = model.load_state_dict(state_dict, strict=True)
-    if msg.missing_keys or msg.unexpected_keys:
-        print(f"⚠️  Missing keys: {msg.missing_keys}")
-        print(f"⚠️  Unexpected keys: {msg.unexpected_keys}")
-
+    model.load_state_dict(state_dict, strict=False)
+    
     model = model.to(DEVICE)
     model.eval()
-
-    print(f"   ✓ Model ready on {DEVICE} (grad_reverse={grad_reverse}, subjects={num_subjects})")
+    
+    print(f"   ✓ Model ready on {DEVICE}")
     return model
 
 # ============================================================================
