@@ -104,25 +104,66 @@ def create_band_mask(size, inner_cutoff=0.2, outer_cutoff=0.5):
     
     return mask
 
-def create_random_mask(size, proportion=0.5):
+def create_random_mask(size, proportion=0.5, seed=None):
     """
-    Create random frequency mask
+    Create random frequency mask (HFSS method)
     
     Args:
         size: Image size
-        proportion: Proportion of frequencies to keep
+        proportion: Proportion of frequencies to keep (0.2 = keep 20% random freqs)
+        seed: Random seed for reproducibility
     
     Returns:
         Random binary mask [size, size]
     """
+    if seed is not None:
+        torch.manual_seed(seed)
+    
     mask = torch.zeros((size, size))
-    num_keep = int(size * size * proportion)
+    
+    # Only select from upper half + DC (due to FFT symmetry)
+    # This matches the HFSS paper approach
+    half_size = size // 2 + 1
+    total_freqs = half_size * size
+    num_keep = int(total_freqs * proportion)
     
     # Randomly select frequencies to keep
-    indices = torch.randperm(size * size)[:num_keep]
-    mask.view(-1)[indices] = 1
+    indices = torch.randperm(total_freqs)[:num_keep]
+    
+    # Create mask for upper half
+    temp_mask = torch.zeros(half_size * size)
+    temp_mask[indices] = 1
+    temp_mask = temp_mask.reshape(half_size, size)
+    
+    # Fill upper half
+    mask[:half_size, :] = temp_mask
+    
+    # Mirror to lower half (maintain FFT symmetry)
+    for h_index in range(1, half_size):
+        for w_index in range(size):
+            h_mirror = size - h_index
+            w_mirror = (size - w_index) % size
+            mask[h_mirror, w_mirror] = mask[h_index, w_index]
     
     return mask
+
+def create_random_masks_batch(size, proportion, num_masks=10):
+    """
+    Create multiple random masks for averaging (HFSS robustness test)
+    
+    Args:
+        size: Image size
+        proportion: Proportion of frequencies to keep
+        num_masks: Number of random masks to generate
+    
+    Returns:
+        List of random masks
+    """
+    masks = []
+    for i in range(num_masks):
+        mask = create_random_mask(size, proportion, seed=i)
+        masks.append(mask)
+    return masks
 
 # ============================================================================
 # VISUALIZATION

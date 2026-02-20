@@ -40,3 +40,95 @@ Fold 1:
    original  : F1=0.800 | AUC=0.926 | Acc=0.887
 
     original  : F1=0.810 | AUC=0.926 | Threshold=0.33
+
+Fold 2:
+📈 Metrics Summary:
+   original  : F1=0.490 | AUC=0.411 | Threshold=0.01
+
+
+Fine tuning model notes:
+Searched for files matching `**/fmae/**/README.md`, 1 match
+
+Searched for files matching `**/fmae/**/FINETUNE.md`, 1 match
+
+Read [](file:///Users/tima/Documents/DASC/Thesis/Frequency-Based-AU-Detection/fmae/README.md#1-1), lines 1 to 100
+
+Read [](file:///Users/tima/Documents/DASC/Thesis/Frequency-Based-AU-Detection/fmae/FINETUNE.md#1-1), lines 1 to 150
+
+Read [](file:///Users/tima/Documents/DASC/Thesis/Frequency-Based-AU-Detection/fmae/README.md#100-100), lines 100 to 250
+
+Now I understand! Let me create a simple finetune.py script based on the BP4D finetuning approach: 
+
+Using "Replace String in File"
+
+
+```
+
+```
+Perfect! I've created a comprehensive finetune.py script. Here's how it works:
+
+## **What the script does:**
+
+1. **Checks requirements** - Makes sure you have pretrained model, dataset, JSON files
+2. **Builds proper training command** - Based on FMAE README instructions
+3. **Handles both FMAE and FMAE-IAT** - Different hyperparameters for each
+4. **Auto-detects device** - CUDA, MPS, or CPU
+5. **Saves trained models** - To models folder
+
+## **How to use it:**
+
+**1. See help and examples:**
+```bash
+python finetune.py
+```
+
+**2. Train FMAE on fold 1:**
+```bash
+python finetune.py --model_type FMAE --fold 1 --seed 0
+```
+
+**3. Train FMAE-IAT on fold 1:**
+```bash
+python finetune.py --model_type IAT --fold 1 --seed 0
+```
+
+**4. Train all 3 folds:**
+```bash
+python finetune.py --model_type FMAE --fold all
+```
+
+**5. See command without running (dry-run):**
+```bash
+python finetune.py --model_type FMAE --fold 1 --dry_run
+```
+
+## **What you need first:**
+
+1. **Download pretrained FMAE ViT-Large:**
+   - URL: https://huggingface.co/forever208/FMAE-IAT/blob/main/FMAE_ViT_large.pth
+   - Save to: `models/FMAE_ViT_large_pretrained.pth`
+
+2. **Your BP4D dataset** is already at BP4D_cropped ✅
+
+3. **JSON files** are already at `BP4D/BP4D_train{1,2,3}.json` ✅
+
+The script will check everything and tell you what's missing!
+
+Made changes.
+
+# 1. Go to your project folder
+cd /gpfs/work4/0/prjs0881/teymur
+
+# 2. Create virtual environment
+python3 -m venv venv
+
+# 3. Activate it
+source venv/bin/activate
+
+# 4. Now install (inside venv, no permission issues!)
+pip install -r requirements.txt
+
+# 5. Run your code (always activate venv first!)
+python batch_analysis.py
+
+RuntimeError: CUDA error: no kernel image is available for execution on the device

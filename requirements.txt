@@ -1,0 +1,27 @@
+# Core ML/DL frameworks
+# Note: Using older PyTorch for compatibility with timm==0.3.2 (required by FMAE)
+torch==1.8.0
+torchvision==0.9.0
+timm==0.3.2
+
+# Data manipulation
+# NumPy must be <2.0 for compatibility with torch 1.8.0
+numpy<2.0,>=1.19.0
+pandas>=1.3.0,<2.0
+
+# Image processing
+Pillow>=8.0.0,<10.0
+
+# Visualization
+matplotlib>=3.3.0,<4.0
+seaborn>=0.11.0,<1.0
+
+# Machine learning utilities
+# scikit-learn and scipy must be compatible with numpy 1.x
+scikit-learn>=0.24.0,<1.2.0
+scipy>=1.5.0,<1.8.0
+
+# Progress bars
+tqdm>=4.60.0
+# Training utilities
+tensorboard>=2.4.0,<3.0lmdb>=1.2.0

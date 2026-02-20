@@ -18,17 +18,23 @@ from warnings import filterwarnings
 filterwarnings("ignore")
 
 # Import from our modules
-from hfss import apply_frequency_mask, create_low_freq_mask, create_high_freq_mask
+from hfss import apply_frequency_mask, create_low_freq_mask, create_high_freq_mask, create_random_mask
 
 # ============================================================================
 # CONFIGURATION - ADJUST THESE PARAMETERS
 # ============================================================================
 MODEL_TYPE = 'FMAE'  # Choose: 'FMAE' or 'IAT'
 
-NUM_SAMPLES = 50  # Set to None to process ALL images, or a number like 50 for testing
+NUM_SAMPLES = None  # Set to None to process ALL images, or a number like 50 for testing
 
-TEST_SETS = ['test1']  # Which test sets to process
-FILTERS = ['original']  # Which filters to apply
+TEST_SETS = ['test2']  # Which test sets to process
+
+# Filter types:
+# - 'original': No filtering
+# - 'low': Low frequency only (circular mask, 30% center)
+# - 'high': High frequency only (edges, outer 70%)
+# - 'random_20', 'random_40', 'random_60', 'random_80': Random X% of frequencies (HFSS)
+FILTERS = ['original'] #, 'random_20', 'random_40', 'random_60', 'random_80']
 
 IMG_SIZE = 224
 DATA_ROOT = Path("BP4D/BP4D_cropped")
@@ -49,7 +55,18 @@ IAT_MODEL_PATHS = {
 OUTPUT_DIR = Path("results")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-DEVICE = 'mps' if torch.backends.mps.is_available() else 'cpu'
+# Auto-detect device (CUDA GPU > MPS > CPU)
+# Note: If CUDA error occurs, force CPU by setting FORCE_CPU=True
+FORCE_CPU = False  # Set to True if CUDA compatibility issues
+
+if FORCE_CPU:
+    DEVICE = 'cpu'
+elif torch.cuda.is_available():
+    DEVICE = 'cuda'
+elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+    DEVICE = 'mps'
+else:
+    DEVICE = 'cpu'
 
 # Subject IDs for identity prediction (FMAE-IAT only)
 SUBJECT_IDS = ['F001', 'F002', 'F003', 'F004', 'F005', 'F006', 'F007', 'F008', 'F009', 'F010',
@@ -115,23 +132,27 @@ def load_and_preprocess_image(img_path):
 def load_model(model_path):
     """Load pretrained model"""
     print(f"\n🤖 Loading model...")
+    print(f"   Device: {DEVICE}")
     
+    print(f"   Creating model architecture...")
     model = timm.create_model(
         'vit_large_patch16_224',
         pretrained=False,
-        num_classes=12,
-        global_pool='avg'
+        num_classes=12
     )
     
+    print(f"   Loading checkpoint from {model_path}...")
     checkpoint = torch.load(model_path, map_location='cpu')
     state_dict = checkpoint['model'] if 'model' in checkpoint else checkpoint
     
+    print(f"   Loading state dict...")
     model.load_state_dict(state_dict, strict=False)
+    
+    print(f"   Moving model to {DEVICE}...")
     model = model.to(DEVICE)
     model.eval()
     
     print(f"   ✓ Model ready")
-    return model
     return model
 
 # ============================================================================
@@ -191,12 +212,16 @@ def process_dataset(model, dataset, test_set_name, filter_type='original', batch
     results = []
     
     # Create frequency mask if needed
+    mask = None
     if filter_type == 'low':
         mask = create_low_freq_mask(IMG_SIZE, cutoff=0.3)
     elif filter_type == 'high':
         mask = create_high_freq_mask(IMG_SIZE, cutoff=0.3)
-    else:
-        mask = None
+    elif filter_type.startswith('random_'):
+        # Extract retention percentage (e.g., 'random_20' -> 0.20)
+        retention = int(filter_type.split('_')[1]) / 100.0
+        # Create ONE random mask for this batch (same mask for all images)
+        mask = create_random_mask(IMG_SIZE, proportion=retention, seed=42)
     
     # Process in batches
     num_batches = (len(dataset) + batch_size - 1) // batch_size
