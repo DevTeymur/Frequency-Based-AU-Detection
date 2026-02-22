@@ -27,15 +27,17 @@ if str(FMAE_PATH) not in sys.path:
     sys.path.insert(0, str(FMAE_PATH))
 
 import models_vit  # noqa: E402
+from util.datasets import build_AU_transform  # noqa: E402
+from types import SimpleNamespace
 
 # ============================================================================
 # CONFIGURATION - ADJUST THESE PARAMETERS
 # ============================================================================
 MODEL_TYPE = 'FMAE'  # Choose: 'FMAE' or 'IAT'
 
-NUM_SAMPLES = 50  # Set to None to process ALL images, or a number like 50 for testing
+NUM_SAMPLES = 200  # Set to None to process ALL images, or a number like 50 for testing
 
-TEST_SETS = ['test2']  # Which test sets to process
+TEST_SETS = ['test1']  # Which test sets to process
 
 # Filter types:
 # - 'original': No filtering
@@ -46,6 +48,9 @@ FILTERS = ['original'] #, 'random_20', 'random_40', 'random_60', 'random_80']
 
 IMG_SIZE = 224
 DATA_ROOT = Path("BP4D/BP4D_cropped")
+RAW_DATA_ROOT = Path("BP4D_no_crop")  # set to your raw BP4D root if available
+IMAGE_ROOT_MODE = 'cropped'  # 'cropped' uses DATA_ROOT, 'raw' uses RAW_DATA_ROOT
+USE_TRAIN_EVAL_TRANSFORM = True  # use the exact eval transform from training code
 
 # Map each test set to its corresponding model (trained on matching train set)
 MODEL_PATHS = {
@@ -111,6 +116,8 @@ print(f"Device: {DEVICE}")
 print(f"Processing: {NUM_SAMPLES if NUM_SAMPLES else 'ALL'} samples per test set")
 print(f"Test sets: {TEST_SETS}")
 print(f"Filters: {FILTERS}")
+print(f"Image root mode: {IMAGE_ROOT_MODE} (cropped root={DATA_ROOT}, raw root={RAW_DATA_ROOT})")
+print(f"Eval transform: {'train-parity build_AU_transform' if USE_TRAIN_EVAL_TRANSFORM else 'manual resize+normalize'}")
 print("="*70)
 
 # ============================================================================
@@ -131,22 +138,39 @@ def load_dataset(test_set, num_samples=None):
     
     return data
 
+
+def get_data_root():
+    """Resolve which data root to use based on IMAGE_ROOT_MODE."""
+    if IMAGE_ROOT_MODE == 'raw' and RAW_DATA_ROOT.exists():
+        return RAW_DATA_ROOT
+    if IMAGE_ROOT_MODE == 'raw' and not RAW_DATA_ROOT.exists():
+        print(f"⚠️  RAW_DATA_ROOT {RAW_DATA_ROOT} not found; falling back to cropped DATA_ROOT {DATA_ROOT}")
+    return DATA_ROOT
+
+# Build eval transform to exactly match training pipeline
+EVAL_TRANSFORM = None
+if USE_TRAIN_EVAL_TRANSFORM:
+    EVAL_TRANSFORM = build_AU_transform(
+        is_train=False,
+        args=SimpleNamespace(input_size=IMG_SIZE)
+    )
+
 def load_and_preprocess_image(img_path):
     """Load and preprocess image for model"""
-    full_path = DATA_ROOT / img_path
+    base_root = get_data_root()
+    full_path = base_root / img_path
     img = Image.open(full_path).convert('RGB')
-    img = img.resize((IMG_SIZE, IMG_SIZE))
 
-    # Convert to tensor and normalize
+    if EVAL_TRANSFORM is not None:
+        return EVAL_TRANSFORM(img)
+
+    # Fallback: manual resize and normalize (matches ImageNet stats)
+    img = img.resize((IMG_SIZE, IMG_SIZE))
     img_array = np.array(img).astype(np.float32) / 255.0
     img_tensor = torch.from_numpy(img_array).permute(2, 0, 1)
-    
-    # Normalize with ImageNet stats
     mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
     std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
-    img_normalized = (img_tensor - mean) / std
-    
-    return img_normalized
+    return (img_tensor - mean) / std
 
 # ============================================================================
 # LOAD MODEL
