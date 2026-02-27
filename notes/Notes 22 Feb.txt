@@ -1,0 +1,130 @@
+Running stats: 
+
+💾 Saved results to results/test1_FMAE_results.csv
+📈 Metrics Summary:
+   original  : F1=81.042% | AUC=92.590% | Threshold=0.33 | ΔF1=+13.934% | ΔAUC=+10.183%
+
+🎯 Reference Results (33 epochs):
+   original  : F1=67.108% | AUC=82.407%
+======================================================================
+
+💾 Saved results to results/test2_FMAE_results.csv
+📈 Metrics Summary:
+   original  : F1=79.354% | AUC=92.735% | Threshold=0.40 | ΔF1=+14.037% | ΔAUC=+10.592%
+
+🎯 Reference Results (33 epochs):
+   original  : F1=65.317% | AUC=82.143%
+======================================================================
+
+💾 Saved results to results/test3_FMAE_results.csv
+📈 Metrics Summary:
+   original  : F1=81.953% | AUC=92.850% | Threshold=0.36 | ΔF1=+14.248% | ΔAUC=+10.082%
+
+🎯 Reference Results (33 epochs):
+   original  : F1=67.705% | AUC=82.768%
+======================================================================
+
+======================================================================
+FMAE-IAT model:
+💾 Saved results to results/test1_IAT_results.csv
+📈 Metrics Summary:
+   original  : F1=75.345% | AUC=89.819% | Threshold=0.48 | ΔF1=+9.136%
+
+🎯 Reference Results (33 epochs):
+   original  : F1=66.209%
+🆔 Identity Prediction Accuracy:
+   original  : 25.08%
+
+Done. f1_mean: 0.7534257369250872 auc_mean: 0.8981326235858632
+
+======================================================================
+💾 Saved results to results/test2_IAT_results.csv
+📈 Metrics Summary:
+   original  : F1=78.137% | AUC=92.098% | Threshold=0.44 | ΔF1=+8.571%
+
+🎯 Reference Results (33 epochs):
+   original  : F1=69.566%
+🆔 Identity Prediction Accuracy:
+   original  : 17.70%
+
+======================================================================
+💾 Saved results to results/test3_IAT_results.csv
+📈 Metrics Summary:
+   original  : F1=80.031% | AUC=92.265% | Threshold=0.34 | ΔF1=+14.646%
+
+🎯 Reference Results (33 epochs):
+   original  : F1=65.385%
+🆔 Identity Prediction Accuracy:
+   original  : 18.20%
+
+
+
+Example run from chat:
+CUDA_VISIBLE_DEVICES=0 python3 fmae/BP4D_finetune.py \
+  --eval \
+  --resume models/FMAE_IAT_BP4D_fold1.pth \
+  --device cuda \
+  --root_path BP4D/ \
+  --test_path BP4D/BP4D_test1.json \
+  --batch_size 32 \
+  --nb_classes 12
+
+
+From photo:
+FMAE:
+python BP4D_finetune.py --seed 0/1/2 --grad_reverse 0 --save_ckpt False \
+--blr 0.0002 --batch_size 64 --epochs 20 --warmup_epochs 2 --nb_classes 12 --nb_subjects 41 \
+--model vit_large_patch16 --finetune (ViT-large_ckpt) \
+-- root_path BP4D \
+--train_path FOLD_1_TRAIN_JSON \
+--test_path FOLD_1_TEST_JSON \
+--output_dir ./exp_BP4D_finetune_vit_L --log_dir ./exp_BP4D_finetune_vit_L
+
+Corrected paths?
+python3 fmae/BP4D_finetune.py \
+  --seed 0 \
+  --grad_reverse 0 \
+  --save_ckpt False \
+  --blr 0.0002 \
+  --batch_size 64 \
+  --epochs 20 \
+  --warmup_epochs 2 \
+  --nb_classes 12 \
+  --nb_subjects 41 \
+  --model vit_large_patch16 \
+  --finetune /path/to/ViT-large_ckpt.pth \
+  --root_path BP4D/ \
+  --train_path BP4D/BP4D_train1.json \
+  --test_path BP4D/BP4D_test1.json \
+  --output_dir ./exp_BP4D_finetune_vit_L \
+  --log_dir ./exp_BP4D_finetune_vit_L
+
+
+FMAE-IAT
+python BP4D_finetune.py --seed 0/1/2 --grad_reverse 2 --save_ckpt False \
+--blr 0.0005 --batch_size 64 --epochs 30 --warmup_epochs 3 --nb_classes 12 --nb_subjects 41 \
+--model vit_large_patch16 --finetune (ViT-large_ckpt) \
+-- root_path BP4D_DATASET \
+-- train_path FOLD_1_TRAIN_JSON \
+-- test_path FOLD_1_TEST_JSON \
+--output_dir ./exp_BP4D_ID_adversarial_ckpt32 --log_dir ./exp_BP4D_ID_adversarial_ckpt32
+
+
+Corrected paths?
+python3 fmae/BP4D_finetune.py \
+  --seed 0 \
+  --grad_reverse 2 \
+  --save_ckpt False \
+  --blr 0.0005 \
+  --batch_size 64 \
+  --epochs 30 \
+  --warmup_epochs 3 \
+  --nb_classes 12 \
+  --nb_subjects 41 \
+  --model vit_large_patch16 \
+  --finetune /path/to/ViT-large_ckpt.pth \
+  --root_path BP4D/ \
+  --train_path BP4D/BP4D_train1.json \
+  --test_path BP4D/BP4D_test1.json \
+  --output_dir ./exp_BP4D_ID_adversarial_ckpt32 \
+  --log_dir ./exp_BP4D_ID_adversarial_ckpt32

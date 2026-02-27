@@ -15,6 +15,7 @@ from pathlib import Path
 from tqdm import tqdm
 from sklearn.metrics import roc_auc_score
 from warnings import filterwarnings
+from torch.utils.data import Dataset, DataLoader
 filterwarnings("ignore")
 
 # Import from our modules
@@ -33,9 +34,9 @@ from types import SimpleNamespace
 # ============================================================================
 # CONFIGURATION - ADJUST THESE PARAMETERS
 # ============================================================================
-MODEL_TYPE = 'FMAE'  # Choose: 'FMAE' or 'IAT'
+MODEL_TYPE = 'IAT'  # Choose: 'FMAE' or 'IAT'
 
-NUM_SAMPLES = 200  # Set to None to process ALL images, or a number like 50 for testing
+NUM_SAMPLES = None  # Set to None to process ALL images, or a number like 50 for testing
 
 TEST_SETS = ['test1']  # Which test sets to process
 
@@ -96,10 +97,12 @@ else:
     DEVICE = 'cpu'
 
 # Subject IDs for identity prediction (FMAE-IAT only)
-SUBJECT_IDS = ['F001', 'F002', 'F003', 'F004', 'F005', 'F006', 'F007', 'F008', 'F009', 'F010',
-               'F011', 'F012', 'F013', 'F014', 'F015', 'F016', 'F017', 'F018', 'F019', 'F020',
-               'F021', 'F022', 'F023', 'M001', 'M002', 'M003', 'M004', 'M005', 'M006', 'M007',
-               'M008', 'M009', 'M010', 'M011', 'M012', 'M013', 'M014', 'M015', 'M016', 'M017', 'M018']
+# Note: Training uses 3-character IDs (F01, M07) not 4-character (F001, M007)
+SUBJECT_IDS = ['F01', 'F02', 'F03', 'F04', 'F05', 'F06', 'F07', 'F08', 'F09', 'F10',
+               'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17', 'F18', 'F19', 'F20',
+               'F21', 'F22', 'F23',
+               'M01', 'M02', 'M03', 'M04', 'M05', 'M06', 'M07', 'M08', 'M09', 'M10',
+               'M11', 'M12', 'M13', 'M14', 'M15', 'M16', 'M17', 'M18']
 
 # Action Units
 AU_LABELS = [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23, 24]
@@ -147,12 +150,21 @@ def get_data_root():
         print(f"⚠️  RAW_DATA_ROOT {RAW_DATA_ROOT} not found; falling back to cropped DATA_ROOT {DATA_ROOT}")
     return DATA_ROOT
 
-# Build eval transform to exactly match training pipeline
+# Build eval transform to exactly match training pipeline (same as eval_once.py)
 EVAL_TRANSFORM = None
 if USE_TRAIN_EVAL_TRANSFORM:
+    # Create args namespace with all transform-related params (matching eval_once.py)
+    transform_args = SimpleNamespace(
+        input_size=IMG_SIZE,
+        color_jitter=None,
+        aa='rand-m9-mstd0.5-inc1',
+        reprob=0.25,
+        remode='pixel',
+        recount=1
+    )
     EVAL_TRANSFORM = build_AU_transform(
         is_train=False,
-        args=SimpleNamespace(input_size=IMG_SIZE)
+        args=transform_args
     )
 
 def load_and_preprocess_image(img_path):
@@ -254,11 +266,65 @@ def predict_batch(model, images, predict_identity=False):
         return au_probs, au_preds, None
 
 # ============================================================================
+# DATASET CLASS FOR DATALOADER
+# ============================================================================
+def custom_collate_fn(batch):
+    """Custom collate function to handle sample dictionaries"""
+    images = torch.stack([item[0] for item in batch])
+    labels = torch.stack([item[1] for item in batch])
+    samples = [item[2] for item in batch]  # Keep as list of dicts
+    return images, labels, samples
+
+class BP4DFilteredDataset(Dataset):
+    """Custom Dataset for BP4D with frequency filtering"""
+    
+    def __init__(self, data, filter_type='original', mask=None, transform=None):
+        self.data = data
+        self.filter_type = filter_type
+        self.mask = mask
+        self.transform = transform
+        self.base_root = get_data_root()
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        sample = self.data[idx]
+        
+        # Load image
+        img_path = self.base_root / sample['img_path']
+        img = Image.open(img_path).convert('RGB')
+        
+        # Apply transform (resize, crop, normalize)
+        if self.transform is not None:
+            img_tensor = self.transform(img)
+        else:
+            # Fallback manual preprocessing
+            img = img.resize((IMG_SIZE, IMG_SIZE))
+            img_array = np.array(img).astype(np.float32) / 255.0
+            img_tensor = torch.from_numpy(img_array).permute(2, 0, 1)
+            mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+            std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+            img_tensor = (img_tensor - mean) / std
+        
+        # Apply frequency filter if provided
+        if self.mask is not None:
+            img_tensor = apply_frequency_mask(img_tensor, self.mask)
+        
+        # Create true label vector
+        true_label = torch.zeros(12)
+        for au in sample['AUs']:
+            if au in AU_LABELS:
+                true_label[AU_LABELS.index(au)] = 1
+        
+        return img_tensor, true_label, sample
+
+# ============================================================================
 # BATCH PROCESSING
 # ============================================================================
 def process_dataset(model, dataset, test_set_name, filter_type='original', batch_size=16, predict_identity=False):
     """
-    Process entire dataset with specified filter
+    Process entire dataset with specified filter using DataLoader for parallel processing
     
     Args:
         model: Loaded model
@@ -285,43 +351,34 @@ def process_dataset(model, dataset, test_set_name, filter_type='original', batch
         # Create ONE random mask for this batch (same mask for all images)
         mask = create_random_mask(IMG_SIZE, proportion=retention, seed=42)
     
-    # Process in batches
-    num_batches = (len(dataset) + batch_size - 1) // batch_size
+    # Create dataset and dataloader
+    filtered_dataset = BP4DFilteredDataset(
+        data=dataset,
+        filter_type=filter_type,
+        mask=mask,
+        transform=EVAL_TRANSFORM
+    )
     
-    for batch_idx in tqdm(range(num_batches), desc=f"{test_set_name} - {filter_type}"):
-        start_idx = batch_idx * batch_size
-        end_idx = min(start_idx + batch_size, len(dataset))
-        batch_samples = dataset[start_idx:end_idx]
-        
-        # Load and preprocess images
-        images = []
-        true_labels = []
-        
-        for sample in batch_samples:
-            # Load image
-            img = load_and_preprocess_image(sample['img_path'])
-            
-            # Apply filter
-            if mask is not None:
-                img = apply_frequency_mask(img, mask)
-            
-            images.append(img)
-            
-            # Create true label vector
-            true_label = torch.zeros(12)
-            for au in sample['AUs']:
-                if au in AU_LABELS:
-                    true_label[AU_LABELS.index(au)] = 1
-            true_labels.append(true_label)
-        
-        # Stack and predict
-        images = torch.stack(images)
-        true_labels = torch.stack(true_labels)
-        
+    dataloader = DataLoader(
+        filtered_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=4,  # Parallel data loading
+        pin_memory=True if DEVICE == 'cuda' else False,
+        collate_fn=custom_collate_fn  # Use custom collation for dicts
+    )
+    
+    # Process batches with DataLoader
+    for images, true_labels, batch_samples in tqdm(dataloader, desc=f"{test_set_name} - {filter_type}"):
+        # Predict
         au_probs, au_preds, id_probs = predict_batch(model, images, predict_identity=predict_identity)
         
-        # Store results
-        for i, sample in enumerate(batch_samples):
+        # Store results for each sample in batch
+        for i in range(len(batch_samples)):
+            # Get sample data (batch_samples is a list of dicts)
+            sample_img_path = batch_samples[i]['img_path']
+            sample_aus = batch_samples[i]['AUs']
+            
             # Get predicted AUs
             predicted_au_indices = torch.where(au_preds[i] == 1)[0].tolist()
             predicted_aus = [AU_LABELS[idx] for idx in predicted_au_indices]
@@ -331,10 +388,10 @@ def process_dataset(model, dataset, test_set_name, filter_type='original', batch
             
             # Store result
             result = {
-                'img_path': sample['img_path'],
+                'img_path': sample_img_path,
                 'test_set': test_set_name,
                 'filter_type': filter_type,
-                'true_aus': sample['AUs'],
+                'true_aus': sample_aus,
                 'predicted_aus': predicted_aus,
                 'accuracy': accuracy,
             }
@@ -348,7 +405,10 @@ def process_dataset(model, dataset, test_set_name, filter_type='original', batch
             # Add identity prediction if available
             if predict_identity and id_probs is not None:
                 # Extract true subject ID from path (e.g., "F001/T1/1.jpg" -> "F001")
-                true_subject = sample['img_path'].split('/')[0]
+                true_subject_4char = sample_img_path.split('/')[0]
+                # Convert to 3-char format matching training (F001 -> F01, M007 -> M07)
+                true_subject = true_subject_4char[0] + true_subject_4char[-2:]
+                
                 predicted_subject_idx = torch.argmax(id_probs[i]).item()
                 predicted_subject = SUBJECT_IDS[predicted_subject_idx]
                 

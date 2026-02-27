@@ -17,15 +17,70 @@ REFERENCE_RESULTS = {
 🎯 Reference Results (33 epochs):
    original  : F1=67.108% | AUC=82.407%
 
+💾 Saved results to results/test1_FMAE_results.csv
+📈 Metrics Summary:
+   original  : F1=81.042% | AUC=92.590% | Threshold=0.33 | ΔF1=+13.934% | ΔAUC=+10.183%
+🎯 Reference Results (33 epochs):
+   original  : F1=67.108% | AUC=82.407%
+
+💾 Saved results to results/test1_FMAE_results.csv
+📈 Metrics Summary:
+   original  : F1=81.042% | AUC=92.590% | Threshold=0.33 | ΔF1=+13.934% | ΔAUC=+10.183%
+🎯 Reference Results (33 epochs):
+   original  : F1=67.108% | AUC=82.407%
+
+
+
+
 💾 Saved results to results/test2_FMAE_results.csv
 📈 Metrics Summary:
    original  : F1=0.490 | AUC=0.411 | Threshold=0.01
 
-
-
 💾 Saved results to results/test2_FMAE_results.csv
 📈 Metrics Summary:
    original  : F1=79.354% | AUC=92.735% | Threshold=0.40 | ΔF1=+14.037% | ΔAUC=+10.592%
-
 🎯 Reference Results (33 epochs):
    original  : F1=65.317% | AUC=82.143%
+
+
+
+In this chat we gonna develop a code, before details some rules: 
+1. We need to keep the code simple and understandable
+2. Code should be understandable, outputting results: detailed logs, and csv files saving. 
+
+Problem: 
+There are 6 pretrained models in my models/ path: 3 folds and 2 different models: fmae model and fmae-iat model. 
+The main aim is to load the data and then using the ready data in BP4D folder to predict test cases and meause F1 score and auc score.
+
+Data:
+In BP4D/ folder rthere are BP4D_cropped folder which contains all the ready data. The labes of the data is in test and train json files. We gonna use test folds to predict the results and measure.
+Obviously, in the models folder fold1 model corrsponts to test1 and respectively. We cannot mix them.
+
+There is a fmae/ path where my supervisor pretrained and fine tuned the model for BP4D data. Our aim is to replicate that code and simply do 3 steps in high level:
+1. Load the data
+2. Load the model
+3. Predict the data depending on the chosen model. Our aim is to get the same results as my supervisor got.
+
+When it comes to load model and predict, like low details of the code, we need to refer to the readme files and python files inside fmae/ path. That is our key codes to get reference and ispiration.
+
+This is the results of the supervisor: 
+REFERENCE_RESULTS = {
+    'FMAE': {
+        'test1': {'F1': 67.108, 'AUC': 82.407},
+        'test2': {'F1': 65.317, 'AUC': 82.143},
+        'test3': {'F1': 67.705, 'AUC': 82.768},
+    },
+    'IAT': {
+        'test1': {'F1': 66.209, 'AUC': None},
+        'test2': {'F1': 69.566, 'AUC': None},
+        'test3': {'F1': 65.385, 'AUC': None},
+    }
+}
+
+We gonna add basic control variables to the code: 
+1. I need a variable to choose which model to run
+2. I need a variable that controls number of samples will be runned
+
+Please ask your questions beforehand if you have in simple way so i can explain and u get the problem correct then we start to develop the code. 
+
+Note main.py file will be the part where we gonna wirte code, rest of the things i told you i will add reference.
