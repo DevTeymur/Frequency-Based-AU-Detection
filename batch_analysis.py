@@ -38,7 +38,7 @@ MODEL_TYPE = 'IAT'  # Choose: 'FMAE' or 'IAT'
 
 NUM_SAMPLES = None  # Set to None to process ALL images, or a number like 50 for testing
 
-TEST_SETS = ['test1']  # Which test sets to process
+TEST_SETS = ['test2']  # Which test sets to process
 
 # Filter types:
 # - 'original': No filtering
@@ -256,6 +256,8 @@ def predict_batch(model, images, predict_identity=False):
         au_probs = torch.sigmoid(au_outputs).cpu()
         au_preds = (au_probs >= 0.5).float()
         id_probs = torch.softmax(id_outputs, dim=1).cpu()
+        # Debug: Check if we're actually getting identity predictions
+        # print(f"  DEBUG: IAT mode - outputs is tuple, id_probs shape: {id_probs.shape}")
         return au_probs, au_preds, id_probs
     else:
         # FMAE or not predicting identity
@@ -263,6 +265,7 @@ def predict_batch(model, images, predict_identity=False):
             outputs = outputs[0]  # Take AU head only
         au_probs = torch.sigmoid(outputs).cpu()
         au_preds = (au_probs >= 0.5).float()
+        # print(f"  DEBUG: Not predicting identity - predict_identity={predict_identity}, isinstance(outputs, tuple)={isinstance(outputs, tuple)}")
         return au_probs, au_preds, None
 
 # ============================================================================
@@ -411,6 +414,12 @@ def process_dataset(model, dataset, test_set_name, filter_type='original', batch
                 
                 predicted_subject_idx = torch.argmax(id_probs[i]).item()
                 predicted_subject = SUBJECT_IDS[predicted_subject_idx]
+                
+                # Debug: Print first few samples to verify
+                # if len(results) < 5:
+                #     print(f"  DEBUG ID: path={sample_img_path}, true_4char={true_subject_4char}, "
+                #           f"true_3char={true_subject}, pred_idx={predicted_subject_idx}, "
+                #           f"pred={predicted_subject}, match={true_subject == predicted_subject}")
                 
                 result['true_subject'] = true_subject
                 result['predicted_subject'] = predicted_subject
