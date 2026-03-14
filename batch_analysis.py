@@ -19,7 +19,7 @@ from torch.utils.data import Dataset, DataLoader
 filterwarnings("ignore")
 
 # Import from our modules
-from hfss import apply_frequency_mask, create_low_freq_mask, create_high_freq_mask, create_random_mask
+from scripts.hfss import apply_frequency_mask, create_low_freq_mask, create_high_freq_mask, create_random_mask
 
 # Ensure we can import the training-time model definition (models_vit.py)
 PROJECT_ROOT = Path(__file__).resolve().parent

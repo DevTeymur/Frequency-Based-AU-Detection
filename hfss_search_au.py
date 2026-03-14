@@ -179,7 +179,7 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     
     print("="*70)
-    print(f"HFSS Search for AU Detection - {args.model_type} | Fold {args.fold}")
+    print(f"HFSS Search for AU Detection - {args.model_type}")
     print(f"Model: {args.model_path} | Device: {args.device}")
     print("="*70)
     

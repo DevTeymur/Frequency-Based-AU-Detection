@@ -84,3 +84,13 @@ We gonna add basic control variables to the code:
 Please ask your questions beforehand if you have in simple way so i can explain and u get the problem correct then we start to develop the code. 
 
 Note main.py file will be the part where we gonna wirte code, rest of the things i told you i will add reference.
+
+
+
+No just for this chat will quick remind what we need to do: 
+
+We have ready pretrained models (au prediction models). We made a script (batch analysis) that i replicated that taking the test sets and evaluating the models. They matched with my supervisors results. 
+
+Then our main aim is to apply hfss search method that im attaching necessary code and information that been done in image nets. Now our main aim is to apply hfss to the test sets and evaluate the results again. 
+
+I'm attachging the necessary info and please read all ask questions beforehand to understand 

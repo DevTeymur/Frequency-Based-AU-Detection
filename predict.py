@@ -15,7 +15,7 @@ from warnings import filterwarnings
 filterwarnings("ignore")
 
 # Import frequency filtering functions from hfss.py
-from hfss import apply_frequency_mask, create_low_freq_mask, create_high_freq_mask
+from scripts.hfss import apply_frequency_mask, create_low_freq_mask, create_high_freq_mask
 
 # ============================================================================
 # CONFIGURATION

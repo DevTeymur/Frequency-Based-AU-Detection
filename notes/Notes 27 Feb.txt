@@ -1,0 +1,30 @@
+Id mapping is not correct for now, maybe consider these:
+
+F001_T1 -> 2F01_01
+F001_T2 -> 2F01_03
+F001_T3 -> 2F01_07
+F001_T4 -> 2F01_08
+F001_T5 -> 2F01_09
+F001_T6 -> 2F01_10
+F001_T7 -> 2F01_11
+F001_T8 -> 2F01_13
+ 
+in the original dataset there were 13 tasks but in the released dataset there were 8.
+ 
+subject IDs are the same like 2F01 is mapped to F001, 2F02 is mapped to F002, and so on.
+ 
+ You can downlaod our ViT-large model for finetune FMAE or FMAE-IAT on AU datasets.
+
+We use json file to contain the AU labels. ID labels are inclueded in the image filename and would be automatically extracted. A template json label looks like (999 stands for the non-existance of this AU):
+
+
+
+For reproducibility, we set random seeds (use 0/1/2) for all experiments and share our cross-fold settings.
+
+Fold-1
+F001, F0O2, F008, F009, F010, F018, F016, F023, M001, M004, M007, M008, M012, M014.
+Fold-2
+F003, F005, F011, F013, F02O, F022,
+M002, M005, M010, M011, M013, M016, M017, M018.
+Fold-3
+F004, F006, F007, F012, F014, F015, F017, F019, F021, M003, M006, M009, M015.
