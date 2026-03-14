@@ -153,7 +153,11 @@ def search_stage(model, dataloader, stage, num_candidates, proportion, prev_mask
     results.sort(key=lambda x: x[2], reverse=True)
     top_10 = results[:10]
     
-    print(f"   Top mean-F1 drops (baseline - mask): {[f'{r[2]*100:.1f}%' for r in top_10[:5]]}")
+    # Print a clearer, one-line-per-mask summary for the top 5 masks
+    print("   Top mean-F1 drops (baseline - mask):")
+    for r in top_10[:5]:
+        mask_id, f1_val, drop_val, _ = r
+        print(f"     - mask{mask_id}: F1={f1_val*100:.2f}%  |  drop={drop_val*100:.2f}%")
     
     # Return top masks
     return [r[3] for r in top_10], results
