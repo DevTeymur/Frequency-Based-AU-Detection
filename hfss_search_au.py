@@ -16,6 +16,10 @@ from sklearn.metrics import f1_score
 import torch
 from torch.utils.data import DataLoader, Subset
 from types import SimpleNamespace
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import pandas as pd
 
 # Add paths
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -131,6 +135,199 @@ def evaluate_mask(model, dataloader, mask_transform, device):
     # return accuracy
 
 
+# ============================================================
+# OPTIONAL FUNCTION 1: Per-AU F1 evaluation
+# Enable with --per_au_eval flag
+# ============================================================
+@torch.no_grad()
+def evaluate_mask_per_au(model, dataloader, mask_transform, baseline_per_au, device):
+    """Evaluate per-AU F1 and show drop vs baseline for each AU.
+    Returns dict: {AU_label: {'f1': float, 'drop': float}}
+    """
+    all_preds = []
+    all_labels = []
+
+    for images, (au_labels, _) in dataloader:
+        images = torch.stack([mask_transform(img) for img in images])
+        images = images.to(device)
+        au_labels = au_labels.to(device)
+        outputs = model(images)
+        if isinstance(outputs, tuple):
+            outputs = outputs[0]
+        preds = (torch.sigmoid(outputs) >= 0.5).float()
+        all_preds.append(preds.cpu().numpy())
+        all_labels.append(au_labels.cpu().numpy())
+
+    if not all_preds:
+        return {}
+
+    all_preds = np.concatenate(all_preds, axis=0)
+    all_labels = np.concatenate(all_labels, axis=0)
+
+    per_au = {}
+    for i, au in enumerate(AU_LABELS):
+        au_f1 = f1_score(all_labels[:, i], all_preds[:, i], average='binary', zero_division=0)
+        baseline_entry = baseline_per_au.get(au, 0.0) if baseline_per_au else 0.0
+        baseline = baseline_entry.get('f1', 0.0) if isinstance(baseline_entry, dict) else baseline_entry
+        drop = baseline - au_f1
+        per_au[au] = {'f1': au_f1, 'drop': drop}
+    return per_au
+
+
+def print_per_au_results(per_au, stage, mask_id):
+    """Pretty-print per-AU F1 drops for a given mask."""
+    print(f"   Per-AU breakdown — {stage} mask{mask_id}:")
+    for au, vals in per_au.items():
+        bar = '▓' * int(abs(vals['drop']) * 100 / 5)  # 1 block per 5% drop
+        print(f"     AU{au:02d}: F1={vals['f1']*100:.1f}%  drop={vals['drop']*100:+.1f}%  {bar}")
+
+
+def save_per_au_grouped_bar(baseline_per_au, masked_per_au, stage, model_type, save_dir):
+    """Save grouped bar chart: baseline vs masked per-AU F1 for one stage."""
+    aus = AU_LABELS
+    baseline_vals = []
+    masked_vals = []
+
+    for au in aus:
+        b = baseline_per_au.get(au, 0.0) if baseline_per_au else 0.0
+        b = b.get('f1', 0.0) if isinstance(b, dict) else b
+        m = masked_per_au.get(au, {}) if masked_per_au else {}
+        m = m.get('f1', 0.0) if isinstance(m, dict) else m
+        baseline_vals.append(float(b))
+        masked_vals.append(float(m))
+
+    x = np.arange(len(aus))
+    width = 0.38
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+    ax.bar(x - width / 2, baseline_vals, width=width, label='Baseline F1', color='#4C78A8')
+    ax.bar(x + width / 2, masked_vals, width=width, label='Masked F1', color='#F58518')
+
+    ax.set_title(f"Per-AU F1 | {model_type} | {stage} (best mask)")
+    ax.set_xlabel('Action Unit (AU)')
+    ax.set_ylabel('F1 score')
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"AU{au}" for au in aus], rotation=0)
+    ax.set_ylim(0.0, 1.0)
+    ax.grid(axis='y', alpha=0.2)
+    ax.legend(loc='best')
+
+    plt.tight_layout()
+    save_path = save_dir / f"{model_type}_{stage}_per_au_grouped_bar.png"
+    plt.savefig(save_path, dpi=140, bbox_inches='tight')
+    plt.close()
+    print(f"   📊 Saved per-AU grouped bar to {save_path}")
+
+
+def save_per_au_stage_heatmap(per_au_drop_by_stage, model_type, save_dir):
+    """Save AU x stage heatmap where value is per-AU F1 drop (baseline - masked)."""
+    if not per_au_drop_by_stage:
+        return
+
+    stages = list(per_au_drop_by_stage.keys())
+    aus = AU_LABELS
+
+    heat = np.array([
+        [float(per_au_drop_by_stage.get(stage, {}).get(au, 0.0)) for stage in stages]
+        for au in aus
+    ])
+
+    vmax = np.max(np.abs(heat)) if heat.size > 0 else 1.0
+    vmax = max(vmax, 1e-6)
+
+    fig, ax = plt.subplots(figsize=(1.8 * len(stages) + 4, 6))
+    im = ax.imshow(heat, cmap='RdBu_r', vmin=-vmax, vmax=vmax, aspect='auto')
+
+    ax.set_title(f"Per-AU F1 Drop Heatmap | {model_type}")
+    ax.set_xlabel('Stage')
+    ax.set_ylabel('Action Unit (AU)')
+    ax.set_xticks(np.arange(len(stages)))
+    ax.set_xticklabels(stages)
+    ax.set_yticks(np.arange(len(aus)))
+    ax.set_yticklabels([f"AU{au}" for au in aus])
+
+    cbar = fig.colorbar(im, ax=ax)
+    cbar.set_label('F1 drop (baseline - masked)')
+
+    plt.tight_layout()
+    save_path = save_dir / f"{model_type}_per_au_drop_heatmap.png"
+    plt.savefig(save_path, dpi=140, bbox_inches='tight')
+    plt.close()
+    print(f"   🌡️ Saved per-AU heatmap to {save_path}")
+
+
+# ============================================================
+# OPTIONAL FUNCTION 2: Advanced frequency mask visualizations
+# Enable with --visualize_masks flag
+# Shows: raw mask, ring overlay, frequency band, masked FFT
+# ============================================================
+def visualize_mask_advanced(mask_array, save_path, stage, mask_id, sample_image=None):
+    """Visualize a frequency mask in 4 views:
+    1. Raw mask (white=keep, black=remove)
+    2. Ring/radial distance overlay
+    3. Frequency band annotation (low/mid/high)
+    4. Masked FFT magnitude (if sample_image provided)
+    """
+    size = mask_array.shape[0]
+    center = size // 2
+
+    # --- Build radial distance map ---
+    ys, xs = np.ogrid[:size, :size]
+    radial = np.sqrt((xs - center) ** 2 + (ys - center) ** 2)
+    max_r = np.sqrt(2) * center
+
+    # --- Frequency band labels (low < 20%, mid 20-50%, high > 50%) ---
+    band = np.zeros((size, size), dtype=int)  # 0=low, 1=mid, 2=high
+    band[radial > max_r * 0.5] = 2
+    band[(radial >= max_r * 0.2) & (radial <= max_r * 0.5)] = 1
+
+    fig, axes = plt.subplots(1, 4 if sample_image is not None else 3, figsize=(16, 4))
+    fig.suptitle(f"{stage} | mask{mask_id}", fontsize=12)
+
+    # Panel 1: Raw mask
+    axes[0].imshow(mask_array, cmap='gray', vmin=0, vmax=1)
+    axes[0].set_title('Mask\n(white=keep)')
+    axes[0].axis('off')
+
+    # Panel 2: Ring overlay
+    ring_vis = plt.cm.RdYlGn(mask_array)  # green=keep, red=remove
+    ring_contour = axes[1].imshow(ring_vis)
+    for r_frac in [0.2, 0.5]:
+        circle = plt.Circle((center, center), max_r * r_frac,
+                             color='white', fill=False, linewidth=1.5, linestyle='--')
+        axes[1].add_patch(circle)
+    axes[1].set_title('Ring overlay\n(dashed=band boundaries)')
+    axes[1].axis('off')
+
+    # Panel 3: Frequency band annotation
+    cmap_band = plt.cm.get_cmap('coolwarm', 3)
+    masked_band = np.ma.masked_where(mask_array == 0, band.astype(float))
+    axes[2].imshow(band, cmap='coolwarm', alpha=0.3, vmin=0, vmax=2)
+    axes[2].imshow(masked_band, cmap='coolwarm', vmin=0, vmax=2)
+    for label, y_frac in [('LOW', 0.85), ('MID', 0.55), ('HIGH', 0.1)]:
+        axes[2].text(size * 0.02, size * y_frac, label, color='white',
+                     fontsize=9, fontweight='bold')
+    axes[2].set_title('Freq bands\n(low/mid/high)')
+    axes[2].axis('off')
+
+    # Panel 4: Masked FFT of sample image (optional)
+    if sample_image is not None:
+        import torch.fft as fft_module
+        img_t = torch.tensor(sample_image, dtype=torch.float32)
+        if img_t.ndim == 3:
+            img_t = img_t.mean(0)  # grayscale for FFT vis
+        freq = torch.fft.fftshift(torch.fft.fft2(img_t))
+        freq_masked = freq * torch.tensor(mask_array, dtype=torch.complex64)
+        magnitude = torch.log(torch.abs(freq_masked) + 1).numpy()
+        axes[3].imshow(magnitude, cmap='inferno')
+        axes[3].set_title('Masked FFT\n(log magnitude)')
+        axes[3].axis('off')
+
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=120, bbox_inches='tight')
+    plt.close()
+
+
 def search_stage(model, dataloader, stage, num_candidates, proportion, prev_mask, device):
     """Search for frequency shortcuts in one stage"""
     print(f"\n🔍 Stage {stage}: Testing {num_candidates} candidates (P={proportion})")
@@ -149,16 +346,17 @@ def search_stage(model, dataloader, stage, num_candidates, proportion, prev_mask
         drop = baseline_f1 - f1
         results.append((i, f1, drop, mask_transform))
     
-    # Find top masks with biggest performance drop
+    # Sort all candidates by drop (largest first)
     results.sort(key=lambda x: x[2], reverse=True)
     top_10 = results[:10]
-    
-    # Print a clearer, one-line-per-mask summary for the top 5 masks
-    print("   Top mean-F1 drops (baseline - mask):")
-    for r in top_10[:5]:
+
+    # Print ALL mask drops for this stage (one line each)
+    print(f"\n   {stage} — all mask drops (sorted by drop):")
+    for r in results:
         mask_id, f1_val, drop_val, _ = r
-        print(f"     - mask{mask_id}: F1={f1_val*100:.2f}%  |  drop={drop_val*100:.2f}%")
-    
+        marker = " ◀ best" if mask_id == results[0][0] else ""
+        print(f"     mask{mask_id:>3}: F1={f1_val*100:.2f}%  |  drop={drop_val*100:+.2f}%{marker}")
+
     # Return top masks
     return [r[3] for r in top_10], results
 
@@ -176,11 +374,18 @@ def main():
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--output_dir', default='hfss/DFM')
     parser.add_argument('--stages', nargs='+', default=['stage1', 'stage2', 'stage3'])
+    # --- Optional feature flags (disable by omitting the flag) ---
+    parser.add_argument('--per_au_eval', action='store_true',
+                        help='After search, evaluate per-AU F1 drops for the best mask per stage')
+    parser.add_argument('--visualize_masks', action='store_true',
+                        help='Save advanced mask visualizations (ring, freq band, masked FFT) for top masks')
     args = parser.parse_args()
     
     # Setup
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    figures_dir = output_dir.parent / "figures"
+    figures_dir.mkdir(parents=True, exist_ok=True)
     
     print("="*70)
     print(f"HFSS Search for AU Detection - {args.model_type}")
@@ -213,6 +418,7 @@ def main():
     # Run hierarchical search
     prev_mask = None
     all_results = {}
+    per_au_drop_by_stage = {}
     
     for stage in args.stages:
         top_masks, stage_results = search_stage(
@@ -225,11 +431,48 @@ def main():
         output_file = output_dir / f"{args.model_type}_{stage}_DFMs.pkl"
         with open(output_file, 'wb') as f:
             pickle.dump(top_masks, f)
-        print(f"   ✓ Saved to {output_file}")
-        
-        # Use best mask for next stage
-        prev_mask = top_masks[0].mask if hasattr(top_masks[0], 'mask') else None
+        print(f"   ✓ Saved DFMs to {output_file}")
+
+        best_mask = top_masks[0]
+        best_mask_array = best_mask.mask if hasattr(best_mask, 'mask') else None
+
+        # --- OPTIONAL: per-AU F1 eval for the best mask ---
+        if args.per_au_eval and best_mask_array is not None:
+            print(f"\n   🔬 Per-AU eval for best mask ({stage})...")
+            # (Re-use evaluate_mask_per_au with identity transform for baseline)
+            baseline_per_au_full = evaluate_mask_per_au(
+                model, dataloader, lambda x: x, {}, args.device)
+            best_per_au = evaluate_mask_per_au(
+                model, dataloader, best_mask, baseline_per_au_full, args.device)
+            print_per_au_results(best_per_au, stage, 'best')
+
+            save_per_au_grouped_bar(
+                baseline_per_au=baseline_per_au_full,
+                masked_per_au=best_per_au,
+                stage=stage,
+                model_type=args.model_type,
+                save_dir=figures_dir,
+            )
+            per_au_drop_by_stage[stage] = {
+                au: vals.get('drop', 0.0) for au, vals in best_per_au.items()
+            }
+
+        # --- OPTIONAL: advanced mask visualization for the best mask ---
+        if args.visualize_masks and best_mask_array is not None:
+            vis_path = figures_dir / f"{args.model_type}_{stage}_best_mask_advanced.png"
+            visualize_mask_advanced(best_mask_array, vis_path, stage, 'best')
+            print(f"   🖼  Advanced mask visualization saved to {vis_path}")
+
+        # Use best mask for next stage (hierarchical)
+        prev_mask = best_mask_array
         all_results[stage] = stage_results
+
+    if args.per_au_eval and per_au_drop_by_stage:
+        save_per_au_stage_heatmap(
+            per_au_drop_by_stage=per_au_drop_by_stage,
+            model_type=args.model_type,
+            save_dir=figures_dir,
+        )
     
     print("\n" + "="*70)
     print("✅ HFSS Search Complete!")
@@ -241,3 +484,18 @@ if __name__ == "__main__":
 
 
 # python hfss_search_au.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth --num_candidates 200 --stages stage1 stage2 stage3
+
+'''
+# All features on
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --num_samples 500 \
+  --per_au_eval --visualize_masks --stages stage1 stage2
+
+# Just advanced viz
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --visualize_masks --stages stage1
+
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --num_samples 500 \
+  --per_au_eval --stages stage1 stage2
+'''
