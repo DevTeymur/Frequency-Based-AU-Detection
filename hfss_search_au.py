@@ -66,7 +66,12 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
 
 
 def generate_mask_candidates(num_candidates, proportion, stage, prev_mask=None):
-    """Generate random frequency mask candidates"""
+    """Generate random frequency mask candidates.
+
+    Stage-1: sample full-image frequency masks.
+    Stage>1: refine only inside previous important region (prev_mask), while
+    keeping outside region unmasked during evaluation.
+    """
     candidates = []
     patch = PATCHES[stage]
     
@@ -77,9 +82,22 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_mask=None):
         mask_int = generate_mask(sample_frqs, patch, patch)
         mask = np.kron(mask_int, np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
         
-        # Apply previous stage mask if exists
+        # Stage refinement behavior:
+        # - eval_mask: used to evaluate this candidate
+        # - region_mask: important region propagated to next stage
         if prev_mask is not None:
-            mask = prev_mask * mask
+            prev_region = (prev_mask > 0.5).astype(mask.dtype)
+
+            # Evaluate by masking ONLY inside previously important region.
+            # Outside region is kept as 1 (no extra masking).
+            eval_mask = np.ones_like(mask, dtype=mask.dtype)
+            eval_mask[prev_region > 0] = mask[prev_region > 0]
+
+            # Propagate refined region to next stage (nested refinement).
+            region_mask = prev_region * mask
+        else:
+            eval_mask = mask
+            region_mask = mask
         
         # Make symmetric
         max_n_h = IMG_SIZE // 2
@@ -89,9 +107,13 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_mask=None):
                 h_matrix_index = IMG_SIZE // 2 + h_index
                 w_matrix_index = IMG_SIZE // 2 + w_index
                 if h_index != 0:
-                    mask[IMG_SIZE - h_matrix_index - 1, IMG_SIZE - w_matrix_index - 1] = mask[h_matrix_index, w_matrix_index]
-        
-        candidates.append(White_Mask(mask))
+                    eval_mask[IMG_SIZE - h_matrix_index - 1, IMG_SIZE - w_matrix_index - 1] = eval_mask[h_matrix_index, w_matrix_index]
+                    region_mask[IMG_SIZE - h_matrix_index - 1, IMG_SIZE - w_matrix_index - 1] = region_mask[h_matrix_index, w_matrix_index]
+
+        transform = White_Mask(eval_mask)
+        # Carry refined region for the next stage.
+        transform.region_mask = region_mask
+        candidates.append(transform)
     
     return candidates
 
@@ -435,6 +457,7 @@ def main():
 
         best_mask = top_masks[0]
         best_mask_array = best_mask.mask if hasattr(best_mask, 'mask') else None
+        next_stage_region_mask = getattr(best_mask, 'region_mask', best_mask_array)
 
         # --- OPTIONAL: per-AU F1 eval for the best mask ---
         if args.per_au_eval and best_mask_array is not None:
@@ -464,7 +487,7 @@ def main():
             print(f"   🖼  Advanced mask visualization saved to {vis_path}")
 
         # Use best mask for next stage (hierarchical)
-        prev_mask = best_mask_array
+        prev_mask = next_stage_region_mask
         all_results[stage] = stage_results
 
     if args.per_au_eval and per_au_drop_by_stage:
