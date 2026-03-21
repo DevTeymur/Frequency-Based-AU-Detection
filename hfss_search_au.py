@@ -65,41 +65,21 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
     return model
 
 
-def generate_mask_candidates(num_candidates, proportion, stage, prev_mask=None):
+def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None):
     """Generate random frequency mask candidates.
 
-    Stage-1: sample full-image frequency masks.
-    Stage>1: refine only inside previous important region (prev_mask), while
-    keeping outside region unmasked during evaluation.
+    Paper-aligned behavior:
+    - Stage1: sample on full grid.
+    - Stage>1: sample finer masks and multiply with a parent mask selected
+      from previous stage top-N (cumulative masking; black stays black).
+    - Also includes shifted-window variants (patch, patch+1, mixed), similar
+      to original HFSS candidate generation.
     """
     candidates = []
     patch = PATCHES[stage]
-    
-    for _ in range(num_candidates):
-        # Generate random frequency mask
-        freqs = gen_freqs_list(patch, patch)
-        sample_frqs = sample_frequency(proportion, freqs)
-        mask_int = generate_mask(sample_frqs, patch, patch)
-        mask = np.kron(mask_int, np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
-        
-        # Stage refinement behavior:
-        # - eval_mask: used to evaluate this candidate
-        # - region_mask: important region propagated to next stage
-        if prev_mask is not None:
-            prev_region = (prev_mask > 0.5).astype(mask.dtype)
+    parent_masks = prev_masks if prev_masks else None
 
-            # Evaluate by masking ONLY inside previously important region.
-            # Outside region is kept as 1 (no extra masking).
-            eval_mask = np.ones_like(mask, dtype=mask.dtype)
-            eval_mask[prev_region > 0] = mask[prev_region > 0]
-
-            # Propagate refined region to next stage (nested refinement).
-            region_mask = prev_region * mask
-        else:
-            eval_mask = mask
-            region_mask = mask
-        
-        # Make symmetric
+    def _make_symmetric(mask_arr):
         max_n_h = IMG_SIZE // 2
         max_n_w = IMG_SIZE // 2
         for h_index in range(-max_n_h, 1):
@@ -107,15 +87,66 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_mask=None):
                 h_matrix_index = IMG_SIZE // 2 + h_index
                 w_matrix_index = IMG_SIZE // 2 + w_index
                 if h_index != 0:
-                    eval_mask[IMG_SIZE - h_matrix_index - 1, IMG_SIZE - w_matrix_index - 1] = eval_mask[h_matrix_index, w_matrix_index]
-                    region_mask[IMG_SIZE - h_matrix_index - 1, IMG_SIZE - w_matrix_index - 1] = region_mask[h_matrix_index, w_matrix_index]
+                    mask_arr[IMG_SIZE - h_matrix_index - 1, IMG_SIZE - w_matrix_index - 1] = mask_arr[h_matrix_index, w_matrix_index]
+        return mask_arr
 
-        transform = White_Mask(eval_mask)
-        # Carry refined region for the next stage.
-        transform.region_mask = region_mask
-        candidates.append(transform)
-    
-    return candidates
+    while len(candidates) < num_candidates:
+        parent_mask = None
+        if parent_masks:
+            parent_mask = parent_masks[np.random.randint(len(parent_masks))]
+
+        # Variant A: patch grid
+        freqs = gen_freqs_list(patch, patch)
+        sample_frqs = sample_frequency(proportion, freqs)
+        mask_int = generate_mask(sample_frqs, patch, patch)
+        mask_a = np.kron(mask_int, np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
+
+        if parent_mask is not None:
+            mask_a = parent_mask * mask_a
+        mask_a = _make_symmetric(mask_a)
+        candidates.append(White_Mask(mask_a))
+        if len(candidates) >= num_candidates:
+            break
+
+        # Variant B: shifted window (patch+1), if possible
+        if patch < IMG_SIZE:
+            patch_b = patch + 1
+            freqs_b = gen_freqs_list(patch_b, patch_b)
+            sample_frqs_b = sample_frequency(proportion, freqs_b)
+            mask_int_b = generate_mask(sample_frqs_b, patch_b, patch_b)
+            step = patch_b - 1
+            mask_b = np.kron(mask_int_b, np.ones((IMG_SIZE // step, IMG_SIZE // step)))
+            crop = int(IMG_SIZE // step / 2)
+            if crop > 0:
+                mask_b = mask_b[crop:-crop, crop:-crop]
+
+            if parent_mask is not None:
+                mask_b = parent_mask * mask_b
+            mask_b = _make_symmetric(mask_b)
+            candidates.append(White_Mask(mask_b))
+            if len(candidates) >= num_candidates:
+                break
+
+            # Variant C: mixed patch and shifted patch
+            freqs_c1 = gen_freqs_list(patch, patch)
+            sample_c1 = sample_frequency(proportion / 2.0, freqs_c1)
+            mask_c1 = generate_mask(sample_c1, patch, patch)
+            mask_c1 = np.kron(mask_c1, np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
+
+            freqs_c2 = gen_freqs_list(patch_b, patch_b)
+            sample_c2 = sample_frequency(proportion / 2.0, freqs_c2)
+            mask_c2 = generate_mask(sample_c2, patch_b, patch_b)
+            mask_c2 = np.kron(mask_c2, np.ones((IMG_SIZE // step, IMG_SIZE // step)))
+            if crop > 0:
+                mask_c2 = mask_c2[crop:-crop, crop:-crop]
+
+            mask_c = np.clip(mask_c1 + mask_c2, 0, 1)
+            if parent_mask is not None:
+                mask_c = parent_mask * mask_c
+            mask_c = _make_symmetric(mask_c)
+            candidates.append(White_Mask(mask_c))
+
+    return candidates[:num_candidates]
 
 
 @torch.no_grad()
@@ -350,12 +381,12 @@ def visualize_mask_advanced(mask_array, save_path, stage, mask_id, sample_image=
     plt.close()
 
 
-def search_stage(model, dataloader, stage, num_candidates, proportion, prev_mask, device):
+def search_stage(model, dataloader, stage, num_candidates, proportion, prev_masks, device, top_n=10):
     """Search for frequency shortcuts in one stage"""
     print(f"\n🔍 Stage {stage}: Testing {num_candidates} candidates (P={proportion})")
     
     # Generate candidates
-    candidates = generate_mask_candidates(num_candidates, proportion, stage, prev_mask)
+    candidates = generate_mask_candidates(num_candidates, proportion, stage, prev_masks)
     
     # Test baseline (no mask)
     baseline_f1 = evaluate_mask(model, dataloader, lambda x: x, device)
@@ -368,19 +399,19 @@ def search_stage(model, dataloader, stage, num_candidates, proportion, prev_mask
         drop = baseline_f1 - f1
         results.append((i, f1, drop, mask_transform))
     
-    # Sort all candidates by drop (largest first)
-    results.sort(key=lambda x: x[2], reverse=True)
-    top_10 = results[:10]
+    # Sort all candidates by masked F1 (largest first) to align with HFSS paper
+    results.sort(key=lambda x: x[1], reverse=True)
+    top_k = results[:top_n]
 
     # Print ALL mask drops for this stage (one line each)
-    print(f"\n   {stage} — all mask drops (sorted by drop):")
+    print(f"\n   {stage} — all masks (sorted by masked F1, high→low):")
     for r in results:
         mask_id, f1_val, drop_val, _ = r
         marker = " ◀ best" if mask_id == results[0][0] else ""
         print(f"     mask{mask_id:>3}: F1={f1_val*100:.2f}%  |  drop={drop_val*100:+.2f}%{marker}")
 
-    # Return top masks
-    return [r[3] for r in top_10], results
+    # Return top masks for next stage refinement
+    return [r[3] for r in top_k], results
 
 
 def main():
@@ -390,6 +421,8 @@ def main():
     parser.add_argument('--test_json', default='BP4D/BP4D_test1.json')
     parser.add_argument('--data_root', default='BP4D/BP4D_cropped/')
     parser.add_argument('--num_candidates', type=int, default=200)
+    parser.add_argument('--top_n', type=int, default=10,
+                        help='Number of top masks to keep and propagate to next stage')
     parser.add_argument('--proportion', type=float, default=0.8)
     parser.add_argument('--num_samples', type=int, default=500, help='Number of training samples to use')
     parser.add_argument('--batch_size', type=int, default=16)
@@ -438,7 +471,7 @@ def main():
     print(f"✓ Loaded {len(dataset)} TEST samples (evaluating on unseen data)")
     
     # Run hierarchical search
-    prev_mask = None
+    prev_masks = None
     all_results = {}
     per_au_drop_by_stage = {}
     
@@ -446,7 +479,7 @@ def main():
         top_masks, stage_results = search_stage(
             model, dataloader, stage, 
             args.num_candidates, args.proportion, 
-            prev_mask, args.device
+            prev_masks, args.device, args.top_n
         )
         
         # Save stage results
@@ -457,7 +490,6 @@ def main():
 
         best_mask = top_masks[0]
         best_mask_array = best_mask.mask if hasattr(best_mask, 'mask') else None
-        next_stage_region_mask = getattr(best_mask, 'region_mask', best_mask_array)
 
         # --- OPTIONAL: per-AU F1 eval for the best mask ---
         if args.per_au_eval and best_mask_array is not None:
@@ -486,8 +518,8 @@ def main():
             visualize_mask_advanced(best_mask_array, vis_path, stage, 'best')
             print(f"   🖼  Advanced mask visualization saved to {vis_path}")
 
-        # Use best mask for next stage (hierarchical)
-        prev_mask = next_stage_region_mask
+        # Use top-N masks for next stage (hierarchical refinement)
+        prev_masks = [m.mask for m in top_masks if hasattr(m, 'mask')]
         all_results[stage] = stage_results
 
     if args.per_au_eval and per_au_drop_by_stage:
@@ -514,11 +546,16 @@ python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
   --test_json BP4D/BP4D_test1.json --num_samples 500 \
   --per_au_eval --visualize_masks --stages stage1 stage2
 
-# Just advanced viz
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-  --test_json BP4D/BP4D_test1.json --visualize_masks --stages stage1
 
 python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-  --test_json BP4D/BP4D_test1.json --num_samples 500 \
-  --per_au_eval --stages stage1 stage2
+  --test_json BP4D/BP4D_test1.json --num_samples 50 \
+  --num_candidates 30 --top_n 10 --stages stage1 stage2 stage3 \
+  --per_au_eval --visualize_masks
+
+For running all test set, 30 masks take top 10 for fold 1
+
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --num_samples 2000 \
+  --num_candidates 30 --top_n 10 --stages stage1 stage2 stage3 \
+  --per_au_eval --visualize_masks
 '''
