@@ -70,10 +70,10 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None)
 
     Paper-aligned behavior:
     - Stage1: sample on full grid.
-    - Stage>1: sample finer masks and multiply with a parent mask selected
-      from previous stage top-N (cumulative masking; black stays black).
-    - Also includes shifted-window variants (patch, patch+1, mixed), similar
-      to original HFSS candidate generation.
+        - Stage>1: sample ONLY inside white/active regions of a selected parent
+            mask from previous stage top-N, then multiply (black stays black).
+        - Stage1 includes shifted-window variants (patch, patch+1, mixed),
+            similar to original HFSS candidate generation.
     """
     candidates = []
     patch = PATCHES[stage]
@@ -90,16 +90,40 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None)
                     mask_arr[IMG_SIZE - h_matrix_index - 1, IMG_SIZE - w_matrix_index - 1] = mask_arr[h_matrix_index, w_matrix_index]
         return mask_arr
 
+    def _active_map_from_parent(parent_mask, grid_n):
+        """Downsample parent full-res mask to grid cells (active/inactive)."""
+        cell = IMG_SIZE // grid_n
+        parent_bin = (parent_mask > 0.5).astype(np.float32)
+        # max-pool over each grid cell: 1 means this cell is still active
+        small = parent_bin.reshape(grid_n, cell, grid_n, cell).max(axis=(1, 3))
+        return small
+
+    def _sample_mask_int(grid_n, p, parent_mask=None):
+        freqs = gen_freqs_list(grid_n, grid_n)
+        if parent_mask is None:
+            chosen = sample_frequency(p, freqs)
+            return generate_mask(chosen, grid_n, grid_n)
+
+        active_map = _active_map_from_parent(parent_mask, grid_n)
+        active_freqs = [f for f in freqs if active_map[f[0], f[1]] > 0]
+
+        if not active_freqs:
+            return torch.zeros((grid_n, grid_n))
+
+        chosen = sample_frequency(p, active_freqs)
+        m = generate_mask(chosen, grid_n, grid_n)
+        # ensure inactive parent cells can never turn on
+        m = m * torch.tensor(active_map, dtype=m.dtype)
+        return m
+
     while len(candidates) < num_candidates:
         parent_mask = None
         if parent_masks:
             parent_mask = parent_masks[np.random.randint(len(parent_masks))]
 
         # Variant A: patch grid
-        freqs = gen_freqs_list(patch, patch)
-        sample_frqs = sample_frequency(proportion, freqs)
-        mask_int = generate_mask(sample_frqs, patch, patch)
-        mask_a = np.kron(mask_int, np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
+        mask_int = _sample_mask_int(patch, proportion, parent_mask)
+        mask_a = np.kron(np.asarray(mask_int), np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
 
         if parent_mask is not None:
             mask_a = parent_mask * mask_a
@@ -108,14 +132,17 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None)
         if len(candidates) >= num_candidates:
             break
 
+        # For stage>1, only subdivide and sample inside parent white regions.
+        # Do not run shifted/global variants to avoid resampling outside parent.
+        if parent_mask is not None:
+            continue
+
         # Variant B: shifted window (patch+1), if possible
         if patch < IMG_SIZE:
             patch_b = patch + 1
-            freqs_b = gen_freqs_list(patch_b, patch_b)
-            sample_frqs_b = sample_frequency(proportion, freqs_b)
-            mask_int_b = generate_mask(sample_frqs_b, patch_b, patch_b)
+            mask_int_b = _sample_mask_int(patch_b, proportion, None)
             step = patch_b - 1
-            mask_b = np.kron(mask_int_b, np.ones((IMG_SIZE // step, IMG_SIZE // step)))
+            mask_b = np.kron(np.asarray(mask_int_b), np.ones((IMG_SIZE // step, IMG_SIZE // step)))
             crop = int(IMG_SIZE // step / 2)
             if crop > 0:
                 mask_b = mask_b[crop:-crop, crop:-crop]
@@ -128,15 +155,11 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None)
                 break
 
             # Variant C: mixed patch and shifted patch
-            freqs_c1 = gen_freqs_list(patch, patch)
-            sample_c1 = sample_frequency(proportion / 2.0, freqs_c1)
-            mask_c1 = generate_mask(sample_c1, patch, patch)
-            mask_c1 = np.kron(mask_c1, np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
+            mask_c1 = _sample_mask_int(patch, proportion / 2.0, None)
+            mask_c1 = np.kron(np.asarray(mask_c1), np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
 
-            freqs_c2 = gen_freqs_list(patch_b, patch_b)
-            sample_c2 = sample_frequency(proportion / 2.0, freqs_c2)
-            mask_c2 = generate_mask(sample_c2, patch_b, patch_b)
-            mask_c2 = np.kron(mask_c2, np.ones((IMG_SIZE // step, IMG_SIZE // step)))
+            mask_c2 = _sample_mask_int(patch_b, proportion / 2.0, None)
+            mask_c2 = np.kron(np.asarray(mask_c2), np.ones((IMG_SIZE // step, IMG_SIZE // step)))
             if crop > 0:
                 mask_c2 = mask_c2[crop:-crop, crop:-crop]
 
@@ -546,6 +569,13 @@ python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
   --test_json BP4D/BP4D_test1.json --num_samples 500 \
   --per_au_eval --visualize_masks --stages stage1 stage2
 
+# Just advanced viz
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --visualize_masks --stages stage1
+
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --num_samples 500 \
+  --per_au_eval --stages stage1 stage2
 
 python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
   --test_json BP4D/BP4D_test1.json --num_samples 50 \
@@ -555,7 +585,7 @@ python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
 For running all test set, 30 masks take top 10 for fold 1
 
 python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-  --test_json BP4D/BP4D_test1.json --num_samples 2000 \
+  --test_json BP4D/BP4D_test1.json --num_samples 999999 \
   --num_candidates 30 --top_n 10 --stages stage1 stage2 stage3 \
   --per_au_eval --visualize_masks
 '''
