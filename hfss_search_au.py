@@ -41,6 +41,36 @@ from transforms_search_space import White_Mask, gen_freqs_list, sample_frequency
 AU_LABELS = [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23, 24]
 IMG_SIZE = 224
 PATCHES = {'stage1': 4, 'stage2': 8, 'stage3': 16, 'stage4': 28, 'stage5': 56, 'stage6': 112}
+DEFAULT_KEEP_RANGES = {
+    'stage1': (0.60, 0.80),
+    'stage2': (0.40, 0.60),
+    'stage3': (0.20, 0.40),
+    'stage4': (0.15, 0.30),
+    'stage5': (0.08, 0.20),
+    'stage6': (0.03, 0.10),
+}
+
+
+def parse_keep_ranges(config_str):
+    """Parse keep ranges: 'stage1:0.6-0.8,stage2:0.4-0.6,...'."""
+    ranges = dict(DEFAULT_KEEP_RANGES)
+    if not config_str:
+        return ranges
+    items = [x.strip() for x in config_str.split(',') if x.strip()]
+    for item in items:
+        if ':' not in item:
+            continue
+        stage, val = item.split(':', 1)
+        stage = stage.strip()
+        if '-' not in val:
+            continue
+        lo, hi = val.split('-', 1)
+        lo = float(lo)
+        hi = float(hi)
+        if lo > hi:
+            lo, hi = hi, lo
+        ranges[stage] = (max(0.0, lo), min(1.0, hi))
+    return ranges
 
 
 def load_model(model_path, model_type='FMAE', device='cuda'):
@@ -65,7 +95,7 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
     return model
 
 
-def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None):
+def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None, keep_ratio_range=None):
     """Generate random frequency mask candidates.
 
     Paper-aligned behavior:
@@ -98,23 +128,39 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None)
         small = parent_bin.reshape(grid_n, cell, grid_n, cell).max(axis=(1, 3))
         return small
 
-    def _sample_mask_int(grid_n, p, parent_mask=None):
+    def _sample_mask_int(grid_n, p, parent_mask=None, keep_range=None):
         freqs = gen_freqs_list(grid_n, grid_n)
         if parent_mask is None:
-            chosen = sample_frequency(p, freqs)
-            return generate_mask(chosen, grid_n, grid_n)
+            if keep_range is not None and len(freqs) > 0:
+                lo, hi = keep_range
+                target_ratio = np.random.uniform(lo, hi)
+                k = int(round(target_ratio * len(freqs)))
+                k = max(1, min(len(freqs), k))
+                chosen_idx = np.random.choice(len(freqs), size=k, replace=False)
+                chosen = [freqs[i] for i in chosen_idx]
+            else:
+                chosen = sample_frequency(p, freqs)
+            return generate_mask(chosen, grid_n, grid_n), len(chosen), len(freqs)
 
         active_map = _active_map_from_parent(parent_mask, grid_n)
         active_freqs = [f for f in freqs if active_map[f[0], f[1]] > 0]
 
         if not active_freqs:
-            return torch.zeros((grid_n, grid_n))
+            return torch.zeros((grid_n, grid_n)), 0, 0
 
-        chosen = sample_frequency(p, active_freqs)
+        if keep_range is not None:
+            lo, hi = keep_range
+            target_ratio = np.random.uniform(lo, hi)
+            k = int(round(target_ratio * len(active_freqs)))
+            k = max(1, min(len(active_freqs), k))
+            chosen_idx = np.random.choice(len(active_freqs), size=k, replace=False)
+            chosen = [active_freqs[i] for i in chosen_idx]
+        else:
+            chosen = sample_frequency(p, active_freqs)
         m = generate_mask(chosen, grid_n, grid_n)
         # ensure inactive parent cells can never turn on
         m = m * torch.tensor(active_map, dtype=m.dtype)
-        return m
+        return m, len(chosen), len(active_freqs)
 
     while len(candidates) < num_candidates:
         parent_mask = None
@@ -122,13 +168,18 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None)
             parent_mask = parent_masks[np.random.randint(len(parent_masks))]
 
         # Variant A: patch grid
-        mask_int = _sample_mask_int(patch, proportion, parent_mask)
+        mask_int, chosen_count, eligible_count = _sample_mask_int(
+            patch, proportion, parent_mask, keep_ratio_range
+        )
         mask_a = np.kron(np.asarray(mask_int), np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
 
         if parent_mask is not None:
             mask_a = parent_mask * mask_a
         mask_a = _make_symmetric(mask_a)
-        candidates.append(White_Mask(mask_a))
+        t_a = White_Mask(mask_a)
+        t_a.white_count = int(np.sum(mask_a > 0.5))
+        t_a.keep_pct = float(chosen_count / eligible_count) if eligible_count > 0 else 0.0
+        candidates.append(t_a)
         if len(candidates) >= num_candidates:
             break
 
@@ -140,7 +191,9 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None)
         # Variant B: shifted window (patch+1), if possible
         if patch < IMG_SIZE:
             patch_b = patch + 1
-            mask_int_b = _sample_mask_int(patch_b, proportion, None)
+            mask_int_b, chosen_b, eligible_b = _sample_mask_int(
+                patch_b, proportion, None, keep_ratio_range
+            )
             step = patch_b - 1
             mask_b = np.kron(np.asarray(mask_int_b), np.ones((IMG_SIZE // step, IMG_SIZE // step)))
             crop = int(IMG_SIZE // step / 2)
@@ -150,15 +203,22 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None)
             if parent_mask is not None:
                 mask_b = parent_mask * mask_b
             mask_b = _make_symmetric(mask_b)
-            candidates.append(White_Mask(mask_b))
+            t_b = White_Mask(mask_b)
+            t_b.white_count = int(np.sum(mask_b > 0.5))
+            t_b.keep_pct = float(chosen_b / eligible_b) if eligible_b > 0 else 0.0
+            candidates.append(t_b)
             if len(candidates) >= num_candidates:
                 break
 
             # Variant C: mixed patch and shifted patch
-            mask_c1 = _sample_mask_int(patch, proportion / 2.0, None)
+            mask_c1, chosen_c1, eligible_c1 = _sample_mask_int(
+                patch, proportion / 2.0, None, keep_ratio_range
+            )
             mask_c1 = np.kron(np.asarray(mask_c1), np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
 
-            mask_c2 = _sample_mask_int(patch_b, proportion / 2.0, None)
+            mask_c2, chosen_c2, eligible_c2 = _sample_mask_int(
+                patch_b, proportion / 2.0, None, keep_ratio_range
+            )
             mask_c2 = np.kron(np.asarray(mask_c2), np.ones((IMG_SIZE // step, IMG_SIZE // step)))
             if crop > 0:
                 mask_c2 = mask_c2[crop:-crop, crop:-crop]
@@ -167,7 +227,11 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None)
             if parent_mask is not None:
                 mask_c = parent_mask * mask_c
             mask_c = _make_symmetric(mask_c)
-            candidates.append(White_Mask(mask_c))
+            t_c = White_Mask(mask_c)
+            t_c.white_count = int(np.sum(mask_c > 0.5))
+            elig = eligible_c1 + eligible_c2
+            t_c.keep_pct = float((chosen_c1 + chosen_c2) / elig) if elig > 0 else 0.0
+            candidates.append(t_c)
 
     return candidates[:num_candidates]
 
@@ -404,12 +468,25 @@ def visualize_mask_advanced(mask_array, save_path, stage, mask_id, sample_image=
     plt.close()
 
 
-def search_stage(model, dataloader, stage, num_candidates, proportion, prev_masks, device, top_n=10):
+def search_stage(
+    model,
+    dataloader,
+    stage,
+    num_candidates,
+    proportion,
+    prev_masks,
+    device,
+    top_n=10,
+    keep_ratio_range=None,
+    f1_tolerance_pct=1.0,
+):
     """Search for frequency shortcuts in one stage"""
     print(f"\n🔍 Stage {stage}: Testing {num_candidates} candidates (P={proportion})")
     
     # Generate candidates
-    candidates = generate_mask_candidates(num_candidates, proportion, stage, prev_masks)
+    candidates = generate_mask_candidates(
+        num_candidates, proportion, stage, prev_masks, keep_ratio_range
+    )
     
     # Test baseline (no mask)
     baseline_f1 = evaluate_mask(model, dataloader, lambda x: x, device)
@@ -420,21 +497,49 @@ def search_stage(model, dataloader, stage, num_candidates, proportion, prev_mask
     for i, mask_transform in enumerate(tqdm(candidates, desc=f"   Testing masks")):
         f1 = evaluate_mask(model, dataloader, mask_transform, device)
         drop = baseline_f1 - f1
-        results.append((i, f1, drop, mask_transform))
+        white_count = int(getattr(mask_transform, 'white_count', np.sum(mask_transform.mask > 0.5)))
+        keep_pct = float(getattr(mask_transform, 'keep_pct', np.mean(mask_transform.mask > 0.5)))
+        results.append((i, f1, drop, white_count, keep_pct, mask_transform))
     
     # Sort all candidates by masked F1 (largest first) to align with HFSS paper
     results.sort(key=lambda x: x[1], reverse=True)
     top_k = results[:top_n]
 
+    best_f1 = results[0][1] if results else 0.0
+    best_drop_pct = (baseline_f1 - best_f1) * 100.0
+
+    viable = [r for r in results if (baseline_f1 - r[1]) * 100.0 <= f1_tolerance_pct]
+    smallest_viable = min(viable, key=lambda x: x[3]) if viable else None
+
     # Print ALL mask drops for this stage (one line each)
     print(f"\n   {stage} — all masks (sorted by masked F1, high→low):")
     for r in results:
-        mask_id, f1_val, drop_val, _ = r
+        mask_id, f1_val, drop_val, white_count, keep_pct, _ = r
         marker = " ◀ best" if mask_id == results[0][0] else ""
-        print(f"     mask{mask_id:>3}: F1={f1_val*100:.2f}%  |  drop={drop_val*100:+.2f}%{marker}")
+        print(
+            f"     mask{mask_id:>3}: F1={f1_val*100:.2f}%  |  "
+            f"drop={drop_val*100:+.2f}%  |  white={white_count}  "
+            f"| keep={keep_pct*100:.1f}%{marker}"
+        )
+
+    if smallest_viable is not None:
+        sid, sf1, sdrop, swhite, skeep, _ = smallest_viable
+        print(
+            f"   Smallest mask within {f1_tolerance_pct:.1f}% of baseline: "
+            f"mask{sid} | F1={sf1*100:.2f}% | drop={sdrop*100:+.2f}% "
+            f"| white={swhite} | keep={skeep*100:.1f}%"
+        )
+    else:
+        print(f"   No mask is within {f1_tolerance_pct:.1f}% of baseline.")
 
     # Return top masks for next stage refinement
-    return [r[3] for r in top_k], results
+    summary = {
+        'baseline_f1': baseline_f1,
+        'best_f1': best_f1,
+        'best_drop_pct': best_drop_pct,
+        'smallest_viable': smallest_viable,
+    }
+    return [r[5] for r in top_k], results, summary
 
 
 def main():
@@ -447,6 +552,23 @@ def main():
     parser.add_argument('--top_n', type=int, default=10,
                         help='Number of top masks to keep and propagate to next stage')
     parser.add_argument('--proportion', type=float, default=0.8)
+    parser.add_argument(
+        '--keep_ranges',
+        default='stage1:0.6-0.8,stage2:0.4-0.6,stage3:0.2-0.4,stage4:0.15-0.3,stage5:0.08-0.2,stage6:0.03-0.1',
+        help='Stage keep-ratio ranges: stage1:0.6-0.8,stage2:0.4-0.6,...',
+    )
+    parser.add_argument(
+        '--stop_drop_pct',
+        type=float,
+        default=5.0,
+        help='Stop refinement if best F1 drops more than this percentage from baseline',
+    )
+    parser.add_argument(
+        '--f1_tolerance_pct',
+        type=float,
+        default=1.0,
+        help='Tolerance for smallest-mask tracking (within X%% drop from baseline)',
+    )
     parser.add_argument('--num_samples', type=int, default=500, help='Number of training samples to use')
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--device', default='cuda')
@@ -458,6 +580,7 @@ def main():
     parser.add_argument('--visualize_masks', action='store_true',
                         help='Save advanced mask visualizations (ring, freq band, masked FFT) for top masks')
     args = parser.parse_args()
+    keep_ranges = parse_keep_ranges(args.keep_ranges)
     
     # Setup
     output_dir = Path(args.output_dir)
@@ -499,10 +622,18 @@ def main():
     per_au_drop_by_stage = {}
     
     for stage in args.stages:
-        top_masks, stage_results = search_stage(
+        stage_keep = keep_ranges.get(stage, DEFAULT_KEEP_RANGES.get(stage, (0.2, 0.4)))
+        print(
+            f"   Keep-ratio target for {stage}: "
+            f"{stage_keep[0]*100:.1f}% - {stage_keep[1]*100:.1f}%"
+        )
+
+        top_masks, stage_results, stage_summary = search_stage(
             model, dataloader, stage, 
             args.num_candidates, args.proportion, 
-            prev_masks, args.device, args.top_n
+            prev_masks, args.device, args.top_n,
+            keep_ratio_range=stage_keep,
+            f1_tolerance_pct=args.f1_tolerance_pct,
         )
         
         # Save stage results
@@ -544,6 +675,14 @@ def main():
         # Use top-N masks for next stage (hierarchical refinement)
         prev_masks = [m.mask for m in top_masks if hasattr(m, 'mask')]
         all_results[stage] = stage_results
+
+        # Early stop when refinement hurts too much
+        if stage_summary['best_drop_pct'] > args.stop_drop_pct:
+            print(
+                f"   ⛔ Early stop: best drop {stage_summary['best_drop_pct']:.2f}% "
+                f"> stop threshold {args.stop_drop_pct:.2f}%"
+            )
+            break
 
     if args.per_au_eval and per_au_drop_by_stage:
         save_per_au_stage_heatmap(
