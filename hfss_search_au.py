@@ -236,7 +236,7 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None,
     return candidates[:num_candidates]
 
 
-@torch.no_grad()
+@torch.inference_mode()
 def evaluate_mask(model, dataloader, mask_transform, device):
     """Evaluate AU performance with frequency mask applied (mean F1 over AUs).
 
@@ -246,11 +246,22 @@ def evaluate_mask(model, dataloader, mask_transform, device):
     all_preds = []
     all_labels = []
 
+    mask_t = None
+    if hasattr(mask_transform, 'mask'):
+        mask_np = mask_transform.mask
+        if getattr(mask_transform, 'flip', False):
+            mask_np = 1 - mask_np
+        mask_t = torch.as_tensor(mask_np, dtype=torch.float32, device=device).unsqueeze(0).unsqueeze(0)
+
     for images, (au_labels, _) in dataloader:
-        # Apply frequency mask
-        images = torch.stack([mask_transform(img) for img in images])
-        images = images.to(device)
-        au_labels = au_labels.to(device)
+        images = images.to(device, non_blocking=True)
+        au_labels = au_labels.to(device, non_blocking=True)
+
+        # Apply frequency mask (batched on device)
+        if mask_t is not None:
+            freq = torch.fft.fftshift(torch.fft.fft2(images, dim=(-2, -1)), dim=(-2, -1))
+            freq = freq * mask_t
+            images = torch.fft.ifft2(torch.fft.ifftshift(freq, dim=(-2, -1)), dim=(-2, -1)).real.float()
 
         # Forward pass
         outputs = model(images)
@@ -279,7 +290,7 @@ def evaluate_mask(model, dataloader, mask_transform, device):
 # OPTIONAL FUNCTION 1: Per-AU F1 evaluation
 # Enable with --per_au_eval flag
 # ============================================================
-@torch.no_grad()
+@torch.inference_mode()
 def evaluate_mask_per_au(model, dataloader, mask_transform, baseline_per_au, device):
     """Evaluate per-AU F1 and show drop vs baseline for each AU.
     Returns dict: {AU_label: {'f1': float, 'drop': float}}
@@ -287,10 +298,22 @@ def evaluate_mask_per_au(model, dataloader, mask_transform, baseline_per_au, dev
     all_preds = []
     all_labels = []
 
+    mask_t = None
+    if hasattr(mask_transform, 'mask'):
+        mask_np = mask_transform.mask
+        if getattr(mask_transform, 'flip', False):
+            mask_np = 1 - mask_np
+        mask_t = torch.as_tensor(mask_np, dtype=torch.float32, device=device).unsqueeze(0).unsqueeze(0)
+
     for images, (au_labels, _) in dataloader:
-        images = torch.stack([mask_transform(img) for img in images])
-        images = images.to(device)
-        au_labels = au_labels.to(device)
+        images = images.to(device, non_blocking=True)
+        au_labels = au_labels.to(device, non_blocking=True)
+
+        if mask_t is not None:
+            freq = torch.fft.fftshift(torch.fft.fft2(images, dim=(-2, -1)), dim=(-2, -1))
+            freq = freq * mask_t
+            images = torch.fft.ifft2(torch.fft.ifftshift(freq, dim=(-2, -1)), dim=(-2, -1)).real.float()
+
         outputs = model(images)
         if isinstance(outputs, tuple):
             outputs = outputs[0]
@@ -479,6 +502,7 @@ def search_stage(
     top_n=10,
     keep_ratio_range=None,
     f1_tolerance_pct=1.0,
+    baseline_f1=None,
 ):
     """Search for frequency shortcuts in one stage"""
     print(f"\n🔍 Stage {stage}: Testing {num_candidates} candidates (P={proportion})")
@@ -488,8 +512,9 @@ def search_stage(
         num_candidates, proportion, stage, prev_masks, keep_ratio_range
     )
     
-    # Test baseline (no mask)
-    baseline_f1 = evaluate_mask(model, dataloader, lambda x: x, device)
+    # Test baseline (no mask), can be precomputed once
+    if baseline_f1 is None:
+        baseline_f1 = evaluate_mask(model, dataloader, lambda x: x, device)
     print(f"   Baseline mean F1: {baseline_f1*100:.2f}% (mean per-AU)")
     
     # Test each candidate (compute mean F1 per candidate)
@@ -571,6 +596,7 @@ def main():
     )
     parser.add_argument('--num_samples', type=int, default=500, help='Number of training samples to use')
     parser.add_argument('--batch_size', type=int, default=16)
+    parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--output_dir', default='hfss/DFM')
     parser.add_argument('--stages', nargs='+', default=['stage1', 'stage2', 'stage3'])
@@ -613,8 +639,24 @@ def main():
         indices = np.random.choice(len(dataset), args.num_samples, replace=False)
         dataset = Subset(dataset, indices)
     
-    dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
+    pin_mem = str(args.device).startswith('cuda')
+    dataloader = DataLoader(
+        dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=args.num_workers,
+        pin_memory=pin_mem,
+        persistent_workers=(args.num_workers > 0),
+    )
     print(f"✓ Loaded {len(dataset)} TEST samples (evaluating on unseen data)")
+
+    # Cache baseline computations once (shared across stages)
+    baseline_f1_global = evaluate_mask(model, dataloader, lambda x: x, args.device)
+    baseline_per_au_full = None
+    if args.per_au_eval:
+        baseline_per_au_full = evaluate_mask_per_au(
+            model, dataloader, lambda x: x, {}, args.device
+        )
     
     # Run hierarchical search
     prev_masks = None
@@ -634,6 +676,7 @@ def main():
             prev_masks, args.device, args.top_n,
             keep_ratio_range=stage_keep,
             f1_tolerance_pct=args.f1_tolerance_pct,
+            baseline_f1=baseline_f1_global,
         )
         
         # Save stage results
@@ -648,9 +691,6 @@ def main():
         # --- OPTIONAL: per-AU F1 eval for the best mask ---
         if args.per_au_eval and best_mask_array is not None:
             print(f"\n   🔬 Per-AU eval for best mask ({stage})...")
-            # (Re-use evaluate_mask_per_au with identity transform for baseline)
-            baseline_per_au_full = evaluate_mask_per_au(
-                model, dataloader, lambda x: x, {}, args.device)
             best_per_au = evaluate_mask_per_au(
                 model, dataloader, best_mask, baseline_per_au_full, args.device)
             print_per_au_results(best_per_au, stage, 'best')
