@@ -4,9 +4,9 @@ Finds frequency shortcuts in AU detection models
 """
 
 import sys
-import json
 import pickle
 import argparse
+import time
 import numpy as np
 from pathlib import Path
 from datetime import datetime
@@ -20,7 +20,6 @@ from types import SimpleNamespace
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import pandas as pd
 
 inference_decorator = torch.inference_mode if hasattr(torch, 'inference_mode') else torch.no_grad
 
@@ -130,7 +129,11 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None,
         - Stage1 includes shifted-window variants (patch, patch+1, mixed),
             similar to original HFSS candidate generation.
     """
+    # Each candidate becomes a 224x224 binary-like frequency mask (float array),
+    # later wrapped by White_Mask for downstream use.
     candidates = []
+    # stage1->4, stage2->8, stage3->16, ... controls grid resolution.
+    # The generated integer mask lives on (patch x patch) first, then upsampled.
     patch = PATCHES[stage]
     parent_masks = prev_masks if prev_masks else None
 
@@ -156,6 +159,7 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None,
     def _sample_mask_int(grid_n, p, parent_mask=None, keep_range=None):
         freqs = gen_freqs_list(grid_n, grid_n)
         if parent_mask is None:
+            # Stage1-style sampling on full grid.
             if keep_range is not None and len(freqs) > 0:
                 lo, hi = keep_range
                 target_ratio = np.random.uniform(lo, hi)
@@ -167,6 +171,7 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None,
                 chosen = sample_frequency(p, freqs)
             return generate_mask(chosen, grid_n, grid_n), len(chosen), len(freqs)
 
+        # Stage>1-style sampling: only cells still white in the parent are eligible.
         active_map = _active_map_from_parent(parent_mask, grid_n)
         active_freqs = [f for f in freqs if active_map[f[0], f[1]] > 0]
 
@@ -190,6 +195,7 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None,
     while len(candidates) < num_candidates:
         parent_mask = None
         if parent_masks:
+            # Parent chosen uniformly from previous stage top-N masks.
             parent_mask = parent_masks[np.random.randint(len(parent_masks))]
 
         # Variant A: patch grid
@@ -199,6 +205,7 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None,
         mask_a = np.kron(np.asarray(mask_int), np.ones((IMG_SIZE // patch, IMG_SIZE // patch)))
 
         if parent_mask is not None:
+            # Permanent pruning rule: if parent is black at a frequency, child stays black.
             mask_a = parent_mask * mask_a
         mask_a = _make_symmetric(mask_a)
         t_a = White_Mask(mask_a)
@@ -248,6 +255,7 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None,
             if crop > 0:
                 mask_c2 = mask_c2[crop:-crop, crop:-crop]
 
+            # Mixed variant combines two sampled masks then clips to {0,1}-like range.
             mask_c = np.clip(mask_c1 + mask_c2, 0, 1)
             if parent_mask is not None:
                 mask_c = parent_mask * mask_c
@@ -261,8 +269,21 @@ def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None,
     return candidates[:num_candidates]
 
 
+def _sync_if_cuda(device, enabled):
+    """Synchronize CUDA only when profiling is enabled."""
+    if enabled and str(device).startswith('cuda') and torch.cuda.is_available():
+        torch.cuda.synchronize()
+
+
+def _timing_add(timing_state, key, value):
+    """Accumulate numeric timing values."""
+    if timing_state is None:
+        return
+    timing_state[key] = timing_state.get(key, 0.0) + float(value)
+
+
 @inference_decorator()
-def evaluate_mask(model, dataloader, mask_transform, device):
+def evaluate_mask(model, dataloader, mask_transform, device, timing_state=None):
     """Evaluate AU performance with frequency mask applied (mean F1 over AUs).
 
     This accumulates predictions across all batches then computes the macro
@@ -276,28 +297,82 @@ def evaluate_mask(model, dataloader, mask_transform, device):
         mask_np = mask_transform.mask
         if getattr(mask_transform, 'flip', False):
             mask_np = 1 - mask_np
+        # mask_t shape: [1, 1, H, W] (here H=W=224).
+        # It is broadcast over batch and channel dims when multiplying frequency tensor.
         mask_t = torch.as_tensor(mask_np, dtype=torch.float32, device=device).unsqueeze(0).unsqueeze(0)
 
+    profile = timing_state is not None
+    eval_t0 = time.perf_counter() if profile else None
+    if profile:
+        timing_state['calls'] = timing_state.get('calls', 0) + 1
+        wait_t0 = time.perf_counter()
+
     for images, (au_labels, _) in dataloader:
+        if profile:
+            now = time.perf_counter()
+            _timing_add(timing_state, 'data_wait_s', now - wait_t0)
+
+            _sync_if_cuda(device, True)
+            t_h2d = time.perf_counter()
         images = images.to(device, non_blocking=True)
         au_labels = au_labels.to(device, non_blocking=True)
+        if profile:
+            _sync_if_cuda(device, True)
+            _timing_add(timing_state, 'h2d_s', time.perf_counter() - t_h2d)
+            timing_state['batches'] = timing_state.get('batches', 0) + 1
 
-        # Apply frequency mask (batched on device)
+        # Apply frequency mask in Fourier domain.
+        # images shape is [B, C, H, W]; FFT is applied per sample and per channel on H,W.
+        # FFT values are complex64/complex128 depending on input dtype.
         if mask_t is not None:
+            if profile:
+                _sync_if_cuda(device, True)
+                t_fft = time.perf_counter()
             freq = torch.fft.fftshift(torch.fft.fft2(images, dim=(-2, -1)), dim=(-2, -1))
+            if profile:
+                _sync_if_cuda(device, True)
+                _timing_add(timing_state, 'fft_s', time.perf_counter() - t_fft)
+
+                _sync_if_cuda(device, True)
+                t_mask = time.perf_counter()
+            # Element-wise complex multiplication by a real mask.
+            # Same spatial mask is applied to every channel.
             freq = freq * mask_t
+            if profile:
+                _sync_if_cuda(device, True)
+                _timing_add(timing_state, 'mask_mul_s', time.perf_counter() - t_mask)
+
+                _sync_if_cuda(device, True)
+                t_ifft = time.perf_counter()
+            # Inverse FFT back to spatial domain, then keep only real part.
+            # Output returns to float tensor shape [B, C, H, W].
             images = torch.fft.ifft2(torch.fft.ifftshift(freq, dim=(-2, -1)), dim=(-2, -1)).real.float()
+            if profile:
+                _sync_if_cuda(device, True)
+                _timing_add(timing_state, 'ifft_s', time.perf_counter() - t_ifft)
 
         # Forward pass
+        if profile:
+            _sync_if_cuda(device, True)
+            t_infer = time.perf_counter()
         outputs = model(images)
+        if profile:
+            _sync_if_cuda(device, True)
+            _timing_add(timing_state, 'infer_s', time.perf_counter() - t_infer)
+
+            t_post = time.perf_counter()
         if isinstance(outputs, tuple):
             outputs = outputs[0]  # Take AU head only
 
-        # Binary predictions
+        # Multi-label AU logits -> sigmoid probabilities -> threshold 0.5 per AU.
         preds = (torch.sigmoid(outputs) >= 0.5).float()
 
         all_preds.append(preds.cpu().numpy())
         all_labels.append(au_labels.cpu().numpy())
+
+        if profile:
+            _timing_add(timing_state, 'post_s', time.perf_counter() - t_post)
+            wait_t0 = time.perf_counter()
 
     if not all_preds:
         return 0.0
@@ -305,8 +380,11 @@ def evaluate_mask(model, dataloader, mask_transform, device):
     all_preds = np.concatenate(all_preds, axis=0)
     all_labels = np.concatenate(all_labels, axis=0)
 
-    # Compute macro (per-AU mean) F1 using sklearn on 2D arrays
+    # Macro F1 over 12 AU columns (each AU equally weighted).
+    # all_labels/all_preds shape: [N, 12].
     f1 = f1_score(all_labels, all_preds, average='macro')
+    if profile:
+        _timing_add(timing_state, 'eval_total_s', time.perf_counter() - eval_t0)
     return float(f1)
     # return accuracy
 
@@ -316,7 +394,7 @@ def evaluate_mask(model, dataloader, mask_transform, device):
 # Enable with --per_au_eval flag
 # ============================================================
 @inference_decorator()
-def evaluate_mask_per_au(model, dataloader, mask_transform, baseline_per_au, device):
+def evaluate_mask_per_au(model, dataloader, mask_transform, baseline_per_au, device, timing_state=None):
     """Evaluate per-AU F1 and show drop vs baseline for each AU.
     Returns dict: {AU_label: {'f1': float, 'drop': float}}
     """
@@ -328,23 +406,72 @@ def evaluate_mask_per_au(model, dataloader, mask_transform, baseline_per_au, dev
         mask_np = mask_transform.mask
         if getattr(mask_transform, 'flip', False):
             mask_np = 1 - mask_np
+        # Same broadcast mask convention as evaluate_mask: [1,1,H,W].
         mask_t = torch.as_tensor(mask_np, dtype=torch.float32, device=device).unsqueeze(0).unsqueeze(0)
 
+    profile = timing_state is not None
+    eval_t0 = time.perf_counter() if profile else None
+    if profile:
+        timing_state['calls'] = timing_state.get('calls', 0) + 1
+        wait_t0 = time.perf_counter()
+
     for images, (au_labels, _) in dataloader:
+        if profile:
+            now = time.perf_counter()
+            _timing_add(timing_state, 'data_wait_s', now - wait_t0)
+
+            _sync_if_cuda(device, True)
+            t_h2d = time.perf_counter()
         images = images.to(device, non_blocking=True)
         au_labels = au_labels.to(device, non_blocking=True)
+        if profile:
+            _sync_if_cuda(device, True)
+            _timing_add(timing_state, 'h2d_s', time.perf_counter() - t_h2d)
+            timing_state['batches'] = timing_state.get('batches', 0) + 1
 
         if mask_t is not None:
+            if profile:
+                _sync_if_cuda(device, True)
+                t_fft = time.perf_counter()
             freq = torch.fft.fftshift(torch.fft.fft2(images, dim=(-2, -1)), dim=(-2, -1))
-            freq = freq * mask_t
-            images = torch.fft.ifft2(torch.fft.ifftshift(freq, dim=(-2, -1)), dim=(-2, -1)).real.float()
+            if profile:
+                _sync_if_cuda(device, True)
+                _timing_add(timing_state, 'fft_s', time.perf_counter() - t_fft)
 
+                _sync_if_cuda(device, True)
+                t_mask = time.perf_counter()
+            # Per-channel complex frequency masking.
+            freq = freq * mask_t
+            if profile:
+                _sync_if_cuda(device, True)
+                _timing_add(timing_state, 'mask_mul_s', time.perf_counter() - t_mask)
+
+                _sync_if_cuda(device, True)
+                t_ifft = time.perf_counter()
+            # Keep real part after inverse FFT reconstruction.
+            images = torch.fft.ifft2(torch.fft.ifftshift(freq, dim=(-2, -1)), dim=(-2, -1)).real.float()
+            if profile:
+                _sync_if_cuda(device, True)
+                _timing_add(timing_state, 'ifft_s', time.perf_counter() - t_ifft)
+
+        if profile:
+            _sync_if_cuda(device, True)
+            t_infer = time.perf_counter()
         outputs = model(images)
+        if profile:
+            _sync_if_cuda(device, True)
+            _timing_add(timing_state, 'infer_s', time.perf_counter() - t_infer)
+
+            t_post = time.perf_counter()
         if isinstance(outputs, tuple):
             outputs = outputs[0]
         preds = (torch.sigmoid(outputs) >= 0.5).float()
         all_preds.append(preds.cpu().numpy())
         all_labels.append(au_labels.cpu().numpy())
+
+        if profile:
+            _timing_add(timing_state, 'post_s', time.perf_counter() - t_post)
+            wait_t0 = time.perf_counter()
 
     if not all_preds:
         return {}
@@ -353,12 +480,15 @@ def evaluate_mask_per_au(model, dataloader, mask_transform, baseline_per_au, dev
     all_labels = np.concatenate(all_labels, axis=0)
 
     per_au = {}
+    # Per-AU binary F1 is computed independently for each AU column.
     for i, au in enumerate(AU_LABELS):
         au_f1 = f1_score(all_labels[:, i], all_preds[:, i], average='binary', zero_division=0)
         baseline_entry = baseline_per_au.get(au, 0.0) if baseline_per_au else 0.0
         baseline = baseline_entry.get('f1', 0.0) if isinstance(baseline_entry, dict) else baseline_entry
         drop = baseline - au_f1
         per_au[au] = {'f1': au_f1, 'drop': drop}
+    if profile:
+        _timing_add(timing_state, 'eval_total_s', time.perf_counter() - eval_t0)
     return per_au
 
 
@@ -497,7 +627,7 @@ def visualize_mask_advanced(mask_array, save_path, stage, mask_id, sample_image=
 
     # Panel 2: Ring overlay
     ring_vis = plt.cm.RdYlGn(mask_array)  # green=keep, red=remove
-    ring_contour = axes[1].imshow(ring_vis)
+    axes[1].imshow(ring_vis)
     for r_frac in [0.2, 0.5]:
         circle = plt.Circle((center, center), max_r * r_frac,
                              color='white', fill=False, linewidth=1.5, linestyle='--')
@@ -506,7 +636,6 @@ def visualize_mask_advanced(mask_array, save_path, stage, mask_id, sample_image=
     axes[1].axis('off')
 
     # Panel 3: Frequency band annotation
-    cmap_band = plt.cm.get_cmap('coolwarm', 3)
     masked_band = np.ma.masked_where(mask_array == 0, band.astype(float))
     axes[2].imshow(band, cmap='coolwarm', alpha=0.3, vmin=0, vmax=2)
     axes[2].imshow(masked_band, cmap='coolwarm', vmin=0, vmax=2)
@@ -518,7 +647,6 @@ def visualize_mask_advanced(mask_array, save_path, stage, mask_id, sample_image=
 
     # Panel 4: Masked FFT of sample image (optional)
     if sample_image is not None:
-        import torch.fft as fft_module
         img_t = torch.tensor(sample_image, dtype=torch.float32)
         if img_t.ndim == 3:
             img_t = img_t.mean(0)  # grayscale for FFT vis
@@ -549,8 +677,11 @@ def search_stage(
     objective_mode='macro',
     target_au=None,
     baseline_per_au=None,
+    profile_timing=False,
 ):
     """Search for frequency shortcuts in one stage"""
+    stage_t0 = time.perf_counter()
+    timing_state = {} if profile_timing else None
     objective_label = 'mean F1 (macro)' if objective_mode == 'macro' else f'AU{target_au:02d} F1'
     print(
         f"\n🔍 Stage {stage}: Testing {num_candidates} candidates (P={proportion}) "
@@ -558,44 +689,53 @@ def search_stage(
     )
     
     # Generate candidates
+    gen_t0 = time.perf_counter()
     candidates = generate_mask_candidates(
         num_candidates, proportion, stage, prev_masks, keep_ratio_range
     )
+    gen_dt = time.perf_counter() - gen_t0
     
     # Test baseline objective (no mask), can be precomputed once
     if objective_mode == 'macro':
         if baseline_f1 is None:
-            baseline_f1 = evaluate_mask(model, dataloader, lambda x: x, device)
+            baseline_f1 = evaluate_mask(model, dataloader, lambda x: x, device, timing_state=timing_state)
         baseline_obj = baseline_f1
         print(f"   Baseline mean F1: {baseline_obj*100:.2f}% (mean per-AU)")
     else:
         if target_au is None:
             raise ValueError("target_au must be provided when objective_mode='per_au'")
         if baseline_per_au is None:
-            baseline_per_au = evaluate_mask_per_au(model, dataloader, lambda x: x, {}, device)
+            baseline_per_au = evaluate_mask_per_au(model, dataloader, lambda x: x, {}, device, timing_state=timing_state)
         baseline_obj = float(baseline_per_au.get(target_au, {}).get('f1', 0.0))
         print(f"   Baseline AU{target_au:02d} F1: {baseline_obj*100:.2f}%")
     
-    # Test each candidate (compute mean F1 per candidate)
+    # Evaluate every candidate on the selected objective:
+    # - macro mode: objective is mean F1 across all AUs
+    # - per_au mode: objective is F1 of target AU only
     results = []
     for i, mask_transform in enumerate(tqdm(candidates, desc=f"   Testing masks")):
         if objective_mode == 'macro':
-            f1 = evaluate_mask(model, dataloader, mask_transform, device)
+            f1 = evaluate_mask(model, dataloader, mask_transform, device, timing_state=timing_state)
         else:
-            per_au = evaluate_mask_per_au(model, dataloader, mask_transform, baseline_per_au, device)
+            per_au = evaluate_mask_per_au(
+                model, dataloader, mask_transform, baseline_per_au, device, timing_state=timing_state
+            )
             f1 = float(per_au.get(target_au, {}).get('f1', 0.0))
         drop = baseline_obj - f1
         white_count = int(getattr(mask_transform, 'white_count', np.sum(mask_transform.mask > 0.5)))
         keep_pct = float(getattr(mask_transform, 'keep_pct', np.mean(mask_transform.mask > 0.5)))
         results.append((i, f1, drop, white_count, keep_pct, mask_transform))
     
-    # Sort all candidates by masked F1 (largest first) to align with HFSS paper
+    # "Best mask" is defined as the candidate with highest objective F1.
+    # Sorting descending by objective F1 establishes ranking.
     results.sort(key=lambda x: x[1], reverse=True)
     top_k = results[:top_n]
 
     best_f1 = results[0][1] if results else 0.0
     best_drop_pct = (baseline_obj - best_f1) * 100.0
 
+    # "Smallest mask within tolerance" means:
+    # drop <= tolerance, then minimize white pixel count (most compact mask).
     viable = [r for r in results if (baseline_obj - r[1]) * 100.0 <= f1_tolerance_pct]
     smallest_viable = min(viable, key=lambda x: x[3]) if viable else None
 
@@ -620,7 +760,7 @@ def search_stage(
     else:
         print(f"   No mask is within {f1_tolerance_pct:.1f}% of baseline.")
 
-    # Return top masks for next stage refinement
+    # top_k masks are passed to next stage as parent candidates.
     summary = {
         'baseline_f1': baseline_obj,
         'best_f1': best_f1,
@@ -628,6 +768,30 @@ def search_stage(
         'smallest_viable': smallest_viable,
         'objective': objective_label,
     }
+
+    if profile_timing and timing_state is not None:
+        stage_total = time.perf_counter() - stage_t0
+        eval_total = timing_state.get('eval_total_s', 0.0)
+        calls = int(timing_state.get('calls', 0))
+        batches = int(timing_state.get('batches', 0))
+        print(f"\n   ⏱ Timing summary ({stage}, objective={objective_label}):")
+        print(
+            f"     stage_total={stage_total:.2f}s | mask_generation={gen_dt:.2f}s | "
+            f"eval_total={eval_total:.2f}s | eval_calls={calls} | eval_batches={batches}"
+        )
+        for key, label in [
+            ('data_wait_s', 'data_wait'),
+            ('h2d_s', 'h2d_transfer'),
+            ('fft_s', 'fft'),
+            ('mask_mul_s', 'mask_apply'),
+            ('ifft_s', 'ifft'),
+            ('infer_s', 'model_infer'),
+            ('post_s', 'postprocess'),
+        ]:
+            val = timing_state.get(key, 0.0)
+            pct = (val / eval_total * 100.0) if eval_total > 0 else 0.0
+            print(f"     - {label:<13}: {val:8.2f}s ({pct:5.1f}%)")
+
     return [r[5] for r in top_k], results, summary
 
 
@@ -659,7 +823,7 @@ def main():
         help='Tolerance for smallest-mask tracking (within X%% drop from baseline)',
     )
     parser.add_argument('--num_samples', type=int, default=500, help='Number of training samples to use')
-    parser.add_argument('--batch_size', type=int, default=16)
+    parser.add_argument('--batch_size', type=int, default=24)
     parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--output_dir', default='hfss/DFM')
@@ -677,6 +841,8 @@ def main():
                         help='Reuse existing stage PKLs and skip recomputing those stages')
     parser.add_argument('--bootstrap_from_macro_stage1', action='store_true',
                         help='For per-AU runs starting at stage2+, initialize parents from macro stage1 PKL')
+    parser.add_argument('--profile_timing', action='store_true',
+                        help='Print detailed timing breakdown for data/FFT/mask/inference during stage search')
     args = parser.parse_args()
     keep_ranges = parse_keep_ranges(args.keep_ranges)
     args.target_au = validate_target_au(args.target_au)
@@ -705,7 +871,8 @@ def main():
         # Load model
         model = load_model(args.model_path, args.model_type, args.device)
         
-        # Load TEST data (not training)
+        # Load TEST split used for search/evaluation.
+        # DataLoader yields images shaped [B, C, H, W] with H=W=224.
         dataset_args = SimpleNamespace(
             root_path=args.data_root,
             input_size=IMG_SIZE,
@@ -717,7 +884,7 @@ def main():
         )
         dataset = BP4D_AU_dataset(args.test_json, is_train=False, args=dataset_args)
         
-        # Sample subset
+        # Optional random subset if num_samples < dataset size.
         if args.num_samples and args.num_samples < len(dataset):
             indices = np.random.choice(len(dataset), args.num_samples, replace=False)
             dataset = Subset(dataset, indices)
@@ -733,7 +900,8 @@ def main():
         )
         print(f"✓ Loaded {len(dataset)} TEST samples (evaluating on unseen data)")
 
-        # Cache baseline computations once (shared across stages)
+        # Baseline (no mask) computed once on the same evaluation dataset.
+        # This is the reference for reporting drops.
         baseline_f1_global = evaluate_mask(model, dataloader, lambda x: x, args.device)
         baseline_per_au_full = None
         if args.per_au_eval or args.per_au_search:
@@ -741,7 +909,9 @@ def main():
                 model, dataloader, lambda x: x, {}, args.device
             )
 
-        # Run hierarchical search (default macro once, or per-AU objective mode)
+        # Run hierarchical search:
+        # - macro mode runs once
+        # - per-AU mode loops targets, each AU gets its own search trajectory
         all_results = {}
         if args.per_au_search:
             target_aus = [args.target_au] if args.target_au is not None else list(AU_LABELS)
@@ -763,7 +933,7 @@ def main():
             print(f"Search target: {target_name}")
             print(f"{'='*50}")
 
-            # Optional bootstrap: reuse global (macro) stage1 masks as parents for per-AU stage2+ runs
+            # Optional bootstrap: per-AU stage2+ can start from macro stage1 masks.
             if (
                 args.per_au_search
                 and args.bootstrap_from_macro_stage1
@@ -819,6 +989,7 @@ def main():
                         objective_mode='per_au' if target_au is not None else 'macro',
                         target_au=target_au,
                         baseline_per_au=baseline_per_au_full,
+                        profile_timing=args.profile_timing,
                     )
 
                     # Save stage results
@@ -853,7 +1024,8 @@ def main():
                     visualize_mask_advanced(best_mask_array, vis_path, stage, 'best')
                     print(f"   🖼  Advanced mask visualization saved to {vis_path}")
 
-                # Use top-N masks for next stage (hierarchical refinement)
+                # Stage transition: next stage samples only inside these top-N masks
+                # (via parent restriction in generate_mask_candidates).
                 prev_masks = [m.mask for m in top_masks if hasattr(m, 'mask')]
                 all_results[target_name][stage] = stage_results
 
