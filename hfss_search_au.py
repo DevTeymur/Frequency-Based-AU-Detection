@@ -7,6 +7,7 @@ import sys
 import pickle
 import argparse
 import time
+import random
 import numpy as np
 from pathlib import Path
 from datetime import datetime
@@ -117,6 +118,20 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
     
     print(f"✓ Loaded {model_type} model")
     return model
+
+
+def set_global_seed(seed, device='cuda'):
+    """Set RNG seeds for reproducible mask sampling and subset selection."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if str(device).startswith('cuda') and torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+    # Best-effort deterministic behavior for reproducible evaluation runs.
+    if hasattr(torch, 'backends') and hasattr(torch.backends, 'cudnn'):
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
 
 def generate_mask_candidates(num_candidates, proportion, stage, prev_masks=None, keep_ratio_range=None):
@@ -678,6 +693,7 @@ def search_stage(
     target_au=None,
     baseline_per_au=None,
     profile_timing=False,
+    precomputed_candidates=None,
 ):
     """Search for frequency shortcuts in one stage"""
     stage_t0 = time.perf_counter()
@@ -688,12 +704,16 @@ def search_stage(
         f"| objective={objective_label}"
     )
     
-    # Generate candidates
-    gen_t0 = time.perf_counter()
-    candidates = generate_mask_candidates(
-        num_candidates, proportion, stage, prev_masks, keep_ratio_range
-    )
-    gen_dt = time.perf_counter() - gen_t0
+    # Generate candidates (or reuse provided candidates)
+    if precomputed_candidates is None:
+        gen_t0 = time.perf_counter()
+        candidates = generate_mask_candidates(
+            num_candidates, proportion, stage, prev_masks, keep_ratio_range
+        )
+        gen_dt = time.perf_counter() - gen_t0
+    else:
+        candidates = precomputed_candidates
+        gen_dt = 0.0
     
     # Test baseline objective (no mask), can be precomputed once
     if objective_mode == 'macro':
@@ -843,9 +863,14 @@ def main():
                         help='For per-AU runs starting at stage2+, initialize parents from macro stage1 PKL')
     parser.add_argument('--profile_timing', action='store_true',
                         help='Print detailed timing breakdown for data/FFT/mask/inference during stage search')
+    parser.add_argument('--seed', type=int, default=42,
+                        help='Global random seed for reproducible runs')
     args = parser.parse_args()
     keep_ranges = parse_keep_ranges(args.keep_ranges)
     args.target_au = validate_target_au(args.target_au)
+
+    # Reproducibility: controls numpy/random/torch sampling in this run.
+    set_global_seed(args.seed, args.device)
     
     # Setup
     output_dir = Path(args.output_dir)
@@ -865,6 +890,7 @@ def main():
         print("="*70)
         print(f"HFSS Search for AU Detection - {args.model_type}")
         print(f"Model: {args.model_path} | Device: {args.device}")
+        print(f"Seed: {args.seed}")
         print(f"Log file: {log_file_path}")
         print("="*70)
         
@@ -918,6 +944,11 @@ def main():
             print(f"\n🎯 Per-AU search mode ON | targets: {target_aus}")
         else:
             target_aus = [None]
+
+        # Shared candidate cache: in per-AU search, each stage's candidate list is
+        # generated once (for the first AU encounter) and then reused for all AUs.
+        # Structure: stage_masks[stage] = list_of_masks
+        stage_masks = {}
 
         for target_au in target_aus:
             prev_masks = None
@@ -979,6 +1010,19 @@ def main():
                         reused_stage = False
 
                 if not reused_stage:
+                    shared_candidates = None
+                    if args.per_au_search:
+                        shared_candidates = stage_masks.get(stage)
+                        if shared_candidates is None:
+                            shared_candidates = generate_mask_candidates(
+                                args.num_candidates,
+                                args.proportion,
+                                stage,
+                                prev_masks,
+                                stage_keep,
+                            )
+                            stage_masks[stage] = shared_candidates
+
                     top_masks, stage_results, stage_summary = search_stage(
                         model, dataloader, stage,
                         args.num_candidates, args.proportion,
@@ -990,6 +1034,7 @@ def main():
                         target_au=target_au,
                         baseline_per_au=baseline_per_au_full,
                         profile_timing=args.profile_timing,
+                        precomputed_candidates=shared_candidates,
                     )
 
                     # Save stage results
@@ -1107,4 +1152,19 @@ Notes:
 - Logs are saved automatically under: hfss/logs/
 - Per-AU search outputs are separated by target under: hfss/DFM/AUxx/ and hfss/figures/AUxx/
 - Use --reuse_saved_stages to skip recomputing stages if matching PKLs already exist.
+
+python3 hfss_search_au.py \
+  --model_type FMAE \
+  --model_path models/FMAE_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json \
+  --data_root BP4D/BP4D_cropped/ \
+  --per_au_search \
+  --target_au 12 \
+  --stages stage3 stage4 stage5 \
+  --reuse_saved_stages \
+  --num_samples 999999 \
+  --num_candidates 30 \
+  --top_n 10 \
+  --device cuda \
+  --output_dir hfss/DFM
 '''
