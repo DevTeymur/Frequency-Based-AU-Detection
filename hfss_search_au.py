@@ -53,6 +53,19 @@ DEFAULT_KEEP_RANGES = {
     'stage6': (0.03, 0.10),
 }
 
+# Fixed runtime defaults (kept out of CLI to reduce argument noise).
+FIXED_DATA_ROOT = 'BP4D/BP4D_cropped/'
+FIXED_TOP_N = 10
+FIXED_PROPORTION = 0.8
+FIXED_STOP_DROP_PCT = 5.0
+FIXED_F1_TOLERANCE_PCT = 1.0
+FIXED_BATCH_SIZE = 24
+FIXED_NUM_WORKERS = 4
+FIXED_DEVICE = 'cuda'
+FIXED_SEED = 42
+FIXED_RADIAL_STEPS = 5
+FIXED_RADIAL_START_KEEP_PCT = 50.0
+
 
 class TeeStream:
     """Write stream output to multiple targets (terminal + log file)."""
@@ -815,39 +828,345 @@ def search_stage(
     return [r[5] for r in top_k], results, summary
 
 
+def build_eval_dataloader(test_json, data_root, num_samples, batch_size, num_workers, device):
+    """Shared data loading path used by random and radial search modes."""
+    dataset_args = SimpleNamespace(
+        root_path=data_root,
+        input_size=IMG_SIZE,
+        color_jitter=None,
+        aa='rand-m9-mstd0.5-inc1',
+        reprob=0.25,
+        remode='pixel',
+        recount=1,
+    )
+    dataset = BP4D_AU_dataset(test_json, is_train=False, args=dataset_args)
+    if num_samples and num_samples < len(dataset):
+        indices = np.random.choice(len(dataset), num_samples, replace=False)
+        dataset = Subset(dataset, indices)
+
+    pin_mem = str(device).startswith('cuda')
+    dataloader = DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=pin_mem,
+        persistent_workers=(num_workers > 0),
+    )
+    return dataset, dataloader
+
+
+def generate_radial_mask_candidates(num_steps, mode='low-pass', start_keep_pct=100.0):
+    """Create deterministic radial mask candidates wrapped as White_Mask objects."""
+    if num_steps < 2:
+        num_steps = 2
+
+    h = IMG_SIZE
+    w = IMG_SIZE
+    cy, cx = h // 2, w // 2
+    ys, xs = np.ogrid[:h, :w]
+    dist = np.sqrt((xs - cx) ** 2 + (ys - cy) ** 2)
+
+    max_radius = float(dist.max())
+    if mode == 'low-pass':
+        start_keep_pct = float(np.clip(start_keep_pct, 0.1, 100.0))
+        end_keep_pct = max(start_keep_pct / float(num_steps), 0.1)
+        target_keep_pcts = np.linspace(start_keep_pct, end_keep_pct, num_steps)
+        radii = [float(np.quantile(dist, kp / 100.0)) for kp in target_keep_pcts]
+    else:
+        max_remove_radius = min(h, w) / 2.0
+        radii = np.linspace(max_remove_radius, 0.0, num_steps)
+
+    masks = []
+    for idx, r in enumerate(radii):
+        if mode == 'low-pass':
+            mask = (dist <= r).astype(np.float32)
+        else:
+            mask = (dist >= r).astype(np.float32)
+        wm = White_Mask(mask)
+        wm.white_count = int(np.sum(mask > 0.5))
+        wm.keep_pct = float(np.mean(mask > 0.5))
+        if mode == 'low-pass':
+            wm.target_keep_pct = float(target_keep_pcts[idx])
+        masks.append(wm)
+    return masks
+
+
+def run_random_hfss_search(
+    args,
+    model,
+    dataloader,
+    output_dir,
+    figures_dir,
+    baseline_f1_global,
+    baseline_per_au_full,
+    keep_ranges,
+):
+    """Current hierarchical random-mask HFSS search (preserved logic)."""
+    all_results = {}
+    if args.per_au_search:
+        target_aus = [args.target_au] if args.target_au is not None else list(AU_LABELS)
+        print(f"\n🎯 Per-AU search mode ON | targets: {target_aus}")
+    else:
+        target_aus = [None]
+
+    # Shared candidate cache: in per-AU search, each stage's candidate list is
+    # generated once (for the first AU encounter) and then reused for all AUs.
+    stage_masks = {}
+
+    for target_au in target_aus:
+        prev_masks = None
+        per_au_drop_by_stage = {}
+        target_suffix = f"_AU{target_au:02d}" if target_au is not None else ""
+        target_name = f"AU{target_au:02d}" if target_au is not None else "macro"
+        target_output_dir = output_dir / target_name if target_au is not None else output_dir
+        target_figures_dir = figures_dir / target_name if target_au is not None else figures_dir
+        target_output_dir.mkdir(parents=True, exist_ok=True)
+        target_figures_dir.mkdir(parents=True, exist_ok=True)
+
+        print(f"\n{'='*50}")
+        print(f"Search target: {target_name}")
+        print(f"{'='*50}")
+
+        # Optional bootstrap: per-AU stage2+ can start from macro stage1 masks.
+        if (
+            args.per_au_search
+            and args.bootstrap_from_macro_stage1
+            and target_au is not None
+            and 'stage1' not in args.stages
+            and prev_masks is None
+        ):
+            macro_stage1_file = output_dir / f"{args.model_type}_stage1_DFMs.pkl"
+            if macro_stage1_file.exists():
+                try:
+                    boot_masks = load_masks_from_pkl(macro_stage1_file)
+                    prev_masks = [m.mask for m in boot_masks if hasattr(m, 'mask')]
+                    print(
+                        f"   ↪ Bootstrapped parents from macro stage1: {macro_stage1_file} "
+                        f"(count={len(prev_masks)})"
+                    )
+                except Exception as e:
+                    print(f"   ⚠ Failed to bootstrap from {macro_stage1_file}: {e}")
+            else:
+                print(f"   ⚠ Macro stage1 PKL not found for bootstrap: {macro_stage1_file}")
+
+        all_results[target_name] = {}
+
+        for stage in args.stages:
+            stage_keep = keep_ranges.get(stage, DEFAULT_KEEP_RANGES.get(stage, (0.2, 0.4)))
+            print(
+                f"   Keep-ratio target for {stage}: "
+                f"{stage_keep[0]*100:.1f}% - {stage_keep[1]*100:.1f}%"
+            )
+
+            output_file = target_output_dir / f"{args.model_type}_{stage}{target_suffix}_DFMs.pkl"
+            reused_stage = False
+
+            if args.reuse_saved_stages and output_file.exists():
+                try:
+                    top_masks = load_masks_from_pkl(output_file)
+                    stage_results = []
+                    stage_summary = None
+                    reused_stage = True
+                    print(f"   ♻ Reusing saved stage masks from {output_file} (count={len(top_masks)})")
+                except Exception as e:
+                    print(f"   ⚠ Failed to reuse {output_file}: {e}")
+                    reused_stage = False
+
+            if not reused_stage:
+                shared_candidates = None
+                if args.per_au_search:
+                    shared_candidates = stage_masks.get(stage)
+                    if shared_candidates is None:
+                        shared_candidates = generate_mask_candidates(
+                            args.num_candidates,
+                            FIXED_PROPORTION,
+                            stage,
+                            prev_masks,
+                            stage_keep,
+                        )
+                        stage_masks[stage] = shared_candidates
+
+                top_masks, stage_results, stage_summary = search_stage(
+                    model, dataloader, stage,
+                    args.num_candidates, FIXED_PROPORTION,
+                    prev_masks, FIXED_DEVICE, FIXED_TOP_N,
+                    keep_ratio_range=stage_keep,
+                    f1_tolerance_pct=FIXED_F1_TOLERANCE_PCT,
+                    baseline_f1=baseline_f1_global,
+                    objective_mode='per_au' if target_au is not None else 'macro',
+                    target_au=target_au,
+                    baseline_per_au=baseline_per_au_full,
+                    profile_timing=args.profile_timing,
+                    precomputed_candidates=shared_candidates,
+                )
+
+                with open(output_file, 'wb') as f:
+                    pickle.dump(top_masks, f)
+                print(f"   ✓ Saved DFMs to {output_file}")
+
+            best_mask = top_masks[0]
+            best_mask_array = best_mask.mask if hasattr(best_mask, 'mask') else None
+
+            if args.per_au_eval and best_mask_array is not None:
+                print(f"\n   🔬 Per-AU eval for best mask ({stage})...")
+                best_per_au = evaluate_mask_per_au(
+                    model, dataloader, best_mask, baseline_per_au_full, FIXED_DEVICE)
+                print_per_au_results(best_per_au, stage, 'best')
+
+                save_per_au_grouped_bar(
+                    baseline_per_au=baseline_per_au_full,
+                    masked_per_au=best_per_au,
+                    stage=stage,
+                    model_type=f"{args.model_type}{target_suffix}",
+                    save_dir=target_figures_dir,
+                )
+                per_au_drop_by_stage[stage] = {
+                    au: vals.get('drop', 0.0) for au, vals in best_per_au.items()
+                }
+
+            if args.visualize_masks and best_mask_array is not None:
+                vis_path = target_figures_dir / f"{args.model_type}_{stage}{target_suffix}_best_mask_advanced.png"
+                visualize_mask_advanced(best_mask_array, vis_path, stage, 'best')
+                print(f"   🖼  Advanced mask visualization saved to {vis_path}")
+
+            prev_masks = [m.mask for m in top_masks if hasattr(m, 'mask')]
+            all_results[target_name][stage] = stage_results
+
+            if (stage_summary is not None) and (stage_summary['best_drop_pct'] > FIXED_STOP_DROP_PCT):
+                print(
+                    f"   ⛔ Early stop: best drop {stage_summary['best_drop_pct']:.2f}% "
+                    f"> stop threshold {FIXED_STOP_DROP_PCT:.2f}%"
+                )
+                break
+
+        if args.per_au_eval and per_au_drop_by_stage:
+            save_per_au_stage_heatmap(
+                per_au_drop_by_stage=per_au_drop_by_stage,
+                model_type=f"{args.model_type}{target_suffix}",
+                save_dir=target_figures_dir,
+            )
+
+    return all_results
+
+
+def run_radial_hfss_search(
+    args,
+    model,
+    dataloader,
+    output_dir,
+    figures_dir,
+    baseline_f1_global,
+    baseline_per_au_full,
+):
+    """Deterministic radial-mask HFSS search using the same AU evaluation stack.
+
+    The stage list controls circle size progression:
+    first stage = biggest circle, later stages = smaller circles.
+    """
+    print("\n🧭 Radial HFSS mode ON (deterministic masks)")
+    radial_mode = 'low-pass'
+    stage_masks = generate_radial_mask_candidates(
+        FIXED_RADIAL_STEPS,
+        mode=radial_mode,
+        start_keep_pct=FIXED_RADIAL_START_KEEP_PCT,
+    )
+    all_results = {}
+
+    if args.per_au_search:
+        target_aus = [args.target_au] if args.target_au is not None else list(AU_LABELS)
+    else:
+        target_aus = [None]
+
+    for target_au in target_aus:
+        target_suffix = f"_AU{target_au:02d}" if target_au is not None else ""
+        target_name = f"AU{target_au:02d}" if target_au is not None else "macro"
+        target_output_dir = output_dir / target_name if target_au is not None else output_dir
+        target_figures_dir = figures_dir / target_name if target_au is not None else figures_dir
+        target_output_dir.mkdir(parents=True, exist_ok=True)
+        target_figures_dir.mkdir(parents=True, exist_ok=True)
+
+        print(f"\n{'='*50}")
+        print(f"Search target: {target_name}")
+        print(f"{'='*50}")
+
+        all_results[target_name] = {}
+        prev_masks = None
+        radial_stage_names = [f"radial_step_{i + 1:02d}" for i in range(len(stage_masks))]
+
+        for stage_index, stage_name in enumerate(radial_stage_names):
+            stage_mask = stage_masks[min(stage_index, len(stage_masks) - 1)]
+            print(
+                f"   Radial stage {stage_index + 1}/{len(radial_stage_names)} ({stage_name}): "
+                f"keep={stage_mask.keep_pct*100:.1f}% "
+                f"| white={stage_mask.white_count}"
+            )
+
+            top_masks, stage_results, stage_summary = search_stage(
+                model=model,
+                dataloader=dataloader,
+                stage=stage_name,
+                num_candidates=1,
+                proportion=FIXED_PROPORTION,
+                prev_masks=prev_masks,
+                device=FIXED_DEVICE,
+                top_n=1,
+                keep_ratio_range=None,
+                f1_tolerance_pct=FIXED_F1_TOLERANCE_PCT,
+                baseline_f1=baseline_f1_global,
+                objective_mode='per_au' if target_au is not None else 'macro',
+                target_au=target_au,
+                baseline_per_au=baseline_per_au_full,
+                profile_timing=args.profile_timing,
+                precomputed_candidates=[stage_mask],
+            )
+
+            output_file = target_output_dir / f"{args.model_type}_{stage_name}{target_suffix}_DFMs.pkl"
+            with open(output_file, 'wb') as f:
+                pickle.dump(top_masks, f)
+            print(f"   ✓ Saved radial DFMs to {output_file}")
+
+            best_mask = top_masks[0] if top_masks else None
+            if args.per_au_eval and best_mask is not None:
+                best_per_au = evaluate_mask_per_au(
+                    model, dataloader, best_mask, baseline_per_au_full, FIXED_DEVICE)
+                print_per_au_results(best_per_au, stage_name, 'best')
+                save_per_au_grouped_bar(
+                    baseline_per_au=baseline_per_au_full,
+                    masked_per_au=best_per_au,
+                    stage=stage_name,
+                    model_type=f"{args.model_type}{target_suffix}",
+                    save_dir=target_figures_dir,
+                )
+
+            if args.visualize_masks and best_mask is not None and hasattr(best_mask, 'mask'):
+                vis_path = target_figures_dir / f"{args.model_type}_{stage_name}{target_suffix}_best_mask_advanced.png"
+                visualize_mask_advanced(best_mask.mask, vis_path, stage_name, 'best')
+                print(f"   🖼  Advanced mask visualization saved to {vis_path}")
+
+            prev_masks = [m.mask for m in top_masks if hasattr(m, 'mask')]
+            all_results[target_name][stage_name] = {
+                'rows': stage_results,
+                'summary': stage_summary,
+            }
+
+            # Radial mode tracks the full F1-vs-keep-ratio curve intentionally;
+            # early stopping would abort at step 1 (tiny circle → big F1 drop).
+
+    return all_results
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_type', default='FMAE', choices=['FMAE', 'IAT'])
     parser.add_argument('--model_path', default='models/FMAE_BP4D_fold1.pth')
     parser.add_argument('--test_json', default='BP4D/BP4D_test1.json')
-    parser.add_argument('--data_root', default='BP4D/BP4D_cropped/')
     parser.add_argument('--num_candidates', type=int, default=200)
-    parser.add_argument('--top_n', type=int, default=10,
-                        help='Number of top masks to keep and propagate to next stage')
-    parser.add_argument('--proportion', type=float, default=0.8)
-    parser.add_argument(
-        '--keep_ranges',
-        default='stage1:0.6-0.8,stage2:0.4-0.6,stage3:0.2-0.4,stage4:0.15-0.3,stage5:0.08-0.2,stage6:0.03-0.1',
-        help='Stage keep-ratio ranges: stage1:0.6-0.8,stage2:0.4-0.6,...',
-    )
-    parser.add_argument(
-        '--stop_drop_pct',
-        type=float,
-        default=5.0,
-        help='Stop refinement if best F1 drops more than this percentage from baseline',
-    )
-    parser.add_argument(
-        '--f1_tolerance_pct',
-        type=float,
-        default=1.0,
-        help='Tolerance for smallest-mask tracking (within X%% drop from baseline)',
-    )
     parser.add_argument('--num_samples', type=int, default=500, help='Number of training samples to use')
-    parser.add_argument('--batch_size', type=int, default=24)
-    parser.add_argument('--num_workers', type=int, default=4)
-    parser.add_argument('--device', default='cuda')
     parser.add_argument('--output_dir', default='hfss/DFM')
     parser.add_argument('--stages', nargs='+', default=['stage1', 'stage2', 'stage3'])
+    parser.add_argument('--search_mode', default='random', choices=['random', 'radial'],
+                        help='Mask search mode: random (current HFSS) or radial (deterministic)')
     # --- Optional feature flags (disable by omitting the flag) ---
     parser.add_argument('--per_au_eval', action='store_true',
                         help='After search, evaluate per-AU F1 drops for the best mask per stage')
@@ -863,10 +1182,20 @@ def main():
                         help='For per-AU runs starting at stage2+, initialize parents from macro stage1 PKL')
     parser.add_argument('--profile_timing', action='store_true',
                         help='Print detailed timing breakdown for data/FFT/mask/inference during stage search')
-    parser.add_argument('--seed', type=int, default=42,
-                        help='Global random seed for reproducible runs')
     args = parser.parse_args()
-    keep_ranges = parse_keep_ranges(args.keep_ranges)
+
+    # Fixed runtime knobs (removed from CLI, values unchanged from previous defaults).
+    args.data_root = FIXED_DATA_ROOT
+    args.top_n = FIXED_TOP_N
+    args.proportion = FIXED_PROPORTION
+    args.stop_drop_pct = FIXED_STOP_DROP_PCT
+    args.f1_tolerance_pct = FIXED_F1_TOLERANCE_PCT
+    args.batch_size = FIXED_BATCH_SIZE
+    args.num_workers = FIXED_NUM_WORKERS
+    args.device = FIXED_DEVICE
+    args.seed = FIXED_SEED
+
+    keep_ranges = dict(DEFAULT_KEEP_RANGES)
     args.target_au = validate_target_au(args.target_au)
 
     # Reproducibility: controls numpy/random/torch sampling in this run.
@@ -896,33 +1225,13 @@ def main():
         
         # Load model
         model = load_model(args.model_path, args.model_type, args.device)
-        
-        # Load TEST split used for search/evaluation.
-        # DataLoader yields images shaped [B, C, H, W] with H=W=224.
-        dataset_args = SimpleNamespace(
-            root_path=args.data_root,
-            input_size=IMG_SIZE,
-            color_jitter=None,
-            aa='rand-m9-mstd0.5-inc1',
-            reprob=0.25,
-            remode='pixel',
-            recount=1
-        )
-        dataset = BP4D_AU_dataset(args.test_json, is_train=False, args=dataset_args)
-        
-        # Optional random subset if num_samples < dataset size.
-        if args.num_samples and args.num_samples < len(dataset):
-            indices = np.random.choice(len(dataset), args.num_samples, replace=False)
-            dataset = Subset(dataset, indices)
-        
-        pin_mem = str(args.device).startswith('cuda')
-        dataloader = DataLoader(
-            dataset,
+        dataset, dataloader = build_eval_dataloader(
+            test_json=args.test_json,
+            data_root=args.data_root,
+            num_samples=args.num_samples,
             batch_size=args.batch_size,
-            shuffle=False,
             num_workers=args.num_workers,
-            pin_memory=pin_mem,
-            persistent_workers=(args.num_workers > 0),
+            device=args.device,
         )
         print(f"✓ Loaded {len(dataset)} TEST samples (evaluating on unseen data)")
 
@@ -935,159 +1244,27 @@ def main():
                 model, dataloader, lambda x: x, {}, args.device
             )
 
-        # Run hierarchical search:
-        # - macro mode runs once
-        # - per-AU mode loops targets, each AU gets its own search trajectory
-        all_results = {}
-        if args.per_au_search:
-            target_aus = [args.target_au] if args.target_au is not None else list(AU_LABELS)
-            print(f"\n🎯 Per-AU search mode ON | targets: {target_aus}")
+        if args.search_mode == 'random':
+            all_results = run_random_hfss_search(
+                args=args,
+                model=model,
+                dataloader=dataloader,
+                output_dir=output_dir,
+                figures_dir=figures_dir,
+                baseline_f1_global=baseline_f1_global,
+                baseline_per_au_full=baseline_per_au_full,
+                keep_ranges=keep_ranges,
+            )
         else:
-            target_aus = [None]
-
-        # Shared candidate cache: in per-AU search, each stage's candidate list is
-        # generated once (for the first AU encounter) and then reused for all AUs.
-        # Structure: stage_masks[stage] = list_of_masks
-        stage_masks = {}
-
-        for target_au in target_aus:
-            prev_masks = None
-            per_au_drop_by_stage = {}
-            target_suffix = f"_AU{target_au:02d}" if target_au is not None else ""
-            target_name = f"AU{target_au:02d}" if target_au is not None else "macro"
-            target_output_dir = output_dir / target_name if target_au is not None else output_dir
-            target_figures_dir = figures_dir / target_name if target_au is not None else figures_dir
-            target_output_dir.mkdir(parents=True, exist_ok=True)
-            target_figures_dir.mkdir(parents=True, exist_ok=True)
-
-            print(f"\n{'='*50}")
-            print(f"Search target: {target_name}")
-            print(f"{'='*50}")
-
-            # Optional bootstrap: per-AU stage2+ can start from macro stage1 masks.
-            if (
-                args.per_au_search
-                and args.bootstrap_from_macro_stage1
-                and target_au is not None
-                and 'stage1' not in args.stages
-                and prev_masks is None
-            ):
-                macro_stage1_file = output_dir / f"{args.model_type}_stage1_DFMs.pkl"
-                if macro_stage1_file.exists():
-                    try:
-                        boot_masks = load_masks_from_pkl(macro_stage1_file)
-                        prev_masks = [m.mask for m in boot_masks if hasattr(m, 'mask')]
-                        print(
-                            f"   ↪ Bootstrapped parents from macro stage1: {macro_stage1_file} "
-                            f"(count={len(prev_masks)})"
-                        )
-                    except Exception as e:
-                        print(f"   ⚠ Failed to bootstrap from {macro_stage1_file}: {e}")
-                else:
-                    print(f"   ⚠ Macro stage1 PKL not found for bootstrap: {macro_stage1_file}")
-
-            all_results[target_name] = {}
-
-            for stage in args.stages:
-                stage_keep = keep_ranges.get(stage, DEFAULT_KEEP_RANGES.get(stage, (0.2, 0.4)))
-                print(
-                    f"   Keep-ratio target for {stage}: "
-                    f"{stage_keep[0]*100:.1f}% - {stage_keep[1]*100:.1f}%"
-                )
-
-                output_file = target_output_dir / f"{args.model_type}_{stage}{target_suffix}_DFMs.pkl"
-                reused_stage = False
-
-                if args.reuse_saved_stages and output_file.exists():
-                    try:
-                        top_masks = load_masks_from_pkl(output_file)
-                        stage_results = []
-                        stage_summary = None
-                        reused_stage = True
-                        print(f"   ♻ Reusing saved stage masks from {output_file} (count={len(top_masks)})")
-                    except Exception as e:
-                        print(f"   ⚠ Failed to reuse {output_file}: {e}")
-                        reused_stage = False
-
-                if not reused_stage:
-                    shared_candidates = None
-                    if args.per_au_search:
-                        shared_candidates = stage_masks.get(stage)
-                        if shared_candidates is None:
-                            shared_candidates = generate_mask_candidates(
-                                args.num_candidates,
-                                args.proportion,
-                                stage,
-                                prev_masks,
-                                stage_keep,
-                            )
-                            stage_masks[stage] = shared_candidates
-
-                    top_masks, stage_results, stage_summary = search_stage(
-                        model, dataloader, stage,
-                        args.num_candidates, args.proportion,
-                        prev_masks, args.device, args.top_n,
-                        keep_ratio_range=stage_keep,
-                        f1_tolerance_pct=args.f1_tolerance_pct,
-                        baseline_f1=baseline_f1_global,
-                        objective_mode='per_au' if target_au is not None else 'macro',
-                        target_au=target_au,
-                        baseline_per_au=baseline_per_au_full,
-                        profile_timing=args.profile_timing,
-                        precomputed_candidates=shared_candidates,
-                    )
-
-                    # Save stage results
-                    with open(output_file, 'wb') as f:
-                        pickle.dump(top_masks, f)
-                    print(f"   ✓ Saved DFMs to {output_file}")
-
-                best_mask = top_masks[0]
-                best_mask_array = best_mask.mask if hasattr(best_mask, 'mask') else None
-
-                # --- OPTIONAL: per-AU F1 eval for the best mask ---
-                if args.per_au_eval and best_mask_array is not None:
-                    print(f"\n   🔬 Per-AU eval for best mask ({stage})...")
-                    best_per_au = evaluate_mask_per_au(
-                        model, dataloader, best_mask, baseline_per_au_full, args.device)
-                    print_per_au_results(best_per_au, stage, 'best')
-
-                    save_per_au_grouped_bar(
-                        baseline_per_au=baseline_per_au_full,
-                        masked_per_au=best_per_au,
-                        stage=stage,
-                        model_type=f"{args.model_type}{target_suffix}",
-                        save_dir=target_figures_dir,
-                    )
-                    per_au_drop_by_stage[stage] = {
-                        au: vals.get('drop', 0.0) for au, vals in best_per_au.items()
-                    }
-
-                # --- OPTIONAL: advanced mask visualization for the best mask ---
-                if args.visualize_masks and best_mask_array is not None:
-                    vis_path = target_figures_dir / f"{args.model_type}_{stage}{target_suffix}_best_mask_advanced.png"
-                    visualize_mask_advanced(best_mask_array, vis_path, stage, 'best')
-                    print(f"   🖼  Advanced mask visualization saved to {vis_path}")
-
-                # Stage transition: next stage samples only inside these top-N masks
-                # (via parent restriction in generate_mask_candidates).
-                prev_masks = [m.mask for m in top_masks if hasattr(m, 'mask')]
-                all_results[target_name][stage] = stage_results
-
-                # Early stop when refinement hurts too much
-                if (stage_summary is not None) and (stage_summary['best_drop_pct'] > args.stop_drop_pct):
-                    print(
-                        f"   ⛔ Early stop: best drop {stage_summary['best_drop_pct']:.2f}% "
-                        f"> stop threshold {args.stop_drop_pct:.2f}%"
-                    )
-                    break
-
-            if args.per_au_eval and per_au_drop_by_stage:
-                save_per_au_stage_heatmap(
-                    per_au_drop_by_stage=per_au_drop_by_stage,
-                    model_type=f"{args.model_type}{target_suffix}",
-                    save_dir=target_figures_dir,
-                )
+            all_results = run_radial_hfss_search(
+                args=args,
+                model=model,
+                dataloader=dataloader,
+                output_dir=output_dir,
+                figures_dir=figures_dir,
+                baseline_f1_global=baseline_f1_global,
+                baseline_per_au_full=baseline_per_au_full,
+            )
         
         print("\n" + "="*70)
         print("✅ HFSS Search Complete!")
@@ -1111,60 +1288,67 @@ if __name__ == "__main__":
 Run from project root:
 cd /Users/tima/Documents/DASC/Thesis/Frequency-Based-AU-Detection
 
-1) QUICK SMOKE (default macro objective)
+--- RANDOM MODE ---
+
+1) QUICK SMOKE (macro, subset)
 python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
     --test_json BP4D/BP4D_test1.json --num_samples 50 \
-    --num_candidates 20 --top_n 5 --stages stage1 stage2
+    --num_candidates 20 --stages stage1 stage2
 
-2) THESIS MODE: SEARCH FOR ONE AU ONLY (example AU12)
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 200 \
-    --num_candidates 30 --top_n 10 --stages stage1 stage2 stage3 \
-    --per_au_search --target_au 12
-
-3) THESIS MODE: SEARCH FOR ALL AUs
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 200 \
-    --num_candidates 30 --top_n 10 --stages stage1 stage2 stage3 \
-    --per_au_search
-
-4) ANALYSIS OUTPUTS ON (per-AU eval + visualizations)
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 200 \
-    --num_candidates 30 --top_n 10 --stages stage1 stage2 stage3 \
-    --per_au_eval --visualize_masks
-
-5) FULL TEST SPLIT (use all samples in json)
+2) FULL TEST SET, MACRO F1
 python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
     --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-    --num_candidates 30 --top_n 10 --stages stage1 stage2 stage3 \
+    --num_candidates 200 --stages stage1 stage2 stage3
+
+3) FULL TEST SET, ALL AUs (per-AU search + eval)
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+    --num_candidates 200 --stages stage1 stage2 stage3 \
+    --per_au_search --per_au_eval
+
+4) FULL TEST SET, SINGLE AU (e.g. AU12)
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+    --num_candidates 200 --stages stage1 stage2 stage3 \
     --per_au_search --target_au 12 --per_au_eval --visualize_masks
 
-6) FAST PER-AU REFINEMENT (reuse precomputed masks)
-# First ensure macro stage1 exists (run once, save PKL), then:
+5) FAST REFINEMENT (reuse precomputed stage1 masks)
 python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
     --test_json BP4D/BP4D_test1.json --num_samples 200 \
     --stages stage2 stage3 --per_au_search --target_au 12 \
     --bootstrap_from_macro_stage1 --reuse_saved_stages
 
-Notes:
-- If CUDA is unavailable, append: --device cpu --num_workers 0
-- Logs are saved automatically under: hfss/logs/
-- Per-AU search outputs are separated by target under: hfss/DFM/AUxx/ and hfss/figures/AUxx/
-- Use --reuse_saved_stages to skip recomputing stages if matching PKLs already exist.
+--- RADIAL MODE ---
 
-python3 hfss_search_au.py \
-  --model_type FMAE \
-  --model_path models/FMAE_BP4D_fold1.pth \
-  --test_json BP4D/BP4D_test1.json \
-  --data_root BP4D/BP4D_cropped/ \
-  --per_au_search \
-  --target_au 12 \
-  --stages stage3 stage4 stage5 \
-  --reuse_saved_stages \
-  --num_samples 999999 \
-  --num_candidates 30 \
-  --top_n 10 \
-  --device cuda \
-  --output_dir hfss/DFM
+6) RADIAL, FULL TEST SET, MACRO F1
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+    --search_mode radial
+
+7) RADIAL, FULL TEST SET, ALL AUs
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+    --search_mode radial --per_au_search --per_au_eval
+
+8) RADIAL, FULL TEST SET, SINGLE AU (e.g. AU12)
+python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
+    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+    --search_mode radial --per_au_search --target_au 12 \
+    --per_au_eval --visualize_masks
+
+Notes:
+- CUDA unavailable? Append: --device cpu --num_workers 0  (device/workers are fixed constants; set in FIXED_* at top of file)
+- Logs saved under: hfss/logs/
+- Outputs under: hfss/DFM/  and  hfss/figures/
+- Per-AU outputs separated by target: hfss/DFM/AUxx/  and  hfss/figures/AUxx/
+- --stages and --num_candidates are ignored in radial mode (uses FIXED_RADIAL_STEPS=10)
 '''
+
+"""
+The search target is only the AU being optimized. For example, with --target_au 04, the search score is based on AU04 only.
+
+The reason you still see all AUs printed is that the script also runs a per-AU report for the same best mask. That extra printout is for debugging and analysis, not for the search objective. In hfss_search_au.py, this comes from the per-AU evaluation path that prints every AU in AU_LABELS.
+
+If you want, I can also show you the exact line that controls this output and how to turn it off.
+
+"""
