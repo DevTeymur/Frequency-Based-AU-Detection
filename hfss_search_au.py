@@ -63,8 +63,9 @@ FIXED_BATCH_SIZE = 24
 FIXED_NUM_WORKERS = 4
 FIXED_DEVICE = 'cuda'
 FIXED_SEED = 42
-FIXED_RADIAL_STEPS = 5
-FIXED_RADIAL_START_KEEP_PCT = 50.0
+FIXED_RADIAL_STEPS = 10
+FIXED_RADIAL_START_KEEP_PCT =100.0
+FIXED_RADIAL_DIRECTION = 'small_to_big'  # 'big_to_small' | 'small_to_big'
 
 
 class TeeStream:
@@ -856,10 +857,21 @@ def build_eval_dataloader(test_json, data_root, num_samples, batch_size, num_wor
     return dataset, dataloader
 
 
-def generate_radial_mask_candidates(num_steps, mode='low-pass', start_keep_pct=100.0):
+def generate_radial_mask_candidates(
+    num_steps,
+    mode='low-pass',
+    start_keep_pct=100.0,
+    direction='big_to_small',
+):
     """Create deterministic radial mask candidates wrapped as White_Mask objects."""
     if num_steps < 2:
         num_steps = 2
+
+    if direction not in ('big_to_small', 'small_to_big'):
+        raise ValueError(
+            f"Invalid radial direction: {direction}. "
+            "Use 'big_to_small' or 'small_to_big'."
+        )
 
     h = IMG_SIZE
     w = IMG_SIZE
@@ -872,6 +884,8 @@ def generate_radial_mask_candidates(num_steps, mode='low-pass', start_keep_pct=1
         start_keep_pct = float(np.clip(start_keep_pct, 0.1, 100.0))
         end_keep_pct = max(start_keep_pct / float(num_steps), 0.1)
         target_keep_pcts = np.linspace(start_keep_pct, end_keep_pct, num_steps)
+        if direction == 'small_to_big':
+            target_keep_pcts = target_keep_pcts[::-1]
         radii = [float(np.quantile(dist, kp / 100.0)) for kp in target_keep_pcts]
     else:
         max_remove_radius = min(h, w) / 2.0
@@ -1066,10 +1080,17 @@ def run_radial_hfss_search(
     """
     print("\n🧭 Radial HFSS mode ON (deterministic masks)")
     radial_mode = 'low-pass'
+    radial_direction = FIXED_RADIAL_DIRECTION
     stage_masks = generate_radial_mask_candidates(
         FIXED_RADIAL_STEPS,
         mode=radial_mode,
         start_keep_pct=FIXED_RADIAL_START_KEEP_PCT,
+        direction=radial_direction,
+    )
+    print(
+        f"   Direction: {radial_direction} "
+        f"| steps={FIXED_RADIAL_STEPS} "
+        f"| start_keep={FIXED_RADIAL_START_KEEP_PCT:.1f}%"
     )
     all_results = {}
 
