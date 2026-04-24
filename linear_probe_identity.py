@@ -16,14 +16,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Optional
+from warnings import filterwarnings, warn
 
 import numpy as np
 import torch
 import torch.nn as nn
+from sklearn.metrics import f1_score
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
-
-from warnings import filterwarnings
 filterwarnings("ignore") 
 
 
@@ -41,7 +41,6 @@ from hfss_search_au import (
     IMG_SIZE,
     TeeStream,
     load_masks_from_pkl,
-    load_model,
     set_global_seed,
 )
 
@@ -54,6 +53,8 @@ FIXED_SEED = 42
 FIXED_NUM_SUBJECTS = 41
 FIXED_PROBE_EPOCHS = 30
 FIXED_PROBE_LR = 1e-3
+FIXED_TRAIN_SAMPLES = 70
+FIXED_TEST_SAMPLES = 30
 FIXED_RADIAL_STEPS = 10
 FIXED_RADIAL_START_KEEP_PCT = 100.0
 FIXED_RADIAL_DIRECTION = "big_to_small"  # 'big_to_small' | 'small_to_big'
@@ -72,6 +73,12 @@ class MaskRecord:
     path: Path
     mask: White_Mask
     target_keep_pct: Optional[float] = None
+
+
+@dataclass
+class SamplingAudit:
+    examples_by_subject: dict
+    overlap_by_subject: dict
 
 
 class LinearProbe(nn.Module):
@@ -115,14 +122,24 @@ def build_dataloader(json_path, data_root, is_train, batch_size, num_workers, sh
     return dataset, dataloader
 
 
-def build_within_subject_split(all_json_paths, data_root, train_ratio=0.7, seed=42):
-    """Build probe train/test splits by sampling frames within each subject.
+def _extract_frame_index(img_path):
+    match = re.search(r"frame_(\d+)", img_path)
+    return int(match.group(1)) if match else None
 
-    All JSON paths are combined first, then each subject's frames are split
-    independently so both probe_train and probe_test contain all subjects.
+
+def build_fixed_samples_per_subject_split(all_json_paths, data_root, train_samples, test_samples, seed=42):
+    """Sample exactly N train/test frames per subject from combined JSON files.
+
+    This matches fixed-count per-subject sampling used by linear probe protocols.
+    Subjects with insufficient frames are skipped with a warning.
     """
     if isinstance(all_json_paths, (str, Path)):
         all_json_paths = [all_json_paths]
+
+    train_samples = int(train_samples)
+    test_samples = int(test_samples)
+    if train_samples <= 0 or test_samples <= 0:
+        raise ValueError("train_samples and test_samples must be positive integers.")
 
     combined_data = []
     for json_path in all_json_paths:
@@ -141,20 +158,49 @@ def build_within_subject_split(all_json_paths, data_root, train_ratio=0.7, seed=
     rng = np.random.default_rng(seed)
     train_entries = []
     test_entries = []
+    skipped_subjects = []
+    examples_by_subject = {}
+    overlap_by_subject = {}
+    required = train_samples + test_samples
 
     for subject_id in sorted(grouped_by_subject.keys()):
         subject_entries = grouped_by_subject[subject_id]
-        if len(subject_entries) < 2:
-            raise ValueError(f"Subject {subject_id} has fewer than 2 frames; cannot make a 70/30 split.")
+        if len(subject_entries) < required:
+            skipped_subjects.append((subject_id, len(subject_entries)))
+            continue
 
-        order = np.arange(len(subject_entries))
-        rng.shuffle(order)
+        order = rng.permutation(len(subject_entries))
+        selected = order[:required]
+        train_idx = selected[:train_samples]
+        test_idx = selected[train_samples:]
 
-        train_count = int(round(len(subject_entries) * train_ratio))
-        train_count = max(1, min(len(subject_entries) - 1, train_count))
+        train_subject_entries = [subject_entries[i] for i in train_idx]
+        test_subject_entries = [subject_entries[i] for i in test_idx]
+        train_entries.extend(train_subject_entries)
+        test_entries.extend(test_subject_entries)
 
-        train_entries.extend(subject_entries[i] for i in order[:train_count])
-        test_entries.extend(subject_entries[i] for i in order[train_count:])
+        train_paths = {e["img_path"] for e in train_subject_entries}
+        test_paths = {e["img_path"] for e in test_subject_entries}
+        overlap_by_subject[subject_id] = len(train_paths.intersection(test_paths))
+
+        examples_by_subject[subject_id] = {
+            "train_frame_indices": [_extract_frame_index(e["img_path"]) for e in train_subject_entries],
+            "test_frame_indices": [_extract_frame_index(e["img_path"]) for e in test_subject_entries],
+        }
+
+    if skipped_subjects:
+        preview = ", ".join([f"{sid}({count})" for sid, count in skipped_subjects[:8]])
+        suffix = " ..." if len(skipped_subjects) > 8 else ""
+        warn(
+            f"Skipped {len(skipped_subjects)} subject(s) with < {required} frames: {preview}{suffix}",
+            stacklevel=1,
+        )
+
+    if not train_entries or not test_entries:
+        raise ValueError(
+            "No valid subjects left after fixed-count sampling. "
+            "Reduce --train_samples/--test_samples or verify JSON files."
+        )
 
     rng.shuffle(train_entries)
     rng.shuffle(test_entries)
@@ -164,7 +210,32 @@ def build_within_subject_split(all_json_paths, data_root, train_ratio=0.7, seed=
     test_dataset = BP4D_AU_dataset(all_json_paths[0], is_train=False, args=dataset_args)
     train_dataset.data = train_entries
     test_dataset.data = test_entries
-    return train_dataset, test_dataset
+    audit = SamplingAudit(examples_by_subject=examples_by_subject, overlap_by_subject=overlap_by_subject)
+    return train_dataset, test_dataset, audit
+
+
+def _subject_set_from_json(json_path):
+    subjects = set()
+    with open(json_path, "r", encoding="utf-8") as f:
+        for line in f:
+            entry = json.loads(line)
+            subjects.add(entry["img_path"][1:4])
+    return subjects
+
+
+def ensure_subject_exclusive_au_split(train_json, test_json):
+    """Ensure AU evaluation uses a subject-exclusive test split."""
+    train_subjects = _subject_set_from_json(train_json)
+    test_subjects = _subject_set_from_json(test_json)
+    overlap = train_subjects.intersection(test_subjects)
+
+    print(f"   AU split subjects | train={len(train_subjects)} test={len(test_subjects)} overlap={len(overlap)}")
+    if overlap:
+        sample = ", ".join(sorted(list(overlap))[:8])
+        raise ValueError(
+            "AU evaluation split is not subject-exclusive. "
+            f"Overlapping subjects ({len(overlap)}): {sample}"
+        )
 
 
 def validate_subject_mapping(dataset, split_name):
@@ -177,19 +248,73 @@ def validate_subject_mapping(dataset, split_name):
     print(f"   Sample IDs: {', '.join(subject_ids[:5])}{' ...' if len(subject_ids) > 5 else ''}")
     if len(dataset.IDs) != FIXED_NUM_SUBJECTS:
         raise ValueError(f"Expected {FIXED_NUM_SUBJECTS} BP4D subject classes, got {len(dataset.IDs)}")
+    if len(subject_ids) != FIXED_NUM_SUBJECTS:
+        raise ValueError(
+            f"{split_name} split does not contain all {FIXED_NUM_SUBJECTS} subjects. "
+            f"Found {len(subject_ids)} unique subjects."
+        )
     return set(subject_ids)
 
 
-def load_backbone(model_path, device):
-    model = load_model(model_path, model_type="FMAE", device=str(device))
+def print_subject_mapping(train_dataset, test_dataset):
+    train_map = getattr(train_dataset, "ID_label2idx", {})
+    test_map = getattr(test_dataset, "ID_label2idx", {})
+    consistent = train_map == test_map
+
+    print("\n   Full subject ID -> class index mapping:")
+    for subject_id, class_idx in sorted(train_map.items(), key=lambda kv: kv[1]):
+        print(f"     {subject_id} -> {class_idx}")
+
+    print(f"   Subject mapping consistent (train vs test): {consistent}")
+    if not consistent:
+        raise ValueError("Train/test subject mapping mismatch detected.")
+
+    return consistent
+
+
+def load_backbone(model_path, model_type, device):
+    model = models_vit.vit_large_patch16(
+        num_classes=12,
+        num_subjects=FIXED_NUM_SUBJECTS if model_type == "IAT" else 0,
+        drop_path_rate=0.0,
+        global_pool=True,
+        grad_reverse=1.0 if model_type == "IAT" else 0.0,
+    )
+
+    checkpoint = torch.load(model_path, map_location="cpu")
+    state_dict = checkpoint.get("model", checkpoint)
+    loaded_keys = list(state_dict.keys())
+    if not loaded_keys:
+        raise ValueError("Checkpoint has no parameters in state_dict.")
+
+    print("   Checkpoint keys (first 5):")
+    for key in loaded_keys[:5]:
+        print(f"     {key}")
+    print("   Checkpoint keys (last 5):")
+    for key in loaded_keys[-5:]:
+        print(f"     {key}")
+
+    model.load_state_dict(state_dict, strict=True)
+
+    # For IAT linear-probe analysis we intentionally bypass ID path; keep GRL inactive.
+    if model_type == "IAT":
+        model.grad_reverse = 0.0
+        print("   IAT grad_reverse set to 0.0 for inference-time probing (GRL inactive)")
+
+    model = model.to(device)
     model.eval()
     for param in model.parameters():
         param.requires_grad = False
+    print(f"   ✓ Loaded {model_type} model with strict=True from {model_path}")
+    print(f"   model.eval() set: {not model.training}")
     return model
 
 
 @torch.no_grad()
 def extract_features_and_labels(backbone, dataloader, device):
+    if backbone.training:
+        raise RuntimeError("Backbone is in training mode during feature extraction. Expected eval mode.")
+
     features = []
     labels = []
 
@@ -322,25 +447,33 @@ def load_radial_masks(dfm_dir):
     return records
 
 
-def load_radial_masks_strict(dfm_dir):
-    """Load only canonical macro radial masks: FMAE_radial_step_XX_DFMs.pkl."""
+def load_radial_masks_saved(dfm_dir, model_type):
+    """Load saved canonical radial masks from PKL files."""
     dfm_dir = Path(dfm_dir)
     if not dfm_dir.exists():
         raise FileNotFoundError(f"DFM directory not found: {dfm_dir}")
 
     candidates = []
-    pattern = re.compile(r"^FMAE_radial_step_(\d+)_DFMs\.pkl$")
+    pattern = re.compile(rf"^{re.escape(model_type)}_radial_step_(\d+)_DFMs\.pkl$")
     for pkl_path in dfm_dir.rglob("*.pkl"):
         match = pattern.match(pkl_path.name)
         if match is None:
             continue
         candidates.append((int(match.group(1)), pkl_path))
 
+    if not candidates:
+        fallback = re.compile(r"^radial_step_(\d+).*\.pkl$")
+        for pkl_path in dfm_dir.rglob("*.pkl"):
+            match = fallback.match(pkl_path.name)
+            if match is None:
+                continue
+            candidates.append((int(match.group(1)), pkl_path))
+
     candidates.sort(key=lambda item: item[0])
     if not candidates:
         raise FileNotFoundError(
-            f"No canonical radial masks found under {dfm_dir}. "
-            "Expected files named FMAE_radial_step_XX_DFMs.pkl"
+            f"No saved radial masks found under {dfm_dir}. "
+            f"Expected files named {model_type}_radial_step_XX_DFMs.pkl"
         )
 
     records = []
@@ -398,18 +531,15 @@ def _mask_keep_ratio_pct(mask_obj):
 
 
 @torch.no_grad()
-def evaluate_probe_and_au(backbone, probe, dataloader, mask_record, device):
+def evaluate_probe_with_mask(backbone, probe, dataloader, mask_record, device):
     probe.eval()
     backbone.eval()
 
     id_preds_all = []
     id_labels_all = []
-    au_preds_all = []
-    au_labels_all = []
 
-    for images, (au_labels, id_onehot) in dataloader:
+    for images, (_, id_onehot) in dataloader:
         images = images.to(device, non_blocking=True)
-        au_labels = au_labels.to(device, non_blocking=True)
         id_labels = torch.argmax(id_onehot.to(device, non_blocking=True), dim=1)
         images = apply_frequency_mask(images, mask_record, device)
 
@@ -417,13 +547,9 @@ def evaluate_probe_and_au(backbone, probe, dataloader, mask_record, device):
         features = backbone.forward_features(images)
         id_logits = probe(features)
         id_preds = torch.argmax(id_logits, dim=1)
-        au_logits = backbone.head(features)
-        au_preds = (torch.sigmoid(au_logits) >= 0.5).float()
 
         id_preds_all.append(id_preds.cpu())
         id_labels_all.append(id_labels.cpu())
-        au_preds_all.append(au_preds.cpu().numpy())
-        au_labels_all.append(au_labels.cpu().numpy())
 
     if id_preds_all:
         id_preds_all = torch.cat(id_preds_all, dim=0)
@@ -432,17 +558,34 @@ def evaluate_probe_and_au(backbone, probe, dataloader, mask_record, device):
     else:
         id_accuracy = 0.0
 
-    if au_preds_all:
-        from sklearn.metrics import f1_score
+    return id_accuracy
 
-        au_preds_all = np.concatenate(au_preds_all, axis=0)
-        au_labels_all = np.concatenate(au_labels_all, axis=0)
-        # Match HFSS evaluate_mask() exactly: sklearn multilabel macro F1.
-        au_macro_f1 = float(f1_score(au_labels_all, au_preds_all, average="macro"))
-    else:
-        au_macro_f1 = 0.0
 
-    return id_accuracy, au_macro_f1
+@torch.no_grad()
+def evaluate_au_macro_f1(backbone, dataloader, mask_record, device):
+    """Match hfss_search_au.evaluate_mask(): sigmoid + threshold=0.5 + macro F1."""
+    backbone.eval()
+    au_preds_all = []
+    au_labels_all = []
+
+    for images, (au_labels, _) in dataloader:
+        images = images.to(device, non_blocking=True)
+        au_labels = au_labels.to(device, non_blocking=True)
+        images = apply_frequency_mask(images, mask_record, device)
+
+        features = backbone.forward_features(images)
+        au_logits = backbone.head(features)
+        au_preds = (torch.sigmoid(au_logits) >= 0.5).float()
+
+        au_preds_all.append(au_preds.cpu().numpy())
+        au_labels_all.append(au_labels.cpu().numpy())
+
+    if not au_preds_all:
+        return 0.0
+
+    au_preds_all = np.concatenate(au_preds_all, axis=0)
+    au_labels_all = np.concatenate(au_labels_all, axis=0)
+    return float(f1_score(au_labels_all, au_preds_all, average="macro"))
 
 
 def write_results_csv(output_csv, rows):
@@ -469,8 +612,68 @@ def print_summary_table(rows):
     print("=" * 78)
 
 
+def _subject_sample_stats(entries):
+    counts = {}
+    for entry in entries:
+        subject_id = entry["img_path"][1:4]
+        counts[subject_id] = counts.get(subject_id, 0) + 1
+    values = list(counts.values())
+    return counts, min(values), max(values), float(np.mean(values))
+
+
+def run_sanity_checks(backbone, probe, train_dataset, test_dataset, sampling_audit, expected_train_samples, expected_test_samples):
+    train_counts, train_min, train_max, train_mean = _subject_sample_stats(train_dataset.data)
+    test_counts, test_min, test_max, test_mean = _subject_sample_stats(test_dataset.data)
+
+    overlap_violations = {
+        sid: cnt for sid, cnt in sampling_audit.overlap_by_subject.items() if cnt > 0
+    }
+    mapping_consistent = getattr(train_dataset, "ID_label2idx", {}) == getattr(test_dataset, "ID_label2idx", {})
+    backbone_frozen = all(not p.requires_grad for p in backbone.parameters())
+    in_features = probe.classifier.in_features
+    out_features = probe.classifier.out_features
+
+    print("\n=== SANITY CHECKS ===")
+    print("Feature source: backbone.forward_features (global pooled transformer output, pre-head)")
+    print(f"Feature dim: {in_features}")
+    print(f"Backbone frozen: {backbone_frozen}")
+    print(f"Probe architecture: Linear({in_features} -> {out_features})")
+    print(
+        f"Train samples per subject: min={train_min}, max={train_max}, mean={train_mean:.2f} "
+        f"(should all be {expected_train_samples})"
+    )
+    print(
+        f"Test samples per subject: min={test_min}, max={test_max}, mean={test_mean:.2f} "
+        f"(should all be {expected_test_samples})"
+    )
+    if not overlap_violations:
+        print("Train/test sample overlap per subject: 0 for all")
+    else:
+        print(f"Train/test sample overlap per subject: {overlap_violations}")
+    print(f"Subject mapping consistent: {mapping_consistent}")
+    print(f"model.training: {backbone.training} during feature extraction")
+    print("=== END SANITY CHECKS ===")
+
+    # Print three example sampled subjects for randomization audit.
+    print("\n   Sampling examples (3 subjects):")
+    shown = 0
+    for subject_id in sorted(sampling_audit.examples_by_subject.keys()):
+        if shown >= 3:
+            break
+        ex = sampling_audit.examples_by_subject[subject_id]
+        print(f"     {subject_id} train frame indices (first 10): {ex['train_frame_indices'][:10]}")
+        print(f"     {subject_id} test frame indices (first 10):  {ex['test_frame_indices'][:10]}")
+        shown += 1
+
+    expected_train = train_min == train_max == int(expected_train_samples)
+    expected_test = test_min == test_max == int(expected_test_samples)
+    if not (backbone_frozen and mapping_consistent and not overlap_violations and expected_train and expected_test):
+        raise ValueError("Sanity checks failed. See printed diagnostics above.")
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Linear probe identity analysis for BP4D/FMAE")
+    parser = argparse.ArgumentParser(description="Linear probe identity analysis for BP4D (FMAE/IAT)")
+    parser.add_argument("--model_type", default="FMAE", choices=["FMAE", "IAT"])
     parser.add_argument("--model_path", default="models/FMAE_BP4D_fold1.pth")
     parser.add_argument("--train_json", default="BP4D/BP4D_train1.json")
     parser.add_argument("--test_json", default="BP4D/BP4D_test1.json")
@@ -478,9 +681,11 @@ def main():
     parser.add_argument(
         "--mask_source",
         default="generated",
-        choices=["generated", "dfm"],
-        help="generated: create 10 deterministic radial masks in-script; dfm: load canonical FMAE radial pkl files",
+        choices=["generated", "saved"],
+        help="generated: create deterministic radial masks in-script; saved: load radial masks from PKL",
     )
+    parser.add_argument("--train_samples", type=int, default=FIXED_TRAIN_SAMPLES)
+    parser.add_argument("--test_samples", type=int, default=FIXED_TEST_SAMPLES)
     parser.add_argument("--probe_save_path", default="hfss/DFM/linear_probe_identity.pth")
     parser.add_argument("--probe_epochs", type=int, default=FIXED_PROBE_EPOCHS)
     parser.add_argument("--probe_lr", type=float, default=FIXED_PROBE_LR)
@@ -505,20 +710,22 @@ def main():
     try:
         print("=" * 70)
         print("Linear Probe Identity Analysis - BP4D")
-        print(f"Model: {args.model_path} | Device: {device}")
+        print(f"Model type: {args.model_type} | Model: {args.model_path} | Device: {device}")
         print(f"Seed: {FIXED_SEED}")
         print(f"Log file: {log_file_path}")
         print("=" * 70)
 
-        backbone = load_backbone(args.model_path, device)
+        backbone = load_backbone(args.model_path, args.model_type, device)
         feature_dim = backbone.head.in_features if hasattr(backbone, "head") else 1024
         print(f"   Backbone feature dim: {feature_dim}")
+        print("   Feature extraction uses: backbone.forward_features(images) (pre-AU/ID heads)")
 
-        print("\n[1] Building datasets")
-        train_dataset, test_dataset = build_within_subject_split(
+        print("\n[1] Building probe datasets (fixed samples per subject)")
+        train_dataset, test_dataset, sampling_audit = build_fixed_samples_per_subject_split(
             [args.train_json, args.test_json],
             FIXED_DATA_ROOT,
-            train_ratio=0.7,
+            train_samples=args.train_samples,
+            test_samples=args.test_samples,
             seed=FIXED_SEED,
         )
         train_loader = DataLoader(
@@ -540,22 +747,48 @@ def main():
         train_subjects = validate_subject_mapping(train_dataset, "Train")
         test_subjects = validate_subject_mapping(test_dataset, "Test")
         overlap = train_subjects.intersection(test_subjects)
-        if len(overlap) != FIXED_NUM_SUBJECTS:
-            raise ValueError(
-                f"Within-subject split failed: expected all {FIXED_NUM_SUBJECTS} subjects in both splits, got overlap={len(overlap)}"
-            )
-        print(f"   Subject overlap train∩test: {len(overlap)} IDs")
+        print(f"   Subject overlap train∩test: {len(overlap)} IDs (expected for closed-set ID probe)")
+        print(f"   Per-subject sampling: train={args.train_samples}, test={args.test_samples}")
         print(f"   Train samples: {len(train_dataset)}")
         print(f"   Test samples:  {len(test_dataset)}")
+        mapping_consistent = print_subject_mapping(train_dataset, test_dataset)
+        if not mapping_consistent:
+            raise ValueError("Subject mapping mismatch detected.")
 
-        print("\n[2] Precomputing frozen backbone features")
+        print("\n[2] Building AU evaluation dataset (subject-exclusive check)")
+        ensure_subject_exclusive_au_split(args.train_json, args.test_json)
+        au_eval_dataset = BP4D_AU_dataset(args.test_json, is_train=False, args=build_dataset_args(FIXED_DATA_ROOT))
+        au_eval_loader = DataLoader(
+            au_eval_dataset,
+            batch_size=FIXED_BATCH_SIZE,
+            shuffle=False,
+            num_workers=FIXED_NUM_WORKERS,
+            pin_memory=device.type == "cuda",
+            persistent_workers=(FIXED_NUM_WORKERS > 0),
+        )
+        print(f"   AU evaluation samples (official test split): {len(au_eval_dataset)}")
+
+        print("\n[3] Precomputing frozen backbone features")
         train_features, train_labels = extract_features_and_labels(backbone, train_loader, device)
         test_features, test_labels = extract_features_and_labels(backbone, test_loader, device)
         print(f"   Train feature tensor: {tuple(train_features.shape)}")
         print(f"   Test feature tensor:  {tuple(test_features.shape)}")
 
-        print("\n[3] Training linear probe")
+        print("\n[4] Training linear probe")
         probe = LinearProbe(feature_dim=feature_dim, num_subjects=FIXED_NUM_SUBJECTS)
+        print(f"   Probe check: {probe}")
+
+        # Mandatory pre-experiment audit block.
+        run_sanity_checks(
+            backbone,
+            probe,
+            train_dataset,
+            test_dataset,
+            sampling_audit,
+            expected_train_samples=args.train_samples,
+            expected_test_samples=args.test_samples,
+        )
+
         probe = train_linear_probe(probe, train_features, train_labels, args.probe_epochs, args.probe_lr, device)
 
         torch.save(
@@ -575,14 +808,11 @@ def main():
         print(f"\n   Train ID accuracy (sanity): {train_id_acc*100:.2f}%")
         test_id_acc = evaluate_probe_on_features(probe, test_features, test_labels, device)
         print(f"\n   Unmasked test ID accuracy: {test_id_acc*100:.2f}%")
-        if len(overlap) == 0:
-            print("   ⚠ This value is not comparable to closed-set identity numbers (e.g., ~83%).")
-
-        print("\n[4] Computing AU baseline")
-        _, baseline_macro_f1 = evaluate_probe_and_au(backbone, probe, test_loader, None, device)
+        print("\n[5] Computing AU baseline (HFSS-aligned: sigmoid + thr=0.5 + macro F1)")
+        baseline_macro_f1 = evaluate_au_macro_f1(backbone, au_eval_loader, None, device)
         print(f"   Baseline AU macro F1: {baseline_macro_f1*100:.2f}%")
 
-        print("\n[5] Preparing radial masks")
+        print("\n[6] Preparing radial masks")
         if args.mask_source == "generated":
             mask_records = generate_radial_masks(
                 num_steps=FIXED_RADIAL_STEPS,
@@ -594,8 +824,8 @@ def main():
                 f"start_keep={FIXED_RADIAL_START_KEEP_PCT:.1f}%, direction={FIXED_RADIAL_DIRECTION}"
             )
         else:
-            mask_records = load_radial_masks_strict(args.dfm_dir)
-            print("   Using DFM masks filtered to canonical macro files: FMAE_radial_step_XX_DFMs.pkl")
+            mask_records = load_radial_masks_saved(args.dfm_dir, args.model_type)
+            print(f"   Using saved masks from PKL files (model_type={args.model_type})")
         print(f"   Loaded {len(mask_records)} radial mask files")
 
         rows = []
@@ -607,13 +837,14 @@ def main():
                 else keep_ratio
             )
             print(f"\n   Step {record.step:02d} | file={record.path.name}")
-            id_accuracy, au_macro_f1 = evaluate_probe_and_au(
+            id_accuracy = evaluate_probe_with_mask(
                 backbone,
                 probe,
                 test_loader,
                 record,
                 device,
             )
+            au_macro_f1 = evaluate_au_macro_f1(backbone, au_eval_loader, record, device)
             au_f1_drop = float(baseline_macro_f1 - au_macro_f1)
             print(
                 f"   Keep(target/actual)={target_keep_ratio:.1f}%/{keep_ratio:.1f}% | "
@@ -645,20 +876,26 @@ if __name__ == "__main__":
 
 """
 python linear_probe_identity.py \
+        --model_type FMAE \
     --model_path models/FMAE_BP4D_fold1.pth \
     --train_json BP4D/BP4D_train1.json \
     --test_json BP4D/BP4D_test1.json \
     --dfm_dir hfss/DFM \
+        --train_samples 70 \
+        --test_samples 30 \
     --probe_save_path hfss/DFM/linear_probe_identity.pth \
     --probe_epochs 30 \
     --probe_lr 0.001 \
     --output_csv hfss/DFM/linear_probe_identity_results.csv
 
 python linear_probe_identity.py \
-  --model_path models/FMAE_BP4D_fold1.pth \
+    --model_type IAT \
+    --model_path models/FMAE_IAT_BP4D_fold1.pth \
   --train_json BP4D/BP4D_train1.json \
   --test_json BP4D/BP4D_test1.json \
   --dfm_dir hfss/DFM \
-  --mask_source dfm \
+    --mask_source saved \
+    --train_samples 70 \
+    --test_samples 30 \
   --output_csv hfss/DFM/linear_probe_identity_results.csv
 """
