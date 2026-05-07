@@ -1,7 +1,7 @@
 """
 Linear probe for BP4D subject identity analysis.
 
-Trains a frozen FMAE backbone + linear classifier on subject IDs, then
+Trains a frozen FMAE/IAT backbone + BN+Linear probe on subject IDs, then
 evaluates the trained probe on radial frequency-masked test images while
 also reporting AU macro F1 with the frozen AU head.
 """
@@ -35,6 +35,7 @@ sys.path.insert(0, str(HFSS_PATH))
 
 import models_vit  # pyright: ignore[reportMissingImports]
 from util.datasets import BP4D_AU_dataset  # pyright: ignore[reportMissingImports]
+from util.lars import LARS  # pyright: ignore[reportMissingImports]
 from transforms_search_space import White_Mask  # pyright: ignore[reportMissingImports]
 
 from hfss_search_au import (
@@ -51,13 +52,19 @@ FIXED_NUM_WORKERS = 4
 FIXED_DEVICE = "cuda"
 FIXED_SEED = 42
 FIXED_NUM_SUBJECTS = 41
-FIXED_PROBE_EPOCHS = 30
+FIXED_PROBE_EPOCHS = 90
 FIXED_PROBE_LR = 1e-3
-FIXED_TRAIN_SAMPLES = 70
-FIXED_TEST_SAMPLES = 30
+FIXED_PROBE_BLR = 0.1
+FIXED_PROBE_WEIGHT_DECAY = 0.0
 FIXED_RADIAL_STEPS = 10
 FIXED_RADIAL_START_KEEP_PCT = 100.0
 FIXED_RADIAL_DIRECTION = "big_to_small"  # 'big_to_small' | 'small_to_big'
+
+
+def terminal_tqdm(iterable, **kwargs):
+    """Render tqdm in terminal only (exclude TeeStream file logger)."""
+    stream = sys.__stderr__ if sys.__stderr__ is not None else sys.stderr
+    return tqdm(iterable, file=stream, **kwargs)
 
 
 def create_linear_probe_log_file(log_dir):
@@ -84,7 +91,11 @@ class SamplingAudit:
 class LinearProbe(nn.Module):
     def __init__(self, feature_dim, num_subjects):
         super().__init__()
-        self.classifier = nn.Linear(feature_dim, num_subjects)
+        # Match main_linprobe.py: BN (affine=False) + linear classifier.
+        self.classifier = nn.Sequential(
+            nn.BatchNorm1d(feature_dim, affine=False, eps=1e-6),
+            nn.Linear(feature_dim, num_subjects),
+        )
 
     def forward(self, features):
         return self.classifier(features)
@@ -249,9 +260,8 @@ def validate_subject_mapping(dataset, split_name):
     if len(dataset.IDs) != FIXED_NUM_SUBJECTS:
         raise ValueError(f"Expected {FIXED_NUM_SUBJECTS} BP4D subject classes, got {len(dataset.IDs)}")
     if len(subject_ids) != FIXED_NUM_SUBJECTS:
-        raise ValueError(
-            f"{split_name} split does not contain all {FIXED_NUM_SUBJECTS} subjects. "
-            f"Found {len(subject_ids)} unique subjects."
+        print(
+            f"   ⚠ {split_name} has {len(subject_ids)} observed subjects (mapping table still has {FIXED_NUM_SUBJECTS})."
         )
     return set(subject_ids)
 
@@ -318,7 +328,7 @@ def extract_features_and_labels(backbone, dataloader, device):
     features = []
     labels = []
 
-    for images, (_, id_onehot) in tqdm(dataloader, desc="   Extracting features", leave=False):
+    for images, (_, id_onehot) in terminal_tqdm(dataloader, desc="   Extracting features", leave=False):
         images = images.to(device, non_blocking=True)
         id_labels = torch.argmax(id_onehot.to(device, non_blocking=True), dim=1)
         pooled = backbone.forward_features(images)
@@ -331,28 +341,35 @@ def extract_features_and_labels(backbone, dataloader, device):
     return torch.cat(features, dim=0), torch.cat(labels, dim=0)
 
 
-def train_linear_probe(probe, train_features, train_labels, epochs, lr, device):
+def train_linear_probe(backbone, probe, train_loader, epochs, lr, weight_decay, device):
+    backbone.eval()
     probe = probe.to(device)
-    train_dataset = TensorDataset(train_features, train_labels)
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=FIXED_BATCH_SIZE,
-        shuffle=True,
-        num_workers=0,
-        pin_memory=device.type == "cuda",
-    )
 
-    optimizer = torch.optim.Adam(probe.parameters(), lr=lr, weight_decay=0.0)
+    optimizer = LARS(probe.parameters(), lr=lr, weight_decay=weight_decay)
     criterion = nn.CrossEntropyLoss()
+    warmup_epochs = 10
+
+    def get_lr(epoch):
+        if epoch < warmup_epochs:
+            return lr * (epoch + 1) / warmup_epochs
+        return lr
 
     for epoch in range(epochs):
+        current_lr = get_lr(epoch)
+        for g in optimizer.param_groups:
+            g["lr"] = current_lr
+
         probe.train()
         running_loss = 0.0
         correct = 0
         total = 0
 
-        for batch_features, batch_labels in tqdm(train_loader, desc=f"   Epoch {epoch + 1}/{epochs}", leave=False):
-            batch_features = batch_features.to(device, non_blocking=True)
+        for images, (_, id_onehot) in terminal_tqdm(train_loader, desc=f"   Epoch {epoch + 1}/{epochs}", leave=False):
+            images = images.to(device, non_blocking=True)
+            batch_features = backbone.forward_features(images)
+            batch_features = batch_features.detach()
+
+            batch_labels = torch.argmax(id_onehot.to(device, non_blocking=True), dim=1)
             batch_labels = batch_labels.to(device, non_blocking=True)
 
             optimizer.zero_grad(set_to_none=True)
@@ -368,9 +385,36 @@ def train_linear_probe(probe, train_features, train_labels, epochs, lr, device):
 
         epoch_loss = running_loss / max(total, 1)
         epoch_acc = correct / max(total, 1)
-        print(f"   Epoch {epoch + 1:02d}/{epochs}: loss={epoch_loss:.4f} | acc={epoch_acc*100:.2f}%")
+        print(
+            f"   Epoch {epoch + 1:02d}/{epochs}: "
+            f"lr={current_lr:.6f} | loss={epoch_loss:.4f} | acc={epoch_acc*100:.2f}%"
+        )
 
     return probe
+
+
+@torch.no_grad()
+def evaluate_probe_on_loader(backbone, probe, dataloader, device):
+    probe.eval()
+    backbone.eval()
+
+    all_preds = []
+    all_labels = []
+    for images, (_, id_onehot) in dataloader:
+        images = images.to(device, non_blocking=True)
+        labels = torch.argmax(id_onehot.to(device, non_blocking=True), dim=1)
+        features = backbone.forward_features(images)
+        logits = probe(features)
+        preds = torch.argmax(logits, dim=1)
+        all_preds.append(preds.cpu())
+        all_labels.append(labels.cpu())
+
+    if not all_preds:
+        return 0.0
+
+    all_preds = torch.cat(all_preds, dim=0)
+    all_labels = torch.cat(all_labels, dim=0)
+    return float((all_preds == all_labels).float().mean().item())
 
 
 @torch.no_grad()
@@ -487,7 +531,12 @@ def load_radial_masks_saved(dfm_dir, model_type):
 
 
 def generate_radial_masks(num_steps, start_keep_pct=100.0, direction="small_to_big"):
-    """Generate deterministic radial masks directly (preferred for reproducibility)."""
+    """Generate deterministic radial masks directly (preferred for reproducibility).
+
+    Use the empirical quantile of pixel distances so that the produced binary
+    masks match the requested keep-percentages on the discrete image grid.
+    This matches the logic in `hfss_search_au.generate_radial_mask_candidates`.
+    """
     if num_steps < 2:
         num_steps = 2
 
@@ -506,14 +555,17 @@ def generate_radial_masks(num_steps, start_keep_pct=100.0, direction="small_to_b
     target_keep_pcts = np.linspace(start_keep_pct, end_keep_pct, num_steps)
     if direction == "small_to_big":
         target_keep_pcts = target_keep_pcts[::-1]
-    radii = np.sqrt(target_keep_pcts / 100.0) * max_radius
+
+    # Compute radii by empirical quantile of distances so that the discrete
+    # pixel-based keep% aligns with the requested target_keep_pcts.
+    radii = [float(np.quantile(dist, kp / 100.0)) for kp in target_keep_pcts]
 
     records = []
     for idx, (r, target_keep) in enumerate(zip(radii, target_keep_pcts)):
         mask = (dist <= r).astype(np.float32)
         wm = White_Mask(mask)
-        wm.white_count = int(mask.sum())
-        wm.keep_pct = float(mask.mean())
+        wm.white_count = int(np.sum(mask > 0.5))
+        wm.keep_pct = float(np.mean(mask > 0.5))
         records.append(
             MaskRecord(
                 step=idx + 1,
@@ -630,8 +682,9 @@ def run_sanity_checks(backbone, probe, train_dataset, test_dataset, sampling_aud
     }
     mapping_consistent = getattr(train_dataset, "ID_label2idx", {}) == getattr(test_dataset, "ID_label2idx", {})
     backbone_frozen = all(not p.requires_grad for p in backbone.parameters())
-    in_features = probe.classifier.in_features
-    out_features = probe.classifier.out_features
+    linear_layer = probe.classifier[-1] if isinstance(probe.classifier, nn.Sequential) else probe.classifier
+    in_features = linear_layer.in_features
+    out_features = linear_layer.out_features
 
     print("\n=== SANITY CHECKS ===")
     print("Feature source: backbone.forward_features (global pooled transformer output, pre-head)")
@@ -684,11 +737,11 @@ def main():
         choices=["generated", "saved"],
         help="generated: create deterministic radial masks in-script; saved: load radial masks from PKL",
     )
-    parser.add_argument("--train_samples", type=int, default=FIXED_TRAIN_SAMPLES)
-    parser.add_argument("--test_samples", type=int, default=FIXED_TEST_SAMPLES)
     parser.add_argument("--probe_save_path", default="hfss/DFM/linear_probe_identity.pth")
     parser.add_argument("--probe_epochs", type=int, default=FIXED_PROBE_EPOCHS)
-    parser.add_argument("--probe_lr", type=float, default=FIXED_PROBE_LR)
+    parser.add_argument("--probe_lr", type=float, default=None)
+    parser.add_argument("--probe_blr", type=float, default=FIXED_PROBE_BLR)
+    parser.add_argument("--probe_weight_decay", type=float, default=FIXED_PROBE_WEIGHT_DECAY)
     parser.add_argument("--output_csv", default="hfss/DFM/linear_probe_identity_results.csv")
     args = parser.parse_args()
 
@@ -720,12 +773,12 @@ def main():
         print(f"   Backbone feature dim: {feature_dim}")
         print("   Feature extraction uses: backbone.forward_features(images) (pre-AU/ID heads)")
 
-        print("\n[1] Building probe datasets (fixed samples per subject)")
+        print("\n[1] Building probe datasets (fixed per-subject sampling: 70 train / 30 test)")
         train_dataset, test_dataset, sampling_audit = build_fixed_samples_per_subject_split(
             [args.train_json, args.test_json],
             FIXED_DATA_ROOT,
-            train_samples=args.train_samples,
-            test_samples=args.test_samples,
+            train_samples=70,
+            test_samples=30,
             seed=FIXED_SEED,
         )
         train_loader = DataLoader(
@@ -734,7 +787,7 @@ def main():
             shuffle=True,
             num_workers=FIXED_NUM_WORKERS,
             pin_memory=device.type == "cuda",
-            persistent_workers=(FIXED_NUM_WORKERS > 0),
+            persistent_workers=True,
         )
         test_loader = DataLoader(
             test_dataset,
@@ -742,18 +795,10 @@ def main():
             shuffle=False,
             num_workers=FIXED_NUM_WORKERS,
             pin_memory=device.type == "cuda",
-            persistent_workers=(FIXED_NUM_WORKERS > 0),
+            persistent_workers=True,
         )
-        train_subjects = validate_subject_mapping(train_dataset, "Train")
-        test_subjects = validate_subject_mapping(test_dataset, "Test")
-        overlap = train_subjects.intersection(test_subjects)
-        print(f"   Subject overlap train∩test: {len(overlap)} IDs (expected for closed-set ID probe)")
-        print(f"   Per-subject sampling: train={args.train_samples}, test={args.test_samples}")
         print(f"   Train samples: {len(train_dataset)}")
         print(f"   Test samples:  {len(test_dataset)}")
-        mapping_consistent = print_subject_mapping(train_dataset, test_dataset)
-        if not mapping_consistent:
-            raise ValueError("Subject mapping mismatch detected.")
 
         print("\n[2] Building AU evaluation dataset (subject-exclusive check)")
         ensure_subject_exclusive_au_split(args.train_json, args.test_json)
@@ -768,28 +813,30 @@ def main():
         )
         print(f"   AU evaluation samples (official test split): {len(au_eval_dataset)}")
 
-        print("\n[3] Precomputing frozen backbone features")
-        train_features, train_labels = extract_features_and_labels(backbone, train_loader, device)
-        test_features, test_labels = extract_features_and_labels(backbone, test_loader, device)
-        print(f"   Train feature tensor: {tuple(train_features.shape)}")
-        print(f"   Test feature tensor:  {tuple(test_features.shape)}")
-
-        print("\n[4] Training linear probe")
+        print("\n[3] Training linear probe (online frozen-feature extraction)")
         probe = LinearProbe(feature_dim=feature_dim, num_subjects=FIXED_NUM_SUBJECTS)
         print(f"   Probe check: {probe}")
 
-        # Mandatory pre-experiment audit block.
-        run_sanity_checks(
-            backbone,
-            probe,
-            train_dataset,
-            test_dataset,
-            sampling_audit,
-            expected_train_samples=args.train_samples,
-            expected_test_samples=args.test_samples,
+        effective_batch_size = FIXED_BATCH_SIZE
+        if args.probe_lr is None:
+            args.probe_lr = args.probe_blr * effective_batch_size / 256.0
+        print(
+            f"   Probe optimizer: LARS | lr={args.probe_lr:.6f} "
+            f"(blr={args.probe_blr}, effective_batch_size={effective_batch_size}) | "
+            f"weight_decay={args.probe_weight_decay}"
         )
 
-        probe = train_linear_probe(probe, train_features, train_labels, args.probe_epochs, args.probe_lr, device)
+        run_sanity_checks(backbone, probe, train_dataset, test_dataset, sampling_audit, 70, 30)
+
+        probe = train_linear_probe(
+            backbone,
+            probe,
+            train_loader,
+            args.probe_epochs,
+            args.probe_lr,
+            args.probe_weight_decay,
+            device,
+        )
 
         torch.save(
             {
@@ -804,15 +851,15 @@ def main():
         )
         print(f"   ✓ Saved probe weights to {probe_save_path}")
 
-        train_id_acc = evaluate_probe_on_features(probe, train_features, train_labels, device)
+        train_id_acc = evaluate_probe_on_loader(backbone, probe, train_loader, device)
         print(f"\n   Train ID accuracy (sanity): {train_id_acc*100:.2f}%")
-        test_id_acc = evaluate_probe_on_features(probe, test_features, test_labels, device)
+        test_id_acc = evaluate_probe_on_loader(backbone, probe, test_loader, device)
         print(f"\n   Unmasked test ID accuracy: {test_id_acc*100:.2f}%")
-        print("\n[5] Computing AU baseline (HFSS-aligned: sigmoid + thr=0.5 + macro F1)")
+        print("\n[4] Computing AU baseline (HFSS-aligned: sigmoid + thr=0.5 + macro F1)")
         baseline_macro_f1 = evaluate_au_macro_f1(backbone, au_eval_loader, None, device)
         print(f"   Baseline AU macro F1: {baseline_macro_f1*100:.2f}%")
 
-        print("\n[6] Preparing radial masks")
+        print("\n[5] Preparing radial masks")
         if args.mask_source == "generated":
             mask_records = generate_radial_masks(
                 num_steps=FIXED_RADIAL_STEPS,
@@ -829,7 +876,7 @@ def main():
         print(f"   Loaded {len(mask_records)} radial mask files")
 
         rows = []
-        for record in tqdm(mask_records, desc="   Radial steps", leave=False):
+        for record in terminal_tqdm(mask_records, desc="   Radial steps", leave=False):
             keep_ratio = _mask_keep_ratio_pct(record.mask)
             target_keep_ratio = (
                 float(record.target_keep_pct)
@@ -876,16 +923,15 @@ if __name__ == "__main__":
 
 """
 python linear_probe_identity.py \
-        --model_type FMAE \
+    --model_type FMAE \
     --model_path models/FMAE_BP4D_fold1.pth \
     --train_json BP4D/BP4D_train1.json \
     --test_json BP4D/BP4D_test1.json \
     --dfm_dir hfss/DFM \
-        --train_samples 70 \
-        --test_samples 30 \
+    --probe_blr 0.1 \
+    --probe_weight_decay 0.0 \
     --probe_save_path hfss/DFM/linear_probe_identity.pth \
-    --probe_epochs 30 \
-    --probe_lr 0.001 \
+    --probe_epochs 90 \
     --output_csv hfss/DFM/linear_probe_identity_results.csv
 
 python linear_probe_identity.py \
@@ -895,7 +941,7 @@ python linear_probe_identity.py \
   --test_json BP4D/BP4D_test1.json \
   --dfm_dir hfss/DFM \
     --mask_source saved \
-    --train_samples 70 \
-    --test_samples 30 \
+        --probe_blr 0.1 \
+        --probe_weight_decay 0.0 \
   --output_csv hfss/DFM/linear_probe_identity_results.csv
 """

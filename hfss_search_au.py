@@ -113,7 +113,13 @@ def parse_keep_ranges(config_str):
 
 
 def load_model(model_path, model_type='FMAE', device='cuda'):
-    """Load AU detection model"""
+    """Load AU detection model
+    
+    Handles mixed checkpoint formats:
+    - FMAE checkpoints work with FMAE model_type
+    - IAT checkpoints work with IAT model_type
+    - FMAE checkpoints can be loaded into IAT model (ID_head uninitialized)
+    """
     grad_reverse = 1.0 if model_type == 'IAT' else 0.0
     num_subjects = 41 if model_type == 'IAT' else 0
     
@@ -127,10 +133,23 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
     
     checkpoint = torch.load(model_path, map_location='cpu')
     state_dict = checkpoint.get('model', checkpoint)
-    model.load_state_dict(state_dict, strict=True)
+    
+    try:
+        # Try strict loading first (all keys must match exactly)
+        model.load_state_dict(state_dict, strict=True)
+    except RuntimeError as e:
+        if 'ID_head' in str(e) and model_type == 'IAT':
+            # Loading FMAE checkpoint into IAT model: missing ID_head is expected
+            print(f"⚠ ID_head parameters not found in checkpoint (using FMAE weights for IAT model).")
+            print(f"  Loading with strict=False. ID_head will use random initialization.")
+            model.load_state_dict(state_dict, strict=False)
+        else:
+            # Other loading errors should be raised
+            raise
+    
     model = model.to(device).eval()
     
-    print(f"✓ Loaded {model_type} model")
+    print(f"✓ Loaded {model_type} model from {model_path}")
     return model
 
 
@@ -527,6 +546,128 @@ def print_per_au_results(per_au, stage, mask_id):
     for au, vals in per_au.items():
         bar = '▓' * int(abs(vals['drop']) * 100 / 5)  # 1 block per 5% drop
         print(f"     AU{au:02d}: F1={vals['f1']*100:.1f}%  drop={vals['drop']*100:+.1f}%  {bar}")
+
+
+@inference_decorator()
+def evaluate_mask_identity(model, dataloader, mask_transform, device, model_type='FMAE', timing_state=None):
+    """Evaluate subject ID classification accuracy under frequency mask.
+    
+    For IAT model: applies mask in Fourier domain, runs inference, extracts output[1] (ID head logits),
+    computes classification accuracy against ground truth subject IDs.
+    
+    For FMAE model: returns empty dict (no ID head).
+    
+    Args:
+        model: Vision Transformer (FMAE or IAT)
+        dataloader: DataLoader yielding (image, (AU_labels, ID_labels))
+        mask_transform: White_Mask object with .mask attribute
+        device: CUDA or CPU
+        model_type: 'FMAE' or 'IAT'
+        timing_state: Optional dict to accumulate timing stats
+    
+    Returns:
+        dict with 'accuracy' key, or empty dict for FMAE
+    """
+    if model_type != 'IAT':
+        return {}
+    
+    all_preds = []
+    all_labels = []
+
+    # Extract mask and convert to device tensor (same pattern as evaluate_mask_per_au)
+    mask_t = None
+    if hasattr(mask_transform, 'mask'):
+        mask_np = mask_transform.mask
+        if getattr(mask_transform, 'flip', False):
+            mask_np = 1 - mask_np
+        # Broadcast mask: [1, 1, H, W] for per-channel multiplication
+        mask_t = torch.as_tensor(mask_np, dtype=torch.float32, device=device).unsqueeze(0).unsqueeze(0)
+
+    profile = timing_state is not None
+    eval_t0 = time.perf_counter() if profile else None
+    if profile:
+        timing_state['calls'] = timing_state.get('calls', 0) + 1
+        wait_t0 = time.perf_counter()
+
+    for images, (au_labels, id_labels_onehot) in dataloader:
+        if profile:
+            now = time.perf_counter()
+            _timing_add(timing_state, 'data_wait_s', now - wait_t0)
+            _sync_if_cuda(device, True)
+            t_h2d = time.perf_counter()
+        
+        images = images.to(device, non_blocking=True)
+        id_labels_onehot = id_labels_onehot.to(device, non_blocking=True)
+        id_labels = torch.argmax(id_labels_onehot, dim=1)  # Convert one-hot to class indices
+        
+        if profile:
+            _sync_if_cuda(device, True)
+            _timing_add(timing_state, 'h2d_s', time.perf_counter() - t_h2d)
+            timing_state['batches'] = timing_state.get('batches', 0) + 1
+
+        # Apply frequency mask in Fourier domain
+        if mask_t is not None:
+            if profile:
+                _sync_if_cuda(device, True)
+                t_fft = time.perf_counter()
+            freq = torch.fft.fftshift(torch.fft.fft2(images, dim=(-2, -1)), dim=(-2, -1))
+            if profile:
+                _sync_if_cuda(device, True)
+                _timing_add(timing_state, 'fft_s', time.perf_counter() - t_fft)
+
+                _sync_if_cuda(device, True)
+                t_mask = time.perf_counter()
+            # Per-channel complex frequency masking
+            freq = freq * mask_t
+            if profile:
+                _sync_if_cuda(device, True)
+                _timing_add(timing_state, 'mask_mul_s', time.perf_counter() - t_mask)
+
+                _sync_if_cuda(device, True)
+                t_ifft = time.perf_counter()
+            # Reconstruct image from masked frequency (keep real part)
+            images = torch.fft.ifft2(torch.fft.ifftshift(freq, dim=(-2, -1)), dim=(-2, -1)).real.float()
+            if profile:
+                _sync_if_cuda(device, True)
+                _timing_add(timing_state, 'ifft_s', time.perf_counter() - t_ifft)
+
+        if profile:
+            _sync_if_cuda(device, True)
+            t_infer = time.perf_counter()
+        
+        # Run inference on masked images
+        with torch.no_grad():
+            output = model(images)
+        
+        if profile:
+            _sync_if_cuda(device, True)
+            _timing_add(timing_state, 'infer_s', time.perf_counter() - t_infer)
+            t_post = time.perf_counter()
+
+        # Extract ID head output (output[1] for IAT)
+        id_logits = output[1]  # (batch_size, 41)
+        id_preds = torch.argmax(id_logits, dim=1)
+        
+        all_preds.append(id_preds.cpu().numpy())
+        all_labels.append(id_labels.cpu().numpy())
+        
+        if profile:
+            _timing_add(timing_state, 'post_s', time.perf_counter() - t_post)
+            wait_t0 = time.perf_counter()
+
+    if not all_preds:
+        return {}
+
+    all_preds = np.concatenate(all_preds, axis=0)
+    all_labels = np.concatenate(all_labels, axis=0)
+    
+    # Compute classification accuracy
+    accuracy = np.mean(all_preds == all_labels)
+    
+    if profile:
+        _timing_add(timing_state, 'eval_total_s', time.perf_counter() - eval_t0)
+    
+    return {'accuracy': accuracy}
 
 
 def save_per_au_grouped_bar(baseline_per_au, masked_per_au, stage, model_type, save_dir):
@@ -1039,6 +1180,17 @@ def run_random_hfss_search(
                     au: vals.get('drop', 0.0) for au, vals in best_per_au.items()
                 }
 
+            # Identity prediction evaluation (IAT only)
+            if args.model_type == 'IAT' and best_mask_array is not None:
+                print(f"   🔐 Identity evaluation for {stage}...")
+                id_result = evaluate_mask_identity(
+                    model, dataloader, best_mask, FIXED_DEVICE,
+                    model_type=args.model_type)
+                if id_result:
+                    print(f"     Subject ID accuracy: {id_result['accuracy']*100:.1f}%")
+                else:
+                    print(f"     [ID evaluation skipped - model_type={args.model_type}]")
+
             if args.visualize_masks and best_mask_array is not None:
                 vis_path = target_figures_dir / f"{args.model_type}_{stage}{target_suffix}_best_mask_advanced.png"
                 visualize_mask_advanced(best_mask_array, vis_path, stage, 'best')
@@ -1159,6 +1311,17 @@ def run_radial_hfss_search(
                     model_type=f"{args.model_type}{target_suffix}",
                     save_dir=target_figures_dir,
                 )
+
+            # Identity prediction evaluation (IAT only)
+            if args.model_type == 'IAT' and best_mask is not None:
+                print(f"   🔐 Identity evaluation for {stage_name}...")
+                id_result = evaluate_mask_identity(
+                    model, dataloader, best_mask, FIXED_DEVICE, 
+                    model_type=args.model_type)
+                if id_result:
+                    print(f"     Subject ID accuracy: {id_result['accuracy']*100:.1f}%")
+                else:
+                    print(f"     [ID evaluation skipped - model_type={args.model_type}]")
 
             if args.visualize_masks and best_mask is not None and hasattr(best_mask, 'mask'):
                 vis_path = target_figures_dir / f"{args.model_type}_{stage_name}{target_suffix}_best_mask_advanced.png"
