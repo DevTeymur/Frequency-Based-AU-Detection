@@ -1,6 +1,6 @@
 """
-Batch Analysis: Process multiple images with HFSS and save results
-Configurable to run on small sample or entire dataset
+Batch analysis for HFSS frequency filtering on BP4D.
+Processes a configurable test split and saves summary metrics and plots.
 """
 
 import json
@@ -687,6 +687,11 @@ def visualize_results(df, test_set_name):
 # ============================================================================
 # MAIN
 # ============================================================================
+"""
+Example runs:
+python batch_analysis.py
+Edit MODEL_TYPE, TEST_SETS, and FILTERS at the top before rerunning.
+"""
 def main():
     # Process each test set with its corresponding model
     for test_set in TEST_SETS:
