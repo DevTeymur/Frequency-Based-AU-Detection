@@ -65,7 +65,7 @@ FIXED_DEVICE = 'cuda'
 FIXED_SEED = 42
 FIXED_RADIAL_STEPS = 10
 FIXED_RADIAL_START_KEEP_PCT =100.0
-FIXED_RADIAL_DIRECTION = 'small_to_big'  # 'big_to_small' | 'small_to_big'
+FIXED_RADIAL_DIRECTION = 'big_to_small'  # 'big_to_small' | 'small_to_big'
 
 
 class TeeStream:
@@ -120,9 +120,18 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
     - IAT checkpoints work with IAT model_type
     - FMAE checkpoints can be loaded into IAT model (ID_head uninitialized)
     """
+    checkpoint = torch.load(model_path, map_location='cpu')
+    state_dict = checkpoint.get('model', checkpoint)
+
+    # Auto-correct model type when checkpoint clearly contains IAT ID head.
+    has_id_head = any(k.startswith('ID_head.') for k in state_dict.keys())
+    if has_id_head and model_type != 'IAT':
+        print("⚠ Checkpoint contains ID_head.* but --model_type is FMAE. Switching to IAT automatically.")
+        model_type = 'IAT'
+
     grad_reverse = 1.0 if model_type == 'IAT' else 0.0
     num_subjects = 41 if model_type == 'IAT' else 0
-    
+
     model = models_vit.vit_large_patch16(
         num_classes=12,
         num_subjects=num_subjects,
@@ -130,9 +139,6 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
         global_pool=True,
         grad_reverse=grad_reverse,
     )
-    
-    checkpoint = torch.load(model_path, map_location='cpu')
-    state_dict = checkpoint.get('model', checkpoint)
     
     try:
         # Try strict loading first (all keys must match exactly)
@@ -1234,15 +1240,15 @@ def run_radial_hfss_search(
     radial_mode = 'low-pass'
     radial_direction = FIXED_RADIAL_DIRECTION
     stage_masks = generate_radial_mask_candidates(
-        FIXED_RADIAL_STEPS,
+        args.radial_steps,
         mode=radial_mode,
-        start_keep_pct=FIXED_RADIAL_START_KEEP_PCT,
-        direction=radial_direction,
+        start_keep_pct=args.radial_start_keep_pct,
+        direction=args.radial_direction,
     )
     print(
-        f"   Direction: {radial_direction} "
-        f"| steps={FIXED_RADIAL_STEPS} "
-        f"| start_keep={FIXED_RADIAL_START_KEEP_PCT:.1f}%"
+        f"   Direction: {args.radial_direction} "
+        f"| steps={args.radial_steps} "
+        f"| start_keep={args.radial_start_keep_pct:.1f}%"
     )
     all_results = {}
 
@@ -1366,6 +1372,13 @@ def main():
                         help='For per-AU runs starting at stage2+, initialize parents from macro stage1 PKL')
     parser.add_argument('--profile_timing', action='store_true',
                         help='Print detailed timing breakdown for data/FFT/mask/inference during stage search')
+    parser.add_argument('--radial_steps', type=int, default=FIXED_RADIAL_STEPS,
+                        help='Number of radial keep-ratio steps')
+    parser.add_argument('--radial_start_keep_pct', type=float, default=FIXED_RADIAL_START_KEEP_PCT,
+                        help='Starting keep ratio percentage for radial mode')
+    parser.add_argument('--radial_direction', type=str, default=FIXED_RADIAL_DIRECTION,
+                        choices=['big_to_small', 'small_to_big'],
+                        help='Direction of radial keep-ratio progression')
     args = parser.parse_args()
 
     # Fixed runtime knobs (removed from CLI, values unchanged from previous defaults).
@@ -1514,6 +1527,10 @@ python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
     --test_json BP4D/BP4D_test1.json --num_samples 999999 \
     --search_mode radial --per_au_search --per_au_eval
 
+python hfss_search_au.py --model_path models/FMAE_IAT_BP4D_fold1.pth \
+    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+    --search_mode radial --per_au_search --per_au_eval
+
 8) RADIAL, FULL TEST SET, SINGLE AU (e.g. AU12)
 python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
     --test_json BP4D/BP4D_test1.json --num_samples 999999 \
@@ -1535,4 +1552,24 @@ The reason you still see all AUs printed is that the script also runs a per-AU r
 
 If you want, I can also show you the exact line that controls this output and how to turn it off.
 
+"""
+
+
+"""
+IAT
+
+python hfss_search_au.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+  --search_mode radial --per_au_search --per_au_eval
+
+hfss_run_20260510_232928.txt - IAT model
+
+
+FMAE
+
+python hfss_search_au.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+  --search_mode radial --per_au_search
+
+hfss_run_20260510_233437.txt - FMAE model
 """
