@@ -1,0 +1,101 @@
+======================================================================
+HFSS Search for AU Detection - FMAE
+Model: models/FMAE_BP4D_fold1.pth | Device: cuda
+Log file: hfss/logs/hfss_run_20260412_122836.txt
+======================================================================
+using ID adversarial: 0.0
+num AUs: 12, num subjects: 0
+✓ Loaded FMAE model
+building dataset from: BP4D/BP4D_test1.json
+dataset path: BP4D/BP4D_cropped/
+<util.datasets.BP4D_dataset object at 0x14bfdc427eb0>
+✓ Loaded 50605 TEST samples (evaluating on unseen data)
+
+🎯 Per-AU search mode ON | targets: [12]
+
+==================================================
+Search target: AU12
+==================================================
+   Keep-ratio target for stage3: 20.0% - 40.0%
+   ♻ Reusing saved stage masks from hfss/DFM/AU12/FMAE_stage3_AU12_DFMs.pkl (count=10)
+   Keep-ratio target for stage4: 15.0% - 30.0%
+
+🔍 Stage stage4: Testing 30 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+
+   stage4 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=85.71%  |  drop=+3.29%  |  white=752  | keep=20.4% ◀ best
+     mask 29: F1=85.32%  |  drop=+3.68%  |  white=1416  | keep=29.0%
+     mask 10: F1=84.93%  |  drop=+4.07%  |  white=1040  | keep=23.2%
+     mask 27: F1=81.57%  |  drop=+7.43%  |  white=856  | keep=23.2%
+     mask 11: F1=80.99%  |  drop=+8.02%  |  white=1768  | keep=22.1%
+     mask 25: F1=80.98%  |  drop=+8.02%  |  white=992  | keep=24.5%
+     mask 16: F1=79.59%  |  drop=+9.41%  |  white=1992  | keep=24.0%
+     mask 15: F1=78.82%  |  drop=+10.18%  |  white=2376  | keep=27.7%
+     mask  1: F1=76.41%  |  drop=+12.60%  |  white=1240  | keep=26.1%
+     mask 28: F1=74.80%  |  drop=+14.20%  |  white=1584  | keep=20.6%
+     mask 23: F1=72.35%  |  drop=+16.65%  |  white=800  | keep=24.5%
+     mask 18: F1=72.06%  |  drop=+16.94%  |  white=672  | keep=16.4%
+     mask  3: F1=71.72%  |  drop=+17.28%  |  white=2304  | keep=28.7%
+     mask 12: F1=71.70%  |  drop=+17.31%  |  white=1232  | keep=15.8%
+     mask 19: F1=71.69%  |  drop=+17.31%  |  white=632  | keep=20.4%
+     mask 14: F1=71.69%  |  drop=+17.31%  |  white=864  | keep=26.5%
+     mask  2: F1=71.16%  |  drop=+17.84%  |  white=1568  | keep=27.9%
+     mask 13: F1=70.24%  |  drop=+18.76%  |  white=968  | keep=20.0%
+     mask  7: F1=68.88%  |  drop=+20.12%  |  white=2176  | keep=24.8%
+     mask  6: F1=65.15%  |  drop=+23.85%  |  white=1360  | keep=22.4%
+     mask  9: F1=61.22%  |  drop=+27.78%  |  white=736  | keep=22.4%
+     mask  5: F1=60.42%  |  drop=+28.58%  |  white=768  | keep=16.9%
+     mask 22: F1=54.10%  |  drop=+34.90%  |  white=1392  | keep=26.2%
+     mask  8: F1=41.32%  |  drop=+47.68%  |  white=1704  | keep=27.9%
+     mask 17: F1=36.03%  |  drop=+52.98%  |  white=1648  | keep=21.6%
+     mask 21: F1=11.47%  |  drop=+77.53%  |  white=1296  | keep=18.6%
+     mask 24: F1=4.00%  |  drop=+85.00%  |  white=1216  | keep=15.8%
+     mask  4: F1=3.42%  |  drop=+85.58%  |  white=728  | keep=18.5%
+     mask 20: F1=2.62%  |  drop=+86.39%  |  white=1088  | keep=26.2%
+     mask 26: F1=2.38%  |  drop=+86.62%  |  white=1592  | keep=18.8%
+   No mask is within 1.0% of baseline.
+   ✓ Saved DFMs to hfss/DFM/AU12/FMAE_stage4_AU12_DFMs.pkl
+   Keep-ratio target for stage5: 8.0% - 20.0%
+
+🔍 Stage stage5: Testing 30 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+
+   stage5 — all masks (sorted by masked F1, high→low):
+     mask 26: F1=76.10%  |  drop=+12.90%  |  white=128  | keep=17.9% ◀ best
+     mask 11: F1=73.45%  |  drop=+15.55%  |  white=288  | keep=17.6%
+     mask  6: F1=72.81%  |  drop=+16.20%  |  white=192  | keep=15.0%
+     mask 21: F1=72.80%  |  drop=+16.21%  |  white=112  | keep=11.8%
+     mask 16: F1=71.72%  |  drop=+17.28%  |  white=120  | keep=14.7%
+     mask  4: F1=71.69%  |  drop=+17.31%  |  white=416  | keep=19.2%
+     mask 13: F1=71.69%  |  drop=+17.31%  |  white=128  | keep=14.3%
+     mask 22: F1=71.69%  |  drop=+17.31%  |  white=336  | keep=18.2%
+     mask  1: F1=71.61%  |  drop=+17.39%  |  white=160  | keep=11.8%
+     mask 24: F1=71.58%  |  drop=+17.42%  |  white=256  | keep=19.6%
+     mask  7: F1=71.48%  |  drop=+17.52%  |  white=160  | keep=14.3%
+     mask 18: F1=71.31%  |  drop=+17.69%  |  white=192  | keep=12.1%
+     mask 27: F1=70.62%  |  drop=+18.38%  |  white=56  | keep=8.8%
+     mask  8: F1=70.61%  |  drop=+18.39%  |  white=160  | keep=17.5%
+     mask 23: F1=70.48%  |  drop=+18.53%  |  white=120  | keep=17.6%
+     mask 17: F1=70.34%  |  drop=+18.67%  |  white=216  | keep=19.1%
+     mask  9: F1=70.23%  |  drop=+18.77%  |  white=96  | keep=10.7%
+     mask 15: F1=69.80%  |  drop=+19.20%  |  white=128  | keep=14.3%
+     mask 28: F1=68.25%  |  drop=+20.76%  |  white=144  | keep=8.9%
+     mask 12: F1=68.12%  |  drop=+20.88%  |  white=208  | keep=15.7%
+     mask 20: F1=68.07%  |  drop=+20.93%  |  white=304  | keep=19.6%
+     mask 29: F1=66.83%  |  drop=+22.18%  |  white=112  | keep=14.3%
+     mask  0: F1=66.29%  |  drop=+22.71%  |  white=176  | keep=9.6%
+     mask 14: F1=61.65%  |  drop=+27.36%  |  white=272  | keep=15.2%
+     mask 19: F1=61.50%  |  drop=+27.50%  |  white=152  | keep=17.5%
+     mask 25: F1=60.50%  |  drop=+28.50%  |  white=128  | keep=11.8%
+     mask  3: F1=57.58%  |  drop=+31.42%  |  white=104  | keep=14.3%
+     mask  5: F1=36.66%  |  drop=+52.34%  |  white=192  | keep=8.0%
+     mask 10: F1=36.17%  |  drop=+52.83%  |  white=232  | keep=17.0%
+     mask  2: F1=32.33%  |  drop=+56.67%  |  white=72  | keep=8.8%
+   No mask is within 1.0% of baseline.
+   ✓ Saved DFMs to hfss/DFM/AU12/FMAE_stage5_AU12_DFMs.pkl
+   ⛔ Early stop: best drop 12.90% > stop threshold 5.00%
+
+======================================================================
+✅ HFSS Search Complete!
+======================================================================

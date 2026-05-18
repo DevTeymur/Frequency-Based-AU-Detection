@@ -1,0 +1,1239 @@
+======================================================================
+HFSS Search for AU Detection - FMAE
+Model: models/FMAE_BP4D_fold1.pth | Device: cuda
+Seed: 42
+Log file: hfss/logs/hfss_run_20260511_201531.txt
+======================================================================
+using ID adversarial: 0.0
+num AUs: 12, num subjects: 0
+✓ Loaded FMAE model from models/FMAE_BP4D_fold1.pth
+building dataset from: BP4D/BP4D_test1.json
+dataset path: BP4D/BP4D_cropped/
+<util.datasets.BP4D_dataset object at 0x14b46cf852b0>
+✓ Loaded 50605 TEST samples (evaluating on unseen data)
+
+🧭 Radial HFSS mode ON (deterministic masks)
+   Direction: big_to_small | steps=10 | start_keep=100.0%
+
+==================================================
+Search target: AU01
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [01:59<00:00, 119.95s/it]   Testing masks: 100%|##########| 1/1 [01:59<00:00, 119.95s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=57.81%  |  drop=-0.01%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=57.81% | drop=-0.01% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_01_AU01_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [01:59<00:00, 119.91s/it]   Testing masks: 100%|##########| 1/1 [01:59<00:00, 119.91s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=57.79%  |  drop=+0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=57.79% | drop=+0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_02_AU01_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [01:59<00:00, 119.92s/it]   Testing masks: 100%|##########| 1/1 [01:59<00:00, 119.92s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=57.82%  |  drop=-0.02%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=57.82% | drop=-0.02% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_03_AU01_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.61s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.61s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=57.83%  |  drop=-0.03%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=57.83% | drop=-0.03% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_04_AU01_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.79s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.79s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.24%  |  drop=-0.44%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.24% | drop=-0.44% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_05_AU01_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.33s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.34s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.43%  |  drop=-0.63%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.43% | drop=-0.63% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_06_AU01_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.12s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.12s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.81%  |  drop=-1.01%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.81% | drop=-1.01% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_07_AU01_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.74s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.74s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.67%  |  drop=-0.87%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.67% | drop=-0.87% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_08_AU01_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.08s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.08s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.76%  |  drop=-0.96%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.76% | drop=-0.96% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_09_AU01_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.24s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.24s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=56.14%  |  drop=+1.66%  |  white=5025  | keep=10.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU01/FMAE_radial_step_10_AU01_DFMs.pkl
+
+==================================================
+Search target: AU02
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.95s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.95s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.05%  |  drop=+0.02%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.05% | drop=+0.02% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_01_AU02_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.97s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.97s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.04%  |  drop=+0.03%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.04% | drop=+0.03% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_02_AU02_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.50s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.50s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.13%  |  drop=-0.06%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.13% | drop=-0.06% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_03_AU02_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:02<00:00, 122.46s/it]   Testing masks: 100%|##########| 1/1 [02:02<00:00, 122.49s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.01%  |  drop=+0.06%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.01% | drop=+0.06% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_04_AU02_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.11s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.11s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.33%  |  drop=-0.26%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.33% | drop=-0.26% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_05_AU02_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.50s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.51s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.33%  |  drop=-0.26%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.33% | drop=-0.26% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_06_AU02_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.18s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.19s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.92%  |  drop=-0.85%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.92% | drop=-0.85% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_07_AU02_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.96s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.96s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.15%  |  drop=-1.08%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.15% | drop=-1.08% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_08_AU02_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.42s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.42s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.05%  |  drop=-0.98%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.05% | drop=-0.98% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_09_AU02_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.16s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.16s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.80%  |  drop=+1.27%  |  white=5025  | keep=10.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU02/FMAE_radial_step_10_AU02_DFMs.pkl
+
+==================================================
+Search target: AU04
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.04s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.04s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=55.97%  |  drop=+0.01%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=55.97% | drop=+0.01% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_01_AU04_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.50s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.52s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=55.99%  |  drop=-0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=55.99% | drop=-0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_02_AU04_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.99s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.99s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=55.96%  |  drop=+0.02%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=55.96% | drop=+0.02% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_03_AU04_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.02s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.02s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=55.70%  |  drop=+0.28%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=55.70% | drop=+0.28% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_04_AU04_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.92s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.94s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=55.68%  |  drop=+0.30%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=55.68% | drop=+0.30% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_05_AU04_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.80s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.80s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=55.63%  |  drop=+0.35%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=55.63% | drop=+0.35% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_06_AU04_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.91s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.93s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=55.43%  |  drop=+0.56%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=55.43% | drop=+0.56% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_07_AU04_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.13s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.14s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=55.37%  |  drop=+0.61%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=55.37% | drop=+0.61% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_08_AU04_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.19s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.19s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=55.57%  |  drop=+0.41%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=55.57% | drop=+0.41% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_09_AU04_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.96s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.96s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=56.51%  |  drop=-0.53%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=56.51% | drop=-0.53% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/FMAE_radial_step_10_AU04_DFMs.pkl
+
+==================================================
+Search target: AU06
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.18s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.18s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.83%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.83% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_01_AU06_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.97s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.99s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.81%  |  drop=+0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.81% | drop=+0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_02_AU06_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.28s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.28s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.81%  |  drop=+0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.81% | drop=+0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_03_AU06_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.01s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.02s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.72%  |  drop=+0.11%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.72% | drop=+0.11% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_04_AU06_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.65s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.65s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.65%  |  drop=+0.17%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.65% | drop=+0.17% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_05_AU06_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.29s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.29s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.64%  |  drop=+0.19%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.64% | drop=+0.19% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_06_AU06_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.08s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.08s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.57%  |  drop=+0.26%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.57% | drop=+0.26% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_07_AU06_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.03s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.03s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.49%  |  drop=+0.34%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.49% | drop=+0.34% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_08_AU06_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.05s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.06s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.76%  |  drop=+0.07%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.76% | drop=+0.07% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_09_AU06_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.00s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.00s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.93%  |  drop=-0.10%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.93% | drop=-0.10% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/FMAE_radial_step_10_AU06_DFMs.pkl
+
+==================================================
+Search target: AU07
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.15s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.17s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=81.07%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=81.07% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_01_AU07_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.28s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.28s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=81.08%  |  drop=-0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=81.08% | drop=-0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_02_AU07_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.81s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.83s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=81.06%  |  drop=+0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=81.06% | drop=+0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_03_AU07_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.45s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.49s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.98%  |  drop=+0.09%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.98% | drop=+0.09% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_04_AU07_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.06s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.09s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.91%  |  drop=+0.16%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.91% | drop=+0.16% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_05_AU07_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.10s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.12s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.78%  |  drop=+0.30%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.78% | drop=+0.30% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_06_AU07_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.53s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.53s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.85%  |  drop=+0.23%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.85% | drop=+0.23% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_07_AU07_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.16s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.18s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.82%  |  drop=+0.26%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.82% | drop=+0.26% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_08_AU07_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.92s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.92s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=81.15%  |  drop=-0.08%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=81.15% | drop=-0.08% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_09_AU07_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.39s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.39s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=81.54%  |  drop=-0.46%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=81.54% | drop=-0.46% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/FMAE_radial_step_10_AU07_DFMs.pkl
+
+==================================================
+Search target: AU10
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.81s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.82s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=77.04%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=77.04% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_01_AU10_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.89s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.90s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=77.04%  |  drop=+0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=77.04% | drop=+0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_02_AU10_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.05s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.07s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=77.04%  |  drop=+0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=77.04% | drop=+0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_03_AU10_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.83s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.83s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.98%  |  drop=+0.07%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.98% | drop=+0.07% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_04_AU10_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.57s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.59s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.99%  |  drop=+0.06%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.99% | drop=+0.06% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_05_AU10_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.03s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.03s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=77.05%  |  drop=+0.00%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=77.05% | drop=+0.00% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_06_AU10_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.97s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.99s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=77.09%  |  drop=-0.04%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=77.09% | drop=-0.04% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_07_AU10_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.87s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.87s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=77.20%  |  drop=-0.15%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=77.20% | drop=-0.15% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_08_AU10_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.02s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.04s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=77.47%  |  drop=-0.42%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=77.47% | drop=-0.42% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_09_AU10_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.33s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.33s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=78.70%  |  drop=-1.65%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=78.70% | drop=-1.65% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/FMAE_radial_step_10_AU10_DFMs.pkl
+
+==================================================
+Search target: AU12
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.10s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.12s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.00%  |  drop=-0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.00% | drop=-0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_01_AU12_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.03s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.03s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.00%  |  drop=+0.00%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.00% | drop=+0.00% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_02_AU12_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.82s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.82s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.01%  |  drop=-0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.01% | drop=-0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_03_AU12_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.96s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.96s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.02%  |  drop=-0.02%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.02% | drop=-0.02% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_04_AU12_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.80s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.80s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=88.93%  |  drop=+0.07%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=88.93% | drop=+0.07% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_05_AU12_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.85s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.85s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=88.91%  |  drop=+0.09%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=88.91% | drop=+0.09% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_06_AU12_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.25s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.27s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=88.94%  |  drop=+0.06%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=88.94% | drop=+0.06% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_07_AU12_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.72s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.72s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=88.87%  |  drop=+0.13%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=88.87% | drop=+0.13% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_08_AU12_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.70s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.70s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=88.92%  |  drop=+0.08%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=88.92% | drop=+0.08% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_09_AU12_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.78s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.78s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.37%  |  drop=-0.36%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.37% | drop=-0.36% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/FMAE_radial_step_10_AU12_DFMs.pkl
+
+==================================================
+Search target: AU14
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.76s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.78s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=62.47%  |  drop=-0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=62.47% | drop=-0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_01_AU14_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.01s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.01s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=62.50%  |  drop=-0.03%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=62.50% | drop=-0.03% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_02_AU14_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.86s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.86s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=62.52%  |  drop=-0.05%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=62.52% | drop=-0.05% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_03_AU14_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.14s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.14s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=62.63%  |  drop=-0.17%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=62.63% | drop=-0.17% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_04_AU14_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.10s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.10s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=62.71%  |  drop=-0.25%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=62.71% | drop=-0.25% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_05_AU14_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.03s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.03s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=62.72%  |  drop=-0.26%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=62.72% | drop=-0.26% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_06_AU14_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.62s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.62s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=62.86%  |  drop=-0.40%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=62.86% | drop=-0.40% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_07_AU14_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.98s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.98s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.00%  |  drop=-0.54%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.00% | drop=-0.54% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_08_AU14_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.76s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.76s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.30%  |  drop=-0.84%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.30% | drop=-0.84% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_09_AU14_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.75s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.75s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.10%  |  drop=-0.64%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.10% | drop=-0.64% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/FMAE_radial_step_10_AU14_DFMs.pkl
+
+==================================================
+Search target: AU15
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.93s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.93s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=35.95%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=35.95% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_01_AU15_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.10s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.11s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=35.91%  |  drop=+0.04%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=35.91% | drop=+0.04% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_02_AU15_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.60s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.62s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=35.78%  |  drop=+0.17%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=35.78% | drop=+0.17% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_03_AU15_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.53s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.53s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=35.53%  |  drop=+0.42%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=35.53% | drop=+0.42% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_04_AU15_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.19s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.19s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=35.80%  |  drop=+0.15%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=35.80% | drop=+0.15% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_05_AU15_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.11s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.13s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=35.87%  |  drop=+0.08%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=35.87% | drop=+0.08% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_06_AU15_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.21s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.21s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=35.69%  |  drop=+0.26%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=35.69% | drop=+0.26% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_07_AU15_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:02<00:00, 122.41s/it]   Testing masks: 100%|##########| 1/1 [02:02<00:00, 122.42s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=35.94%  |  drop=+0.00%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=35.94% | drop=+0.00% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_08_AU15_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.37s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.37s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=35.77%  |  drop=+0.18%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=35.77% | drop=+0.18% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_09_AU15_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.36s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.38s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=33.27%  |  drop=+2.68%  |  white=5025  | keep=10.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU15/FMAE_radial_step_10_AU15_DFMs.pkl
+
+==================================================
+Search target: AU17
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.22s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.22s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.95%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.95% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_01_AU17_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.60s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.62s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.95%  |  drop=+0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.95% | drop=+0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_02_AU17_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.35s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.35s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.96%  |  drop=-0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.96% | drop=-0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_03_AU17_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.06s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.10s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.77%  |  drop=+0.18%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.77% | drop=+0.18% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_04_AU17_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.25s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.25s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.55%  |  drop=+0.40%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.55% | drop=+0.40% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_05_AU17_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.32s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.34s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.67%  |  drop=+0.28%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.67% | drop=+0.28% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_06_AU17_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.42s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.42s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.01%  |  drop=+0.94%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.01% | drop=+0.94% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_07_AU17_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.34s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.34s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.89%  |  drop=+1.06%  |  white=15053  | keep=30.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_08_AU17_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.48s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.48s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.48%  |  drop=+1.47%  |  white=10037  | keep=20.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_09_AU17_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.40s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.40s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=59.96%  |  drop=+1.99%  |  white=5025  | keep=10.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU17/FMAE_radial_step_10_AU17_DFMs.pkl
+
+==================================================
+Search target: AU23
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.05s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.05s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=49.72%  |  drop=-0.02%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=49.72% | drop=-0.02% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_01_AU23_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.11s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.11s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=49.72%  |  drop=-0.02%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=49.72% | drop=-0.02% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_02_AU23_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.85s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.85s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=49.63%  |  drop=+0.07%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=49.63% | drop=+0.07% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_03_AU23_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.29s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.29s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=49.51%  |  drop=+0.19%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=49.51% | drop=+0.19% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_04_AU23_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.73s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.73s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=49.38%  |  drop=+0.33%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=49.38% | drop=+0.33% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_05_AU23_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.47s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.47s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=49.24%  |  drop=+0.46%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=49.24% | drop=+0.46% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_06_AU23_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.91s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.91s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=49.15%  |  drop=+0.55%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=49.15% | drop=+0.55% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_07_AU23_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.97s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.97s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=49.15%  |  drop=+0.56%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=49.15% | drop=+0.56% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_08_AU23_DFMs.pkl
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.29s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.29s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=49.03%  |  drop=+0.67%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=49.03% | drop=+0.67% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_09_AU23_DFMs.pkl
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.61s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.61s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=45.83%  |  drop=+3.87%  |  white=5025  | keep=10.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU23/FMAE_radial_step_10_AU23_DFMs.pkl
+
+==================================================
+Search target: AU24
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 54.20%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.50s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.50s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=54.20%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=54.20% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/FMAE_radial_step_01_AU24_DFMs.pkl
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 54.20%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.69s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.69s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=54.22%  |  drop=-0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=54.22% | drop=-0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/FMAE_radial_step_02_AU24_DFMs.pkl
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 54.20%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.26s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.26s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=54.23%  |  drop=-0.03%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=54.23% | drop=-0.03% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/FMAE_radial_step_03_AU24_DFMs.pkl
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 54.20%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.26s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.26s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=54.17%  |  drop=+0.04%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=54.17% | drop=+0.04% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/FMAE_radial_step_04_AU24_DFMs.pkl
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 54.20%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.96s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.96s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.84%  |  drop=+0.37%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.84% | drop=+0.37% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/FMAE_radial_step_05_AU24_DFMs.pkl
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 54.20%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.09s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.09s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=54.09%  |  drop=+0.11%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=54.09% | drop=+0.11% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/FMAE_radial_step_06_AU24_DFMs.pkl
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 54.20%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.17s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.17s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.56%  |  drop=+0.64%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.56% | drop=+0.64% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/FMAE_radial_step_07_AU24_DFMs.pkl
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 54.20%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]

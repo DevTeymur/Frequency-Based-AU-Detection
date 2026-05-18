@@ -1,0 +1,1902 @@
+======================================================================
+HFSS Search for AU Detection - FMAE
+Model: models/FMAE_BP4D_fold1.pth | Device: cuda
+Log file: hfss/logs/hfss_run_20260331_172751.txt
+======================================================================
+using ID adversarial: 0.0
+num AUs: 12, num subjects: 0
+✓ Loaded FMAE model
+building dataset from: BP4D/BP4D_test1.json
+dataset path: BP4D/BP4D_cropped/
+<util.datasets.BP4D_dataset object at 0x151e97cb5e50>
+✓ Loaded 50605 TEST samples (evaluating on unseen data)
+
+🎯 Per-AU search mode ON | targets: [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23, 24]
+
+==================================================
+Search target: AU01
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask 18: F1=58.83%  |  drop=-1.03%  |  white=31360  | keep=62.5% ◀ best
+     mask 16: F1=58.63%  |  drop=-0.83%  |  white=32928  | keep=66.7%
+     mask 28: F1=58.62%  |  drop=-0.82%  |  white=34496  | keep=66.7%
+     mask 27: F1=58.40%  |  drop=-0.60%  |  white=37632  | keep=75.0%
+     mask 21: F1=58.37%  |  drop=-0.57%  |  white=37632  | keep=75.0%
+     mask 25: F1=58.21%  |  drop=-0.41%  |  white=31360  | keep=73.3%
+     mask 23: F1=58.18%  |  drop=-0.38%  |  white=45472  | keep=69.6%
+     mask  0: F1=58.07%  |  drop=-0.27%  |  white=37632  | keep=75.0%
+     mask  9: F1=57.90%  |  drop=-0.10%  |  white=37632  | keep=75.0%
+     mask  7: F1=57.86%  |  drop=-0.06%  |  white=32928  | keep=60.0%
+     mask 29: F1=57.85%  |  drop=-0.05%  |  white=47040  | keep=69.6%
+     mask  4: F1=57.84%  |  drop=-0.04%  |  white=34496  | keep=73.3%
+     mask 26: F1=57.83%  |  drop=-0.03%  |  white=43904  | keep=65.2%
+     mask 11: F1=57.81%  |  drop=-0.01%  |  white=47040  | keep=73.9%
+     mask 22: F1=57.76%  |  drop=+0.04%  |  white=28224  | keep=60.0%
+     mask  5: F1=57.72%  |  drop=+0.08%  |  white=47040  | keep=69.6%
+     mask  8: F1=57.71%  |  drop=+0.09%  |  white=48608  | keep=73.9%
+     mask 14: F1=57.34%  |  drop=+0.46%  |  white=43904  | keep=69.6%
+     mask 10: F1=57.32%  |  drop=+0.48%  |  white=31360  | keep=73.3%
+     mask 13: F1=57.12%  |  drop=+0.68%  |  white=37632  | keep=80.0%
+     mask 20: F1=54.09%  |  drop=+3.71%  |  white=48608  | keep=73.9%
+     mask  2: F1=51.29%  |  drop=+6.51%  |  white=45472  | keep=69.6%
+     mask  6: F1=49.38%  |  drop=+8.42%  |  white=37632  | keep=75.0%
+     mask  3: F1=49.01%  |  drop=+8.79%  |  white=37632  | keep=75.0%
+     mask 17: F1=48.70%  |  drop=+9.10%  |  white=45472  | keep=73.9%
+     mask 15: F1=47.04%  |  drop=+10.76%  |  white=37632  | keep=75.0%
+     mask 24: F1=47.04%  |  drop=+10.76%  |  white=37632  | keep=75.0%
+     mask 12: F1=44.53%  |  drop=+13.27%  |  white=31360  | keep=62.5%
+     mask  1: F1=0.00%  |  drop=+57.80%  |  white=29792  | keep=66.7%
+     mask 19: F1=0.00%  |  drop=+57.80%  |  white=34496  | keep=73.3%
+   Smallest mask within 1.0% of baseline: mask22 | F1=57.76% | drop=+0.04% | white=28224 | keep=60.0%
+   ✓ Saved DFMs to hfss/DFM/AU01/FMAE_stage1_AU01_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=58.8%  drop=-1.0%  
+     AU02: F1=61.1%  drop=-1.0%  
+     AU04: F1=55.5%  drop=+0.4%  
+     AU06: F1=76.7%  drop=+0.1%  
+     AU07: F1=81.0%  drop=+0.0%  
+     AU10: F1=77.1%  drop=-0.0%  
+     AU12: F1=88.9%  drop=+0.1%  
+     AU14: F1=63.4%  drop=-0.9%  
+     AU15: F1=35.4%  drop=+0.6%  
+     AU17: F1=61.0%  drop=+0.9%  
+     AU23: F1=48.8%  drop=+0.9%  
+     AU24: F1=54.7%  drop=-0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/FMAE_AU01_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU01/FMAE_stage1_AU01_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+
+  
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask  9: F1=58.16%  |  drop=-0.36%  |  white=17248  | keep=52.4% ◀ best
+     mask  0: F1=57.88%  |  drop=-0.08%  |  white=17248  | keep=50.0%
+     mask 15: F1=57.04%  |  drop=+0.76%  |  white=15680  | keep=41.7%
+     mask 24: F1=52.05%  |  drop=+5.75%  |  white=17248  | keep=55.0%
+     mask 22: F1=50.49%  |  drop=+7.31%  |  white=17248  | keep=45.8%
+     mask 18: F1=50.39%  |  drop=+7.41%  |  white=21952  | keep=48.3%
+     mask 13: F1=50.04%  |  drop=+7.76%  |  white=15680  | keep=50.0%
+     mask 12: F1=49.97%  |  drop=+7.83%  |  white=15680  | keep=50.0%
+     mask 16: F1=49.20%  |  drop=+8.60%  |  white=17248  | keep=45.8%
+     mask  2: F1=48.74%  |  drop=+9.06%  |  white=17248  | keep=45.8%
+     mask 17: F1=48.10%  |  drop=+9.70%  |  white=20384  | keep=54.2%
+     mask 28: F1=47.63%  |  drop=+10.17%  |  white=17248  | keep=45.8%
+     mask  5: F1=47.39%  |  drop=+10.41%  |  white=14112  | keep=42.9%
+     mask 11: F1=47.24%  |  drop=+10.56%  |  white=21952  | keep=58.3%
+     mask 19: F1=47.18%  |  drop=+10.62%  |  white=14112  | keep=42.9%
+     mask  8: F1=45.59%  |  drop=+12.21%  |  white=18816  | keep=57.1%
+     mask 29: F1=45.21%  |  drop=+12.59%  |  white=12544  | keep=40.0%
+     mask  3: F1=44.05%  |  drop=+13.75%  |  white=20384  | keep=54.2%
+     mask  6: F1=42.90%  |  drop=+14.90%  |  white=20384  | keep=59.1%
+     mask 25: F1=42.72%  |  drop=+15.08%  |  white=12544  | keep=40.0%
+     mask  1: F1=31.26%  |  drop=+26.54%  |  white=17248  | keep=55.0%
+     mask 26: F1=29.98%  |  drop=+27.82%  |  white=15680  | keep=50.0%
+     mask 23: F1=29.21%  |  drop=+28.59%  |  white=17248  | keep=45.8%
+     mask 14: F1=29.09%  |  drop=+28.71%  |  white=21952  | keep=58.3%
+     mask 21: F1=24.84%  |  drop=+32.96%  |  white=20384  | keep=54.2%
+     mask  7: F1=19.13%  |  drop=+38.67%  |  white=15680  | keep=50.0%
+     mask  4: F1=18.17%  |  drop=+39.63%  |  white=15680  | keep=50.0%
+     mask 10: F1=0.00%  |  drop=+57.80%  |  white=15680  | keep=45.5%
+     mask 20: F1=0.00%  |  drop=+57.80%  |  white=20384  | keep=59.1%
+     mask 27: F1=0.00%  |  drop=+57.80%  |  white=17248  | keep=50.0%
+   Smallest mask within 1.0% of baseline: mask15 | F1=57.04% | drop=+0.76% | white=15680 | keep=41.7%
+   ✓ Saved DFMs to hfss/DFM/AU01/FMAE_stage2_AU01_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=58.2%  drop=-0.4%  
+     AU02: F1=58.7%  drop=+1.4%  
+     AU04: F1=57.0%  drop=-1.1%  
+     AU06: F1=77.1%  drop=-0.3%  
+     AU07: F1=79.1%  drop=+2.0%  
+     AU10: F1=78.5%  drop=-1.5%  
+     AU12: F1=89.1%  drop=-0.1%  
+     AU14: F1=62.5%  drop=-0.1%  
+     AU15: F1=29.5%  drop=+6.4%  ▓
+     AU17: F1=59.7%  drop=+2.2%  
+     AU23: F1=43.4%  drop=+6.3%  ▓
+     AU24: F1=47.1%  drop=+7.1%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/FMAE_AU01_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU01/FMAE_stage2_AU01_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 57.80%
+
+
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask 27: F1=53.23%  |  drop=+4.57%  |  white=5880  | keep=34.1% ◀ best
+     mask 12: F1=46.61%  |  drop=+11.19%  |  white=6272  | keep=28.6%
+     mask 10: F1=44.24%  |  drop=+13.56%  |  white=5880  | keep=34.1%
+     mask  9: F1=41.35%  |  drop=+16.45%  |  white=6272  | keep=36.4%
+     mask 13: F1=40.87%  |  drop=+16.93%  |  white=5880  | keep=34.1%
+     mask 24: F1=40.72%  |  drop=+17.08%  |  white=3920  | keep=22.7%
+     mask  4: F1=36.07%  |  drop=+21.73%  |  white=4312  | keep=27.5%
+     mask  7: F1=35.68%  |  drop=+22.12%  |  white=4704  | keep=21.4%
+     mask 25: F1=35.36%  |  drop=+22.44%  |  white=3528  | keep=22.5%
+     mask 18: F1=34.17%  |  drop=+23.62%  |  white=5096  | keep=29.5%
+     mask 17: F1=33.83%  |  drop=+23.97%  |  white=5880  | keep=34.1%
+     mask  5: F1=33.45%  |  drop=+24.35%  |  white=5488  | keep=31.8%
+     mask  3: F1=32.37%  |  drop=+25.43%  |  white=3920  | keep=22.7%
+     mask 16: F1=31.41%  |  drop=+26.39%  |  white=4312  | keep=25.0%
+     mask 21: F1=30.45%  |  drop=+27.35%  |  white=4704  | keep=27.3%
+     mask 28: F1=29.48%  |  drop=+28.32%  |  white=3528  | keep=22.5%
+     mask 20: F1=29.30%  |  drop=+28.50%  |  white=7056  | keep=32.1%
+     mask 11: F1=25.22%  |  drop=+32.58%  |  white=4704  | keep=27.3%
+     mask 23: F1=22.22%  |  drop=+35.58%  |  white=3920  | keep=22.7%
+     mask 19: F1=19.16%  |  drop=+38.64%  |  white=5096  | keep=23.2%
+     mask 22: F1=10.85%  |  drop=+46.95%  |  white=6664  | keep=30.4%
+     mask  2: F1=0.81%  |  drop=+56.99%  |  white=3920  | keep=22.7%
+     mask  0: F1=0.00%  |  drop=+57.80%  |  white=3136  | keep=20.0%
+     mask  1: F1=0.00%  |  drop=+57.80%  |  white=5096  | keep=29.5%
+     mask  6: F1=0.00%  |  drop=+57.80%  |  white=5096  | keep=29.5%
+     mask  8: F1=0.00%  |  drop=+57.80%  |  white=4704  | keep=27.3%
+     mask 14: F1=0.00%  |  drop=+57.80%  |  white=4704  | keep=27.3%
+     mask 15: F1=0.00%  |  drop=+57.80%  |  white=5880  | keep=34.1%
+     mask 26: F1=0.00%  |  drop=+57.80%  |  white=5488  | keep=35.0%
+     mask 29: F1=0.00%  |  drop=+57.80%  |  white=4312  | keep=25.0%
+   No mask is within 1.0% of baseline.
+   ✓ Saved DFMs to hfss/DFM/AU01/FMAE_stage3_AU01_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=53.2%  drop=+4.6%  
+     AU02: F1=56.6%  drop=+3.5%  
+     AU04: F1=55.0%  drop=+1.0%  
+     AU06: F1=76.8%  drop=-0.0%  
+     AU07: F1=77.9%  drop=+3.1%  
+     AU10: F1=80.5%  drop=-3.4%  
+     AU12: F1=88.7%  drop=+0.3%  
+     AU14: F1=62.0%  drop=+0.5%  
+     AU15: F1=29.2%  drop=+6.7%  ▓
+     AU17: F1=58.6%  drop=+3.3%  
+     AU23: F1=45.3%  drop=+4.5%  
+     AU24: F1=55.3%  drop=-1.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/FMAE_AU01_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU01/FMAE_stage3_AU01_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU01/FMAE_AU01_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU02
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask  5: F1=60.92%  |  drop=-0.85%  |  white=43904  | keep=73.9% ◀ best
+     mask 27: F1=60.71%  |  drop=-0.64%  |  white=31360  | keep=62.5%
+     mask  7: F1=60.64%  |  drop=-0.57%  |  white=31360  | keep=73.3%
+     mask 21: F1=60.54%  |  drop=-0.47%  |  white=31360  | keep=62.5%
+     mask  6: F1=60.53%  |  drop=-0.46%  |  white=37632  | keep=75.0%
+     mask 18: F1=60.39%  |  drop=-0.32%  |  white=37632  | keep=75.0%
+     mask 19: F1=60.35%  |  drop=-0.28%  |  white=37632  | keep=80.0%
+     mask 23: F1=60.16%  |  drop=-0.09%  |  white=48608  | keep=69.6%
+     mask 22: F1=60.11%  |  drop=-0.04%  |  white=34496  | keep=66.7%
+     mask 25: F1=60.09%  |  drop=-0.02%  |  white=29792  | keep=66.7%
+     mask  9: F1=60.08%  |  drop=-0.01%  |  white=37632  | keep=75.0%
+     mask 20: F1=60.08%  |  drop=-0.01%  |  white=43904  | keep=69.6%
+     mask 24: F1=60.07%  |  drop=-0.00%  |  white=31360  | keep=62.5%
+     mask  2: F1=60.03%  |  drop=+0.04%  |  white=47040  | keep=73.9%
+     mask 29: F1=59.96%  |  drop=+0.11%  |  white=47040  | keep=73.9%
+     mask 14: F1=59.95%  |  drop=+0.12%  |  white=48608  | keep=78.3%
+     mask  4: F1=59.41%  |  drop=+0.66%  |  white=32928  | keep=60.0%
+     mask  1: F1=59.27%  |  drop=+0.80%  |  white=32928  | keep=66.7%
+     mask 10: F1=59.20%  |  drop=+0.87%  |  white=43904  | keep=80.0%
+     mask 11: F1=59.19%  |  drop=+0.88%  |  white=45472  | keep=69.6%
+     mask 13: F1=59.11%  |  drop=+0.96%  |  white=39200  | keep=73.3%
+     mask 26: F1=49.47%  |  drop=+10.60%  |  white=47040  | keep=69.6%
+     mask 17: F1=48.95%  |  drop=+11.12%  |  white=43904  | keep=65.2%
+     mask  8: F1=48.51%  |  drop=+11.56%  |  white=43904  | keep=60.9%
+     mask  3: F1=47.21%  |  drop=+12.86%  |  white=31360  | keep=62.5%
+     mask  0: F1=46.09%  |  drop=+13.98%  |  white=37632  | keep=75.0%
+     mask 15: F1=46.05%  |  drop=+14.02%  |  white=37632  | keep=75.0%
+     mask 12: F1=45.02%  |  drop=+15.05%  |  white=37632  | keep=75.0%
+     mask 28: F1=37.91%  |  drop=+22.16%  |  white=36064  | keep=73.3%
+     mask 16: F1=0.00%  |  drop=+60.07%  |  white=36064  | keep=73.3%
+   Smallest mask within 1.0% of baseline: mask25 | F1=60.09% | drop=-0.02% | white=29792 | keep=66.7%
+   ✓ Saved DFMs to hfss/DFM/AU02/FMAE_stage1_AU02_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=58.2%  drop=-0.4%  
+     AU02: F1=60.9%  drop=-0.8%  
+     AU04: F1=56.0%  drop=-0.0%  
+     AU06: F1=76.7%  drop=+0.2%  
+     AU07: F1=81.1%  drop=+0.0%  
+     AU10: F1=77.0%  drop=+0.0%  
+     AU12: F1=88.9%  drop=+0.1%  
+     AU14: F1=63.3%  drop=-0.8%  
+     AU15: F1=35.2%  drop=+0.8%  
+     AU17: F1=61.6%  drop=+0.4%  
+     AU23: F1=49.0%  drop=+0.7%  
+     AU24: F1=54.6%  drop=-0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/FMAE_AU02_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU02/FMAE_stage1_AU02_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask 24: F1=61.11%  |  drop=-1.04%  |  white=14112  | keep=45.0% ◀ best
+     mask 27: F1=61.09%  |  drop=-1.02%  |  white=18816  | keep=50.0%
+     mask 22: F1=60.56%  |  drop=-0.49%  |  white=20384  | keep=54.2%
+     mask 15: F1=60.43%  |  drop=-0.36%  |  white=18816  | keep=54.5%
+     mask 20: F1=60.36%  |  drop=-0.29%  |  white=21952  | keep=58.3%
+     mask  8: F1=60.11%  |  drop=-0.04%  |  white=15680  | keep=45.5%
+     mask 19: F1=60.05%  |  drop=+0.02%  |  white=21952  | keep=58.3%
+     mask 26: F1=59.72%  |  drop=+0.35%  |  white=18816  | keep=50.0%
+     mask 17: F1=59.28%  |  drop=+0.79%  |  white=14112  | keep=45.0%
+     mask  0: F1=58.84%  |  drop=+1.23%  |  white=15680  | keep=52.6%
+     mask 11: F1=58.79%  |  drop=+1.28%  |  white=15680  | keep=50.0%
+     mask 14: F1=54.39%  |  drop=+5.68%  |  white=18816  | keep=50.0%
+     mask 12: F1=51.07%  |  drop=+9.00%  |  white=14112  | keep=40.9%
+     mask  7: F1=50.19%  |  drop=+9.88%  |  white=18816  | keep=50.0%
+     mask  9: F1=49.15%  |  drop=+10.92%  |  white=14112  | keep=45.0%
+     mask  4: F1=48.74%  |  drop=+11.33%  |  white=18816  | keep=50.0%
+     mask 18: F1=48.18%  |  drop=+11.89%  |  white=18816  | keep=50.0%
+     mask 16: F1=47.53%  |  drop=+12.54%  |  white=14112  | keep=45.0%
+     mask  1: F1=47.36%  |  drop=+12.71%  |  white=18816  | keep=60.0%
+     mask 25: F1=46.98%  |  drop=+13.09%  |  white=17248  | keep=45.8%
+     mask 28: F1=46.83%  |  drop=+13.24%  |  white=25088  | keep=51.6%
+     mask 29: F1=45.62%  |  drop=+14.45%  |  white=18816  | keep=42.9%
+     mask  2: F1=42.68%  |  drop=+17.39%  |  white=17248  | keep=57.9%
+     mask  6: F1=41.72%  |  drop=+18.35%  |  white=14112  | keep=40.9%
+     mask  3: F1=38.51%  |  drop=+21.56%  |  white=17248  | keep=50.0%
+     mask 23: F1=32.92%  |  drop=+27.15%  |  white=14112  | keep=45.0%
+     mask  5: F1=31.80%  |  drop=+28.27%  |  white=12544  | keep=40.0%
+     mask 21: F1=3.63%  |  drop=+56.44%  |  white=15680  | keep=50.0%
+     mask 10: F1=0.00%  |  drop=+60.07%  |  white=14112  | keep=47.4%
+     mask 13: F1=0.00%  |  drop=+60.07%  |  white=15680  | keep=41.7%
+   Smallest mask within 1.0% of baseline: mask24 | F1=61.11% | drop=-1.04% | white=14112 | keep=45.0%
+   ✓ Saved DFMs to hfss/DFM/AU02/FMAE_stage2_AU02_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=58.0%  drop=-0.2%  
+     AU02: F1=61.1%  drop=-1.0%  
+     AU04: F1=57.1%  drop=-1.2%  
+     AU06: F1=76.8%  drop=-0.0%  
+     AU07: F1=80.0%  drop=+1.1%  
+     AU10: F1=78.4%  drop=-1.4%  
+     AU12: F1=89.0%  drop=+0.0%  
+     AU14: F1=62.2%  drop=+0.3%  
+     AU15: F1=29.1%  drop=+6.8%  ▓
+     AU17: F1=60.3%  drop=+1.7%  
+     AU23: F1=44.1%  drop=+5.6%  ▓
+     AU24: F1=50.1%  drop=+4.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/FMAE_AU02_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU02/FMAE_stage2_AU02_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 60.07%
+
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask  3: F1=56.90%  |  drop=+3.17%  |  white=8232  | keep=37.5% ◀ best
+     mask  8: F1=55.06%  |  drop=+5.01%  |  white=5488  | keep=38.9%
+     mask  4: F1=51.95%  |  drop=+8.12%  |  white=3528  | keep=22.5%
+     mask 14: F1=50.46%  |  drop=+9.61%  |  white=7840  | keep=38.5%
+     mask  2: F1=50.29%  |  drop=+9.78%  |  white=5488  | keep=35.0%
+     mask 10: F1=46.81%  |  drop=+13.26%  |  white=7448  | keep=33.9%
+     mask 27: F1=45.58%  |  drop=+14.49%  |  white=4704  | keep=25.0%
+     mask 16: F1=45.42%  |  drop=+14.65%  |  white=7448  | keep=33.9%
+     mask 13: F1=45.04%  |  drop=+15.03%  |  white=3920  | keep=27.8%
+     mask 29: F1=44.12%  |  drop=+15.95%  |  white=4312  | keep=22.9%
+     mask  1: F1=43.81%  |  drop=+16.26%  |  white=7448  | keep=33.9%
+     mask 28: F1=42.84%  |  drop=+17.23%  |  white=3920  | keep=25.0%
+     mask 17: F1=42.00%  |  drop=+18.07%  |  white=5488  | keep=38.9%
+     mask  7: F1=41.15%  |  drop=+18.92%  |  white=5096  | keep=36.1%
+     mask 20: F1=38.49%  |  drop=+21.58%  |  white=7056  | keep=37.5%
+     mask 19: F1=37.51%  |  drop=+22.56%  |  white=3920  | keep=25.0%
+     mask 21: F1=36.53%  |  drop=+23.54%  |  white=4312  | keep=22.9%
+     mask 26: F1=36.19%  |  drop=+23.88%  |  white=6664  | keep=30.4%
+     mask 11: F1=31.26%  |  drop=+28.81%  |  white=7448  | keep=39.6%
+     mask 24: F1=25.14%  |  drop=+34.93%  |  white=3528  | keep=25.0%
+     mask 22: F1=13.97%  |  drop=+46.10%  |  white=4312  | keep=27.5%
+     mask  0: F1=11.45%  |  drop=+48.62%  |  white=6272  | keep=33.3%
+     mask  6: F1=10.13%  |  drop=+49.94%  |  white=6664  | keep=35.4%
+     mask 25: F1=2.20%  |  drop=+57.87%  |  white=6664  | keep=35.4%
+     mask 18: F1=0.54%  |  drop=+59.53%  |  white=8232  | keep=37.5%
+     mask  5: F1=0.20%  |  drop=+59.87%  |  white=3920  | keep=27.8%
+     mask  9: F1=0.00%  |  drop=+60.07%  |  white=4704  | keep=21.4%
+     mask 12: F1=0.00%  |  drop=+60.07%  |  white=4704  | keep=21.4%
+     mask 15: F1=0.00%  |  drop=+60.07%  |  white=4312  | keep=22.9%
+     mask 23: F1=0.00%  |  drop=+60.07%  |  white=4312  | keep=30.6%
+   No mask is within 1.0% of baseline.
+   ✓ Saved DFMs to hfss/DFM/AU02/FMAE_stage3_AU02_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=53.7%  drop=+4.1%  
+     AU02: F1=56.9%  drop=+3.2%  
+     AU04: F1=54.3%  drop=+1.7%  
+     AU06: F1=77.3%  drop=-0.4%  
+     AU07: F1=79.1%  drop=+1.9%  
+     AU10: F1=79.1%  drop=-2.0%  
+     AU12: F1=88.6%  drop=+0.4%  
+     AU14: F1=60.9%  drop=+1.5%  
+     AU15: F1=27.7%  drop=+8.2%  ▓
+     AU17: F1=61.1%  drop=+0.9%  
+     AU23: F1=47.6%  drop=+2.1%  
+     AU24: F1=59.5%  drop=-5.3%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/FMAE_AU02_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU02/FMAE_stage3_AU02_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU02/FMAE_AU02_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU04
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask 22: F1=56.75%  |  drop=-0.76%  |  white=34496  | keep=80.0% ◀ best
+     mask 26: F1=56.34%  |  drop=-0.36%  |  white=40768  | keep=60.9%
+     mask 20: F1=56.30%  |  drop=-0.32%  |  white=43904  | keep=69.6%
+     mask 11: F1=56.22%  |  drop=-0.23%  |  white=45472  | keep=65.2%
+     mask 29: F1=56.03%  |  drop=-0.05%  |  white=47040  | keep=73.9%
+     mask 25: F1=56.02%  |  drop=-0.03%  |  white=37632  | keep=66.7%
+     mask 14: F1=56.01%  |  drop=-0.03%  |  white=45472  | keep=60.9%
+     mask 17: F1=56.00%  |  drop=-0.01%  |  white=47040  | keep=73.9%
+     mask  2: F1=55.99%  |  drop=-0.01%  |  white=47040  | keep=73.9%
+     mask  4: F1=55.96%  |  drop=+0.02%  |  white=39200  | keep=73.3%
+     mask 12: F1=55.94%  |  drop=+0.04%  |  white=31360  | keep=62.5%
+     mask 10: F1=55.94%  |  drop=+0.04%  |  white=31360  | keep=60.0%
+     mask  9: F1=55.92%  |  drop=+0.06%  |  white=37632  | keep=75.0%
+     mask 13: F1=55.89%  |  drop=+0.09%  |  white=32928  | keep=66.7%
+     mask  8: F1=55.89%  |  drop=+0.10%  |  white=45472  | keep=65.2%
+     mask  3: F1=55.63%  |  drop=+0.36%  |  white=37632  | keep=75.0%
+     mask 15: F1=55.63%  |  drop=+0.36%  |  white=37632  | keep=75.0%
+     mask 16: F1=55.59%  |  drop=+0.40%  |  white=34496  | keep=66.7%
+     mask 18: F1=55.55%  |  drop=+0.43%  |  white=31360  | keep=62.5%
+     mask 23: F1=55.47%  |  drop=+0.51%  |  white=45472  | keep=69.6%
+     mask  7: F1=55.45%  |  drop=+0.53%  |  white=31360  | keep=66.7%
+     mask  5: F1=55.24%  |  drop=+0.74%  |  white=40768  | keep=69.6%
+     mask 21: F1=55.04%  |  drop=+0.94%  |  white=31360  | keep=62.5%
+     mask  0: F1=54.39%  |  drop=+1.59%  |  white=31360  | keep=62.5%
+     mask  6: F1=54.31%  |  drop=+1.67%  |  white=31360  | keep=62.5%
+     mask 24: F1=54.30%  |  drop=+1.68%  |  white=31360  | keep=62.5%
+     mask 28: F1=29.87%  |  drop=+26.12%  |  white=40768  | keep=80.0%
+     mask  1: F1=28.22%  |  drop=+27.76%  |  white=39200  | keep=80.0%
+     mask 19: F1=20.82%  |  drop=+35.16%  |  white=37632  | keep=73.3%
+     mask 27: F1=0.00%  |  drop=+55.98%  |  white=31360  | keep=62.5%
+   Smallest mask within 1.0% of baseline: mask12 | F1=55.94% | drop=+0.04% | white=31360 | keep=62.5%
+   ✓ Saved DFMs to hfss/DFM/AU04/FMAE_stage1_AU04_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=57.3%  drop=+0.5%  
+     AU02: F1=59.8%  drop=+0.2%  
+     AU04: F1=56.7%  drop=-0.8%  
+     AU06: F1=76.9%  drop=-0.1%  
+     AU07: F1=79.9%  drop=+1.1%  
+     AU10: F1=78.6%  drop=-1.5%  
+     AU12: F1=89.1%  drop=-0.1%  
+     AU14: F1=62.4%  drop=+0.1%  
+     AU15: F1=28.2%  drop=+7.8%  ▓
+     AU17: F1=59.4%  drop=+2.6%  
+     AU23: F1=44.1%  drop=+5.6%  ▓
+     AU24: F1=49.4%  drop=+4.8%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/FMAE_AU04_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU04/FMAE_stage1_AU04_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask  5: F1=57.41%  |  drop=-1.43%  |  white=17248  | keep=50.0% ◀ best
+     mask 17: F1=57.36%  |  drop=-1.38%  |  white=25088  | keep=57.1%
+     mask  2: F1=57.13%  |  drop=-1.15%  |  white=17248  | keep=42.3%
+     mask 28: F1=56.87%  |  drop=-0.88%  |  white=18816  | keep=54.5%
+     mask 15: F1=56.73%  |  drop=-0.75%  |  white=17248  | keep=44.0%
+     mask 24: F1=56.42%  |  drop=-0.44%  |  white=23520  | keep=53.6%
+     mask 22: F1=56.38%  |  drop=-0.39%  |  white=23520  | keep=51.7%
+     mask 18: F1=55.83%  |  drop=+0.16%  |  white=26656  | keep=56.7%
+     mask 20: F1=55.19%  |  drop=+0.79%  |  white=20384  | keep=54.2%
+     mask  8: F1=55.09%  |  drop=+0.89%  |  white=18816  | keep=48.0%
+     mask 29: F1=55.08%  |  drop=+0.90%  |  white=21952  | keep=48.3%
+     mask 27: F1=54.98%  |  drop=+1.00%  |  white=21952  | keep=46.7%
+     mask 23: F1=54.70%  |  drop=+1.29%  |  white=21952  | keep=48.3%
+     mask 25: F1=54.53%  |  drop=+1.46%  |  white=26656  | keep=58.6%
+     mask 19: F1=54.36%  |  drop=+1.62%  |  white=21952  | keep=46.7%
+     mask 10: F1=54.27%  |  drop=+1.71%  |  white=17248  | keep=50.0%
+     mask 14: F1=54.22%  |  drop=+1.77%  |  white=18816  | keep=41.4%
+     mask 13: F1=54.02%  |  drop=+1.96%  |  white=17248  | keep=45.8%
+     mask 12: F1=53.83%  |  drop=+2.16%  |  white=20384  | keep=50.0%
+     mask 26: F1=53.49%  |  drop=+2.49%  |  white=20384  | keep=59.1%
+     mask  0: F1=52.75%  |  drop=+3.23%  |  white=15680  | keep=41.7%
+     mask  4: F1=52.55%  |  drop=+3.43%  |  white=17248  | keep=44.0%
+     mask  1: F1=9.52%  |  drop=+46.47%  |  white=17248  | keep=45.8%
+     mask  7: F1=5.33%  |  drop=+50.65%  |  white=23520  | keep=53.6%
+     mask 16: F1=1.81%  |  drop=+54.17%  |  white=20384  | keep=43.3%
+     mask  3: F1=0.00%  |  drop=+55.98%  |  white=23520  | keep=51.7%
+     mask  6: F1=0.00%  |  drop=+55.98%  |  white=15680  | keep=45.5%
+     mask  9: F1=0.00%  |  drop=+55.98%  |  white=18816  | keep=46.2%
+     mask 11: F1=0.00%  |  drop=+55.98%  |  white=20384  | keep=44.8%
+     mask 21: F1=0.00%  |  drop=+55.98%  |  white=17248  | keep=42.3%
+   Smallest mask within 1.0% of baseline: mask5 | F1=57.41% | drop=-1.43% | white=17248 | keep=50.0%
+   ✓ Saved DFMs to hfss/DFM/AU04/FMAE_stage2_AU04_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=58.0%  drop=-0.2%  
+     AU02: F1=58.9%  drop=+1.2%  
+     AU04: F1=57.4%  drop=-1.4%  
+     AU06: F1=77.0%  drop=-0.2%  
+     AU07: F1=79.2%  drop=+1.9%  
+     AU10: F1=78.8%  drop=-1.8%  
+     AU12: F1=89.2%  drop=-0.2%  
+     AU14: F1=62.2%  drop=+0.2%  
+     AU15: F1=28.7%  drop=+7.2%  ▓
+     AU17: F1=59.5%  drop=+2.4%  
+     AU23: F1=43.9%  drop=+5.8%  ▓
+     AU24: F1=48.1%  drop=+6.1%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/FMAE_AU04_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU04/FMAE_stage2_AU04_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 55.98%
+
+   
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask 16: F1=55.74%  |  drop=+0.24%  |  white=6272  | keep=36.4% ◀ best
+     mask  6: F1=55.69%  |  drop=+0.30%  |  white=7448  | keep=39.6%
+     mask  2: F1=54.28%  |  drop=+1.70%  |  white=9016  | keep=33.8%
+     mask 25: F1=53.78%  |  drop=+2.20%  |  white=4312  | keep=25.0%
+     mask  9: F1=52.64%  |  drop=+3.34%  |  white=7448  | keep=31.7%
+     mask 28: F1=52.20%  |  drop=+3.78%  |  white=5096  | keep=29.5%
+     mask 27: F1=51.94%  |  drop=+4.04%  |  white=6272  | keep=30.8%
+     mask 29: F1=51.31%  |  drop=+4.68%  |  white=9408  | keep=37.5%
+     mask 19: F1=50.36%  |  drop=+5.62%  |  white=9408  | keep=37.5%
+     mask  4: F1=50.33%  |  drop=+5.66%  |  white=9800  | keep=39.1%
+     mask 22: F1=50.11%  |  drop=+5.87%  |  white=7448  | keep=29.7%
+     mask  7: F1=49.72%  |  drop=+6.26%  |  white=7840  | keep=31.2%
+     mask  3: F1=46.75%  |  drop=+9.23%  |  white=5880  | keep=22.1%
+     mask 13: F1=45.67%  |  drop=+10.32%  |  white=5096  | keep=29.5%
+     mask  1: F1=45.54%  |  drop=+10.44%  |  white=4312  | keep=25.0%
+     mask  5: F1=44.08%  |  drop=+11.90%  |  white=7056  | keep=30.0%
+     mask 20: F1=41.14%  |  drop=+14.85%  |  white=6272  | keep=36.4%
+     mask 17: F1=40.99%  |  drop=+14.99%  |  white=9016  | keep=33.8%
+     mask 18: F1=40.96%  |  drop=+15.02%  |  white=5880  | keep=31.2%
+     mask  0: F1=35.85%  |  drop=+20.13%  |  white=5096  | keep=21.7%
+     mask 15: F1=34.01%  |  drop=+21.97%  |  white=4704  | keep=25.0%
+     mask 26: F1=33.27%  |  drop=+22.71%  |  white=4704  | keep=20.0%
+     mask 21: F1=32.58%  |  drop=+23.40%  |  white=5488  | keep=23.3%
+     mask 11: F1=0.51%  |  drop=+55.47%  |  white=10584  | keep=39.7%
+     mask 23: F1=0.12%  |  drop=+55.86%  |  white=7448  | keep=31.7%
+     mask  8: F1=0.00%  |  drop=+55.98%  |  white=5096  | keep=27.1%
+     mask 10: F1=0.00%  |  drop=+55.98%  |  white=7056  | keep=30.0%
+     mask 12: F1=0.00%  |  drop=+55.98%  |  white=5488  | keep=26.9%
+     mask 14: F1=0.00%  |  drop=+55.98%  |  white=7448  | keep=27.9%
+     mask 24: F1=0.00%  |  drop=+55.98%  |  white=3528  | keep=20.5%
+   Smallest mask within 1.0% of baseline: mask16 | F1=55.74% | drop=+0.24% | white=6272 | keep=36.4%
+   ✓ Saved DFMs to hfss/DFM/AU04/FMAE_stage3_AU04_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=55.2%  drop=+2.6%  
+     AU02: F1=57.9%  drop=+2.2%  
+     AU04: F1=55.7%  drop=+0.2%  
+     AU06: F1=77.1%  drop=-0.3%  
+     AU07: F1=79.9%  drop=+1.2%  
+     AU10: F1=80.2%  drop=-3.1%  
+     AU12: F1=88.5%  drop=+0.5%  
+     AU14: F1=61.0%  drop=+1.5%  
+     AU15: F1=24.7%  drop=+11.2%  ▓▓
+     AU17: F1=57.8%  drop=+4.2%  
+     AU23: F1=44.0%  drop=+5.7%  ▓
+     AU24: F1=57.1%  drop=-2.9%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/FMAE_AU04_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU04/FMAE_stage3_AU04_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU04/FMAE_AU04_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU06
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask  7: F1=77.03%  |  drop=-0.20%  |  white=34496  | keep=73.3% ◀ best
+     mask 13: F1=76.97%  |  drop=-0.14%  |  white=31360  | keep=66.7%
+     mask 17: F1=76.83%  |  drop=-0.00%  |  white=48608  | keep=69.6%
+     mask 20: F1=76.82%  |  drop=+0.01%  |  white=45472  | keep=73.9%
+     mask 14: F1=76.80%  |  drop=+0.03%  |  white=42336  | keep=69.6%
+     mask 29: F1=76.79%  |  drop=+0.04%  |  white=48608  | keep=73.9%
+     mask  8: F1=76.78%  |  drop=+0.05%  |  white=47040  | keep=69.6%
+     mask 22: F1=76.76%  |  drop=+0.07%  |  white=34496  | keep=66.7%
+     mask  1: F1=76.75%  |  drop=+0.07%  |  white=36064  | keep=73.3%
+     mask 26: F1=76.75%  |  drop=+0.08%  |  white=43904  | keep=73.9%
+     mask 23: F1=76.74%  |  drop=+0.09%  |  white=47040  | keep=73.9%
+     mask 27: F1=76.71%  |  drop=+0.12%  |  white=31360  | keep=62.5%
+     mask 24: F1=76.71%  |  drop=+0.12%  |  white=37632  | keep=75.0%
+     mask  2: F1=76.65%  |  drop=+0.18%  |  white=48608  | keep=73.9%
+     mask  0: F1=76.62%  |  drop=+0.21%  |  white=37632  | keep=75.0%
+     mask 12: F1=76.61%  |  drop=+0.22%  |  white=37632  | keep=75.0%
+     mask 11: F1=76.57%  |  drop=+0.25%  |  white=48608  | keep=73.9%
+     mask 18: F1=76.53%  |  drop=+0.30%  |  white=37632  | keep=75.0%
+     mask 25: F1=76.52%  |  drop=+0.31%  |  white=42336  | keep=80.0%
+     mask 16: F1=76.04%  |  drop=+0.79%  |  white=37632  | keep=66.7%
+     mask  5: F1=75.97%  |  drop=+0.86%  |  white=42336  | keep=69.6%
+     mask 15: F1=75.67%  |  drop=+1.16%  |  white=37632  | keep=75.0%
+     mask  9: F1=74.96%  |  drop=+1.87%  |  white=37632  | keep=75.0%
+     mask  3: F1=74.94%  |  drop=+1.89%  |  white=31360  | keep=62.5%
+     mask  6: F1=74.94%  |  drop=+1.89%  |  white=31360  | keep=62.5%
+     mask 21: F1=74.56%  |  drop=+2.27%  |  white=31360  | keep=62.5%
+     mask 19: F1=70.82%  |  drop=+6.01%  |  white=39200  | keep=73.3%
+     mask 10: F1=70.80%  |  drop=+6.03%  |  white=42336  | keep=80.0%
+     mask  4: F1=66.24%  |  drop=+10.59%  |  white=40768  | keep=80.0%
+     mask 28: F1=35.79%  |  drop=+41.04%  |  white=34496  | keep=66.7%
+   Smallest mask within 1.0% of baseline: mask13 | F1=76.97% | drop=-0.14% | white=31360 | keep=66.7%
+   ✓ Saved DFMs to hfss/DFM/AU06/FMAE_stage1_AU06_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=58.3%  drop=-0.5%  
+     AU02: F1=60.2%  drop=-0.1%  
+     AU04: F1=56.9%  drop=-0.9%  
+     AU06: F1=77.0%  drop=-0.2%  
+     AU07: F1=80.1%  drop=+1.0%  
+     AU10: F1=78.4%  drop=-1.4%  
+     AU12: F1=89.2%  drop=-0.2%  
+     AU14: F1=62.3%  drop=+0.2%  
+     AU15: F1=27.0%  drop=+8.9%  ▓
+     AU17: F1=59.4%  drop=+2.5%  
+     AU23: F1=43.5%  drop=+6.2%  ▓
+     AU24: F1=48.9%  drop=+5.3%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/FMAE_AU06_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU06/FMAE_stage1_AU06_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask  5: F1=77.48%  |  drop=-0.65%  |  white=21952  | keep=48.3% ◀ best
+     mask  7: F1=77.21%  |  drop=-0.38%  |  white=17248  | keep=55.0%
+     mask 11: F1=77.15%  |  drop=-0.32%  |  white=15680  | keep=45.5%
+     mask 13: F1=77.13%  |  drop=-0.30%  |  white=17248  | keep=55.0%
+     mask 20: F1=77.01%  |  drop=-0.18%  |  white=23520  | keep=53.6%
+     mask 21: F1=77.00%  |  drop=-0.18%  |  white=23520  | keep=48.4%
+     mask  8: F1=76.94%  |  drop=-0.11%  |  white=25088  | keep=55.2%
+     mask  9: F1=76.90%  |  drop=-0.07%  |  white=25088  | keep=59.3%
+     mask 28: F1=76.73%  |  drop=+0.10%  |  white=23520  | keep=48.4%
+     mask 26: F1=76.48%  |  drop=+0.35%  |  white=18816  | keep=52.2%
+     mask  3: F1=76.23%  |  drop=+0.59%  |  white=21952  | keep=50.0%
+     mask 25: F1=76.22%  |  drop=+0.61%  |  white=20384  | keep=59.1%
+     mask  0: F1=76.02%  |  drop=+0.81%  |  white=18816  | keep=41.4%
+     mask 12: F1=76.00%  |  drop=+0.83%  |  white=20384  | keep=41.9%
+     mask  6: F1=75.90%  |  drop=+0.93%  |  white=17248  | keep=47.8%
+     mask 18: F1=75.77%  |  drop=+1.06%  |  white=17248  | keep=40.7%
+     mask  1: F1=75.62%  |  drop=+1.20%  |  white=25088  | keep=51.6%
+     mask 10: F1=75.58%  |  drop=+1.24%  |  white=18816  | keep=54.5%
+     mask  2: F1=75.43%  |  drop=+1.40%  |  white=23520  | keep=53.6%
+     mask 22: F1=75.28%  |  drop=+1.55%  |  white=20384  | keep=41.9%
+     mask 24: F1=73.80%  |  drop=+3.02%  |  white=20384  | keep=41.9%
+     mask 17: F1=73.50%  |  drop=+3.33%  |  white=18816  | keep=52.2%
+     mask 15: F1=73.02%  |  drop=+3.81%  |  white=14112  | keep=40.9%
+     mask  4: F1=65.32%  |  drop=+11.51%  |  white=25088  | keep=51.6%
+     mask 14: F1=58.65%  |  drop=+18.18%  |  white=20384  | keep=59.1%
+     mask 27: F1=56.88%  |  drop=+19.95%  |  white=15680  | keep=50.0%
+     mask 16: F1=56.16%  |  drop=+20.66%  |  white=18816  | keep=54.5%
+     mask 23: F1=26.71%  |  drop=+50.12%  |  white=26656  | keep=54.8%
+     mask 19: F1=0.05%  |  drop=+76.78%  |  white=18816  | keep=54.5%
+     mask 29: F1=0.00%  |  drop=+76.83%  |  white=14112  | keep=45.0%
+   Smallest mask within 1.0% of baseline: mask11 | F1=77.15% | drop=-0.32% | white=15680 | keep=45.5%
+   ✓ Saved DFMs to hfss/DFM/AU06/FMAE_stage2_AU06_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=57.3%  drop=+0.5%  
+     AU02: F1=59.8%  drop=+0.2%  
+     AU04: F1=56.3%  drop=-0.4%  
+     AU06: F1=77.5%  drop=-0.6%  
+     AU07: F1=80.0%  drop=+1.1%  
+     AU10: F1=78.2%  drop=-1.1%  
+     AU12: F1=89.0%  drop=-0.0%  
+     AU14: F1=62.0%  drop=+0.5%  
+     AU15: F1=33.6%  drop=+2.4%  
+     AU17: F1=60.3%  drop=+1.6%  
+     AU23: F1=48.2%  drop=+1.5%  
+     AU24: F1=54.5%  drop=-0.3%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/FMAE_AU06_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU06/FMAE_stage2_AU06_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.83%
+
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask 15: F1=77.16%  |  drop=-0.33%  |  white=7448  | keep=39.6% ◀ best
+     mask 17: F1=77.12%  |  drop=-0.29%  |  white=6272  | keep=40.0%
+     mask  4: F1=75.55%  |  drop=+1.28%  |  white=9408  | keep=37.5%
+     mask  6: F1=75.54%  |  drop=+1.29%  |  white=6664  | keep=38.6%
+     mask  8: F1=75.33%  |  drop=+1.50%  |  white=9408  | keep=37.5%
+     mask 18: F1=75.19%  |  drop=+1.64%  |  white=5880  | keep=25.0%
+     mask  2: F1=74.92%  |  drop=+1.90%  |  white=6272  | keep=26.7%
+     mask  1: F1=74.78%  |  drop=+2.05%  |  white=5488  | keep=31.8%
+     mask 11: F1=74.65%  |  drop=+2.18%  |  white=8232  | keep=32.8%
+     mask  0: F1=74.13%  |  drop=+2.70%  |  white=4704  | keep=30.0%
+     mask 23: F1=74.09%  |  drop=+2.74%  |  white=8624  | keep=36.7%
+     mask 25: F1=73.95%  |  drop=+2.88%  |  white=8624  | keep=39.3%
+     mask 22: F1=73.79%  |  drop=+3.04%  |  white=6664  | keep=26.6%
+     mask  5: F1=73.65%  |  drop=+3.18%  |  white=6272  | keep=40.0%
+     mask 16: F1=73.60%  |  drop=+3.23%  |  white=5880  | keep=34.1%
+     mask  7: F1=73.45%  |  drop=+3.38%  |  white=9016  | keep=35.9%
+     mask 26: F1=72.17%  |  drop=+4.66%  |  white=9800  | keep=39.1%
+     mask  9: F1=69.42%  |  drop=+7.41%  |  white=3920  | keep=22.7%
+     mask 12: F1=66.12%  |  drop=+10.71%  |  white=5488  | keep=35.0%
+     mask 24: F1=64.81%  |  drop=+12.02%  |  white=6272  | keep=25.0%
+     mask 19: F1=63.92%  |  drop=+12.91%  |  white=6664  | keep=28.3%
+     mask 13: F1=63.24%  |  drop=+13.59%  |  white=4312  | keep=22.9%
+     mask 14: F1=62.69%  |  drop=+14.13%  |  white=9016  | keep=38.3%
+     mask 27: F1=62.55%  |  drop=+14.28%  |  white=5096  | keep=21.7%
+     mask 20: F1=58.77%  |  drop=+18.06%  |  white=6664  | keep=28.3%
+     mask 21: F1=58.57%  |  drop=+18.26%  |  white=7448  | keep=33.9%
+     mask  3: F1=58.36%  |  drop=+18.47%  |  white=5096  | keep=23.2%
+     mask 10: F1=57.46%  |  drop=+19.36%  |  white=5880  | keep=34.1%
+     mask 28: F1=56.87%  |  drop=+19.96%  |  white=5488  | keep=31.8%
+     mask 29: F1=21.18%  |  drop=+55.65%  |  white=5488  | keep=25.0%
+   Smallest mask within 1.0% of baseline: mask17 | F1=77.12% | drop=-0.29% | white=6272 | keep=40.0%
+   ✓ Saved DFMs to hfss/DFM/AU06/FMAE_stage3_AU06_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=52.9%  drop=+4.9%  
+     AU02: F1=56.8%  drop=+3.2%  
+     AU04: F1=54.2%  drop=+1.7%  
+     AU06: F1=77.2%  drop=-0.3%  
+     AU07: F1=77.8%  drop=+3.3%  
+     AU10: F1=79.0%  drop=-2.0%  
+     AU12: F1=88.2%  drop=+0.8%  
+     AU14: F1=61.5%  drop=+0.9%  
+     AU15: F1=30.9%  drop=+5.0%  ▓
+     AU17: F1=61.1%  drop=+0.9%  
+     AU23: F1=47.8%  drop=+1.9%  
+     AU24: F1=57.3%  drop=-3.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/FMAE_AU06_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU06/FMAE_stage3_AU06_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU06/FMAE_AU06_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU07
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask  2: F1=81.07%  |  drop=+0.00%  |  white=43904  | keep=65.2% ◀ best
+     mask 24: F1=81.03%  |  drop=+0.04%  |  white=31360  | keep=62.5%
+     mask 23: F1=81.00%  |  drop=+0.07%  |  white=48608  | keep=69.6%
+     mask  5: F1=80.99%  |  drop=+0.08%  |  white=43904  | keep=69.6%
+     mask  3: F1=80.96%  |  drop=+0.11%  |  white=31360  | keep=62.5%
+     mask 14: F1=80.94%  |  drop=+0.13%  |  white=48608  | keep=73.9%
+     mask 11: F1=80.93%  |  drop=+0.14%  |  white=47040  | keep=73.9%
+     mask 26: F1=80.87%  |  drop=+0.21%  |  white=45472  | keep=69.6%
+     mask  1: F1=80.77%  |  drop=+0.30%  |  white=32928  | keep=66.7%
+     mask  6: F1=80.75%  |  drop=+0.33%  |  white=37632  | keep=75.0%
+     mask 17: F1=80.62%  |  drop=+0.45%  |  white=42336  | keep=60.9%
+     mask 29: F1=80.31%  |  drop=+0.76%  |  white=43904  | keep=65.2%
+     mask 13: F1=80.24%  |  drop=+0.83%  |  white=34496  | keep=73.3%
+     mask 21: F1=79.86%  |  drop=+1.22%  |  white=31360  | keep=62.5%
+     mask  9: F1=79.85%  |  drop=+1.22%  |  white=31360  | keep=62.5%
+     mask  4: F1=79.70%  |  drop=+1.38%  |  white=39200  | keep=80.0%
+     mask 28: F1=79.69%  |  drop=+1.38%  |  white=31360  | keep=60.0%
+     mask 25: F1=79.68%  |  drop=+1.39%  |  white=37632  | keep=66.7%
+     mask 20: F1=79.67%  |  drop=+1.40%  |  white=43904  | keep=69.6%
+     mask  7: F1=79.55%  |  drop=+1.52%  |  white=39200  | keep=73.3%
+     mask 19: F1=79.52%  |  drop=+1.55%  |  white=32928  | keep=66.7%
+     mask 18: F1=79.24%  |  drop=+1.83%  |  white=37632  | keep=75.0%
+     mask 22: F1=78.32%  |  drop=+2.75%  |  white=32928  | keep=60.0%
+     mask 15: F1=77.26%  |  drop=+3.81%  |  white=37632  | keep=75.0%
+     mask 27: F1=77.26%  |  drop=+3.81%  |  white=37632  | keep=75.0%
+     mask  8: F1=76.54%  |  drop=+4.53%  |  white=43904  | keep=69.6%
+     mask  0: F1=76.36%  |  drop=+4.71%  |  white=37632  | keep=75.0%
+     mask 10: F1=73.11%  |  drop=+7.97%  |  white=29792  | keep=60.0%
+     mask 16: F1=72.43%  |  drop=+8.64%  |  white=32928  | keep=73.3%
+     mask 12: F1=33.32%  |  drop=+47.75%  |  white=37632  | keep=75.0%
+   Smallest mask within 1.0% of baseline: mask24 | F1=81.03% | drop=+0.04% | white=31360 | keep=62.5%
+   ✓ Saved DFMs to hfss/DFM/AU07/FMAE_stage1_AU07_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=57.8%  drop=-0.0%  
+     AU02: F1=60.1%  drop=-0.0%  
+     AU04: F1=56.0%  drop=-0.0%  
+     AU06: F1=76.8%  drop=+0.0%  
+     AU07: F1=81.1%  drop=+0.0%  
+     AU10: F1=77.0%  drop=-0.0%  
+     AU12: F1=89.0%  drop=-0.0%  
+     AU14: F1=62.5%  drop=-0.0%  
+     AU15: F1=35.9%  drop=+0.1%  
+     AU17: F1=61.9%  drop=+0.0%  
+     AU23: F1=49.7%  drop=+0.0%  
+     AU24: F1=54.3%  drop=-0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/FMAE_AU07_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU07/FMAE_stage1_AU07_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask 21: F1=81.06%  |  drop=+0.01%  |  white=26656  | keep=58.6% ◀ best
+     mask 13: F1=80.90%  |  drop=+0.18%  |  white=25088  | keep=57.1%
+     mask 18: F1=80.71%  |  drop=+0.36%  |  white=15680  | keep=47.6%
+     mask  0: F1=80.21%  |  drop=+0.86%  |  white=21952  | keep=45.2%
+     mask  2: F1=80.17%  |  drop=+0.90%  |  white=28224  | keep=58.1%
+     mask 16: F1=80.08%  |  drop=+1.00%  |  white=17248  | keep=52.4%
+     mask 20: F1=79.88%  |  drop=+1.20%  |  white=18816  | keep=60.0%
+     mask 19: F1=79.70%  |  drop=+1.37%  |  white=25088  | keep=57.1%
+     mask 17: F1=79.36%  |  drop=+1.71%  |  white=25088  | keep=55.2%
+     mask  4: F1=79.30%  |  drop=+1.78%  |  white=15680  | keep=50.0%
+     mask  5: F1=79.22%  |  drop=+1.85%  |  white=18816  | keep=60.0%
+     mask 24: F1=79.11%  |  drop=+1.96%  |  white=15680  | keep=50.0%
+     mask 12: F1=78.72%  |  drop=+2.35%  |  white=17248  | keep=45.8%
+     mask 28: F1=78.70%  |  drop=+2.37%  |  white=25088  | keep=51.6%
+     mask  3: F1=78.68%  |  drop=+2.39%  |  white=23520  | keep=50.0%
+     mask 14: F1=78.46%  |  drop=+2.61%  |  white=15680  | keep=41.7%
+     mask  1: F1=77.74%  |  drop=+3.33%  |  white=18816  | keep=60.0%
+     mask 10: F1=77.61%  |  drop=+3.47%  |  white=20384  | keep=54.2%
+     mask 15: F1=77.51%  |  drop=+3.56%  |  white=25088  | keep=51.6%
+     mask 11: F1=77.28%  |  drop=+3.79%  |  white=14112  | keep=45.0%
+     mask  8: F1=77.08%  |  drop=+3.99%  |  white=18816  | keep=42.9%
+     mask  6: F1=76.94%  |  drop=+4.13%  |  white=23520  | keep=53.6%
+     mask 25: F1=76.80%  |  drop=+4.27%  |  white=26656  | keep=60.7%
+     mask 27: F1=76.72%  |  drop=+4.36%  |  white=18816  | keep=50.0%
+     mask 23: F1=76.69%  |  drop=+4.38%  |  white=21952  | keep=50.0%
+     mask 22: F1=76.53%  |  drop=+4.54%  |  white=25088  | keep=57.1%
+     mask 26: F1=74.38%  |  drop=+6.69%  |  white=20384  | keep=46.4%
+     mask  7: F1=74.36%  |  drop=+6.71%  |  white=17248  | keep=55.0%
+     mask 29: F1=73.75%  |  drop=+7.32%  |  white=18816  | keep=50.0%
+     mask  9: F1=67.43%  |  drop=+13.64%  |  white=23520  | keep=53.6%
+   Smallest mask within 1.0% of baseline: mask18 | F1=80.71% | drop=+0.36% | white=15680 | keep=47.6%
+   ✓ Saved DFMs to hfss/DFM/AU07/FMAE_stage2_AU07_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=50.9%  drop=+6.9%  ▓
+     AU02: F1=52.4%  drop=+7.7%  ▓
+     AU04: F1=54.0%  drop=+2.0%  
+     AU06: F1=75.7%  drop=+1.1%  
+     AU07: F1=81.1%  drop=+0.0%  
+     AU10: F1=80.3%  drop=-3.3%  
+     AU12: F1=87.3%  drop=+1.7%  
+     AU14: F1=58.3%  drop=+4.2%  
+     AU15: F1=34.9%  drop=+1.1%  
+     AU17: F1=60.5%  drop=+1.5%  
+     AU23: F1=41.0%  drop=+8.7%  ▓
+     AU24: F1=60.8%  drop=-6.6%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/FMAE_AU07_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU07/FMAE_stage2_AU07_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 81.07%
+
+
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask 28: F1=80.52%  |  drop=+0.55%  |  white=9016  | keep=33.8% ◀ best
+     mask  2: F1=80.32%  |  drop=+0.75%  |  white=5488  | keep=35.0%
+     mask 17: F1=79.55%  |  drop=+1.52%  |  white=8232  | keep=32.8%
+     mask 23: F1=79.26%  |  drop=+1.81%  |  white=9408  | keep=37.5%
+     mask 15: F1=78.89%  |  drop=+2.18%  |  white=9408  | keep=37.5%
+     mask 22: F1=78.67%  |  drop=+2.41%  |  white=3920  | keep=25.0%
+     mask  6: F1=78.00%  |  drop=+3.07%  |  white=5880  | keep=23.4%
+     mask 19: F1=77.96%  |  drop=+3.11%  |  white=3528  | keep=22.5%
+     mask  7: F1=77.94%  |  drop=+3.13%  |  white=8624  | keep=34.4%
+     mask 14: F1=77.84%  |  drop=+3.24%  |  white=5880  | keep=37.5%
+     mask  3: F1=77.70%  |  drop=+3.37%  |  white=5880  | keep=31.2%
+     mask 16: F1=77.44%  |  drop=+3.63%  |  white=7448  | keep=39.6%
+     mask  5: F1=77.01%  |  drop=+4.06%  |  white=5096  | keep=32.5%
+     mask 21: F1=76.98%  |  drop=+4.09%  |  white=4704  | keep=27.3%
+     mask 25: F1=76.05%  |  drop=+5.02%  |  white=5488  | keep=35.0%
+     mask 18: F1=75.79%  |  drop=+5.29%  |  white=9408  | keep=37.5%
+     mask 11: F1=75.42%  |  drop=+5.65%  |  white=5096  | keep=32.5%
+     mask  1: F1=75.23%  |  drop=+5.84%  |  white=7448  | keep=39.6%
+     mask 24: F1=74.90%  |  drop=+6.17%  |  white=6664  | keep=35.4%
+     mask  4: F1=74.63%  |  drop=+6.44%  |  white=6272  | keep=40.0%
+     mask 27: F1=74.42%  |  drop=+6.66%  |  white=7448  | keep=27.9%
+     mask 20: F1=74.42%  |  drop=+6.66%  |  white=7840  | keep=27.8%
+     mask  9: F1=74.22%  |  drop=+6.85%  |  white=4312  | keep=27.5%
+     mask 26: F1=74.21%  |  drop=+6.86%  |  white=5880  | keep=26.8%
+     mask 29: F1=74.08%  |  drop=+6.99%  |  white=5488  | keep=20.6%
+     mask 12: F1=73.36%  |  drop=+7.72%  |  white=5096  | keep=29.5%
+     mask 10: F1=71.44%  |  drop=+9.63%  |  white=7448  | keep=29.7%
+     mask  0: F1=61.23%  |  drop=+19.84%  |  white=6272  | keep=25.0%
+     mask 13: F1=46.01%  |  drop=+35.06%  |  white=3920  | keep=25.0%
+     mask  8: F1=36.45%  |  drop=+44.62%  |  white=7448  | keep=29.7%
+   Smallest mask within 1.0% of baseline: mask2 | F1=80.32% | drop=+0.75% | white=5488 | keep=35.0%
+   ✓ Saved DFMs to hfss/DFM/AU07/FMAE_stage3_AU07_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=48.7%  drop=+9.1%  ▓
+     AU02: F1=52.0%  drop=+8.1%  ▓
+     AU04: F1=54.0%  drop=+2.0%  
+     AU06: F1=74.6%  drop=+2.2%  
+     AU07: F1=80.5%  drop=+0.5%  
+     AU10: F1=80.7%  drop=-3.7%  
+     AU12: F1=87.5%  drop=+1.5%  
+     AU14: F1=60.2%  drop=+2.2%  
+     AU15: F1=19.4%  drop=+16.6%  ▓▓▓
+     AU17: F1=53.4%  drop=+8.6%  ▓
+     AU23: F1=23.6%  drop=+26.1%  ▓▓▓▓▓
+     AU24: F1=50.8%  drop=+3.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/FMAE_AU07_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU07/FMAE_stage3_AU07_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU07/FMAE_AU07_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU10
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask 15: F1=79.43%  |  drop=-2.39%  |  white=31360  | keep=62.5% ◀ best
+     mask  0: F1=79.24%  |  drop=-2.20%  |  white=37632  | keep=75.0%
+     mask 18: F1=79.24%  |  drop=-2.20%  |  white=37632  | keep=75.0%
+     mask  6: F1=79.24%  |  drop=-2.19%  |  white=31360  | keep=62.5%
+     mask 27: F1=79.24%  |  drop=-2.19%  |  white=31360  | keep=62.5%
+     mask 10: F1=78.63%  |  drop=-1.58%  |  white=36064  | keep=73.3%
+     mask  4: F1=78.50%  |  drop=-1.45%  |  white=29792  | keep=66.7%
+     mask 25: F1=78.45%  |  drop=-1.41%  |  white=36064  | keep=80.0%
+     mask  9: F1=78.45%  |  drop=-1.40%  |  white=31360  | keep=62.5%
+     mask 11: F1=77.55%  |  drop=-0.51%  |  white=43904  | keep=60.9%
+     mask 23: F1=77.38%  |  drop=-0.33%  |  white=45472  | keep=65.2%
+     mask 20: F1=77.36%  |  drop=-0.31%  |  white=45472  | keep=65.2%
+     mask 24: F1=77.33%  |  drop=-0.28%  |  white=31360  | keep=62.5%
+     mask 12: F1=77.30%  |  drop=-0.26%  |  white=37632  | keep=75.0%
+     mask 17: F1=77.28%  |  drop=-0.23%  |  white=48608  | keep=78.3%
+     mask  8: F1=77.28%  |  drop=-0.23%  |  white=47040  | keep=69.6%
+     mask 22: F1=77.23%  |  drop=-0.18%  |  white=42336  | keep=80.0%
+     mask 14: F1=77.20%  |  drop=-0.15%  |  white=39200  | keep=65.2%
+     mask 19: F1=77.16%  |  drop=-0.11%  |  white=32928  | keep=60.0%
+     mask 29: F1=77.14%  |  drop=-0.10%  |  white=45472  | keep=73.9%
+     mask 28: F1=77.13%  |  drop=-0.09%  |  white=43904  | keep=80.0%
+     mask  2: F1=77.12%  |  drop=-0.07%  |  white=47040  | keep=69.6%
+     mask  1: F1=77.07%  |  drop=-0.02%  |  white=36064  | keep=66.7%
+     mask 26: F1=77.04%  |  drop=+0.01%  |  white=48608  | keep=69.6%
+     mask  7: F1=77.00%  |  drop=+0.05%  |  white=37632  | keep=66.7%
+     mask  5: F1=77.00%  |  drop=+0.05%  |  white=45472  | keep=69.6%
+     mask 21: F1=76.96%  |  drop=+0.09%  |  white=31360  | keep=62.5%
+     mask 13: F1=76.17%  |  drop=+0.88%  |  white=39200  | keep=73.3%
+     mask 16: F1=75.88%  |  drop=+1.17%  |  white=43904  | keep=80.0%
+     mask  3: F1=73.50%  |  drop=+3.55%  |  white=31360  | keep=62.5%
+   Smallest mask within 1.0% of baseline: mask4 | F1=78.50% | drop=-1.45% | white=29792 | keep=66.7%
+   ✓ Saved DFMs to hfss/DFM/AU10/FMAE_stage1_AU10_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=47.6%  drop=+10.2%  ▓▓
+     AU02: F1=46.2%  drop=+13.8%  ▓▓
+     AU04: F1=54.5%  drop=+1.5%  
+     AU06: F1=75.7%  drop=+1.2%  
+     AU07: F1=79.0%  drop=+2.1%  
+     AU10: F1=79.4%  drop=-2.4%  
+     AU12: F1=88.0%  drop=+1.0%  
+     AU14: F1=58.8%  drop=+3.7%  
+     AU15: F1=30.4%  drop=+5.6%  ▓
+     AU17: F1=61.4%  drop=+0.5%  
+     AU23: F1=34.9%  drop=+14.8%  ▓▓
+     AU24: F1=59.6%  drop=-5.4%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/FMAE_AU10_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU10/FMAE_stage1_AU10_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask 12: F1=80.40%  |  drop=-3.35%  |  white=20384  | keep=54.2% ◀ best
+     mask  3: F1=80.37%  |  drop=-3.32%  |  white=17248  | keep=47.8%
+     mask 24: F1=80.17%  |  drop=-3.12%  |  white=15680  | keep=50.0%
+     mask  2: F1=80.06%  |  drop=-3.01%  |  white=15680  | keep=50.0%
+     mask  6: F1=79.74%  |  drop=-2.69%  |  white=14112  | keep=45.0%
+     mask 10: F1=79.28%  |  drop=-2.23%  |  white=15680  | keep=43.5%
+     mask  5: F1=79.22%  |  drop=-2.17%  |  white=15680  | keep=43.5%
+     mask 18: F1=79.10%  |  drop=-2.05%  |  white=20384  | keep=56.5%
+     mask 25: F1=78.97%  |  drop=-1.92%  |  white=18816  | keep=50.0%
+     mask 16: F1=78.95%  |  drop=-1.90%  |  white=14112  | keep=47.4%
+     mask 20: F1=78.92%  |  drop=-1.87%  |  white=25088  | keep=57.1%
+     mask  8: F1=78.87%  |  drop=-1.82%  |  white=14112  | keep=47.4%
+     mask  4: F1=78.86%  |  drop=-1.81%  |  white=21952  | keep=58.3%
+     mask 26: F1=78.84%  |  drop=-1.79%  |  white=15680  | keep=50.0%
+     mask 15: F1=78.81%  |  drop=-1.76%  |  white=20384  | keep=56.5%
+     mask  7: F1=78.77%  |  drop=-1.72%  |  white=14112  | keep=45.0%
+     mask 23: F1=78.72%  |  drop=-1.67%  |  white=25088  | keep=57.1%
+     mask 29: F1=78.39%  |  drop=-1.34%  |  white=20384  | keep=46.4%
+     mask 14: F1=78.36%  |  drop=-1.32%  |  white=18816  | keep=52.2%
+     mask  9: F1=74.65%  |  drop=+2.39%  |  white=23520  | keep=53.6%
+     mask  1: F1=73.85%  |  drop=+3.19%  |  white=18816  | keep=50.0%
+     mask 27: F1=73.66%  |  drop=+3.39%  |  white=17248  | keep=45.8%
+     mask 22: F1=73.26%  |  drop=+3.79%  |  white=12544  | keep=40.0%
+     mask  0: F1=73.19%  |  drop=+3.86%  |  white=18816  | keep=50.0%
+     mask 13: F1=73.16%  |  drop=+3.89%  |  white=21952  | keep=60.9%
+     mask 19: F1=73.16%  |  drop=+3.89%  |  white=15680  | keep=41.7%
+     mask 11: F1=73.15%  |  drop=+3.90%  |  white=18816  | keep=60.0%
+     mask 17: F1=73.15%  |  drop=+3.90%  |  white=18816  | keep=42.9%
+     mask 21: F1=70.55%  |  drop=+6.50%  |  white=12544  | keep=40.0%
+     mask 28: F1=68.90%  |  drop=+8.15%  |  white=12544  | keep=40.0%
+   Smallest mask within 1.0% of baseline: mask6 | F1=79.74% | drop=-2.69% | white=14112 | keep=45.0%
+   ✓ Saved DFMs to hfss/DFM/AU10/FMAE_stage2_AU10_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=42.5%  drop=+15.3%  ▓▓▓
+     AU02: F1=44.2%  drop=+15.9%  ▓▓▓
+     AU04: F1=55.6%  drop=+0.4%  
+     AU06: F1=74.1%  drop=+2.7%  
+     AU07: F1=80.1%  drop=+0.9%  
+     AU10: F1=80.4%  drop=-3.4%  
+     AU12: F1=84.8%  drop=+4.2%  
+     AU14: F1=58.6%  drop=+3.8%  
+     AU15: F1=19.6%  drop=+16.3%  ▓▓▓
+     AU17: F1=53.9%  drop=+8.1%  ▓
+     AU23: F1=23.1%  drop=+26.6%  ▓▓▓▓▓
+     AU24: F1=51.5%  drop=+2.7%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/FMAE_AU10_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU10/FMAE_stage2_AU10_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 77.05%
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask 29: F1=80.97%  |  drop=-3.92%  |  white=4704  | keep=27.3% ◀ best
+     mask 14: F1=80.75%  |  drop=-3.70%  |  white=6664  | keep=32.7%
+     mask  5: F1=80.40%  |  drop=-3.36%  |  white=5880  | keep=37.5%
+     mask  0: F1=77.11%  |  drop=-0.06%  |  white=4312  | keep=27.5%
+     mask 28: F1=76.85%  |  drop=+0.20%  |  white=5096  | keep=25.0%
+     mask 11: F1=76.58%  |  drop=+0.47%  |  white=6664  | keep=38.6%
+     mask 21: F1=73.15%  |  drop=+3.90%  |  white=3528  | keep=25.0%
+     mask  1: F1=73.15%  |  drop=+3.90%  |  white=3920  | keep=25.0%
+     mask  2: F1=73.15%  |  drop=+3.90%  |  white=4312  | keep=30.6%
+     mask  3: F1=73.15%  |  drop=+3.90%  |  white=3136  | keep=20.0%
+     mask  4: F1=73.15%  |  drop=+3.90%  |  white=5488  | keep=26.9%
+     mask  9: F1=73.15%  |  drop=+3.90%  |  white=5096  | keep=32.5%
+     mask 12: F1=73.15%  |  drop=+3.90%  |  white=5096  | keep=36.1%
+     mask 15: F1=73.15%  |  drop=+3.90%  |  white=7840  | keep=38.5%
+     mask 17: F1=73.15%  |  drop=+3.90%  |  white=5880  | keep=28.8%
+     mask 19: F1=73.15%  |  drop=+3.90%  |  white=4312  | keep=25.0%
+     mask 20: F1=73.15%  |  drop=+3.90%  |  white=3136  | keep=20.0%
+     mask 22: F1=73.15%  |  drop=+3.90%  |  white=3920  | keep=27.8%
+     mask 23: F1=73.15%  |  drop=+3.90%  |  white=5096  | keep=29.5%
+     mask 24: F1=73.15%  |  drop=+3.90%  |  white=5488  | keep=35.0%
+     mask  8: F1=73.15%  |  drop=+3.90%  |  white=4312  | keep=27.5%
+     mask 13: F1=73.15%  |  drop=+3.90%  |  white=6272  | keep=36.4%
+     mask 10: F1=73.14%  |  drop=+3.90%  |  white=4312  | keep=25.0%
+     mask 26: F1=73.14%  |  drop=+3.91%  |  white=4312  | keep=27.5%
+     mask 16: F1=73.12%  |  drop=+3.92%  |  white=3136  | keep=20.0%
+     mask 25: F1=73.05%  |  drop=+4.00%  |  white=4312  | keep=27.5%
+     mask 27: F1=72.98%  |  drop=+4.06%  |  white=5488  | keep=35.0%
+     mask  7: F1=72.87%  |  drop=+4.18%  |  white=4704  | keep=25.0%
+     mask  6: F1=71.96%  |  drop=+5.09%  |  white=3920  | keep=20.8%
+     mask 18: F1=65.72%  |  drop=+11.32%  |  white=5096  | keep=36.1%
+   Smallest mask within 1.0% of baseline: mask0 | F1=77.11% | drop=-0.06% | white=4312 | keep=27.5%
+   ✓ Saved DFMs to hfss/DFM/AU10/FMAE_stage3_AU10_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=41.5%  drop=+16.3%  ▓▓▓
+     AU02: F1=50.9%  drop=+9.2%  ▓
+     AU04: F1=54.2%  drop=+1.8%  
+     AU06: F1=73.8%  drop=+3.0%  
+     AU07: F1=80.7%  drop=+0.4%  
+     AU10: F1=81.0%  drop=-3.9%  
+     AU12: F1=86.7%  drop=+2.3%  
+     AU14: F1=60.5%  drop=+1.9%  
+     AU15: F1=26.4%  drop=+9.6%  ▓
+     AU17: F1=54.2%  drop=+7.7%  ▓
+     AU23: F1=21.5%  drop=+28.2%  ▓▓▓▓▓
+     AU24: F1=51.5%  drop=+2.7%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/FMAE_AU10_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU10/FMAE_stage3_AU10_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU10/FMAE_AU10_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU12
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask 13: F1=89.08%  |  drop=-0.08%  |  white=32928  | keep=60.0% ◀ best
+     mask 19: F1=89.08%  |  drop=-0.08%  |  white=34496  | keep=73.3%
+     mask 18: F1=89.06%  |  drop=-0.06%  |  white=37632  | keep=75.0%
+     mask 28: F1=89.04%  |  drop=-0.03%  |  white=39200  | keep=80.0%
+     mask 24: F1=89.02%  |  drop=-0.02%  |  white=37632  | keep=75.0%
+     mask 15: F1=89.00%  |  drop=-0.00%  |  white=31360  | keep=62.5%
+     mask  3: F1=89.00%  |  drop=-0.00%  |  white=37632  | keep=75.0%
+     mask  6: F1=89.00%  |  drop=-0.00%  |  white=37632  | keep=75.0%
+     mask 29: F1=89.00%  |  drop=+0.00%  |  white=47040  | keep=73.9%
+     mask  7: F1=88.99%  |  drop=+0.01%  |  white=40768  | keep=73.3%
+     mask 17: F1=88.99%  |  drop=+0.01%  |  white=45472  | keep=65.2%
+     mask  5: F1=88.97%  |  drop=+0.03%  |  white=45472  | keep=69.6%
+     mask 12: F1=88.97%  |  drop=+0.03%  |  white=37632  | keep=75.0%
+     mask  2: F1=88.96%  |  drop=+0.04%  |  white=45472  | keep=69.6%
+     mask 25: F1=88.96%  |  drop=+0.05%  |  white=34496  | keep=73.3%
+     mask 14: F1=88.94%  |  drop=+0.06%  |  white=47040  | keep=78.3%
+     mask 10: F1=88.94%  |  drop=+0.06%  |  white=39200  | keep=80.0%
+     mask 11: F1=88.93%  |  drop=+0.07%  |  white=43904  | keep=65.2%
+     mask 23: F1=88.92%  |  drop=+0.09%  |  white=40768  | keep=65.2%
+     mask 16: F1=88.90%  |  drop=+0.10%  |  white=34496  | keep=73.3%
+     mask 26: F1=88.79%  |  drop=+0.21%  |  white=43904  | keep=78.3%
+     mask  9: F1=88.04%  |  drop=+0.97%  |  white=37632  | keep=75.0%
+     mask 27: F1=87.98%  |  drop=+1.02%  |  white=31360  | keep=62.5%
+     mask 20: F1=86.66%  |  drop=+2.34%  |  white=45472  | keep=65.2%
+     mask  8: F1=86.55%  |  drop=+2.45%  |  white=47040  | keep=78.3%
+     mask 21: F1=86.44%  |  drop=+2.57%  |  white=31360  | keep=62.5%
+     mask  0: F1=86.32%  |  drop=+2.68%  |  white=31360  | keep=62.5%
+     mask  4: F1=83.45%  |  drop=+5.55%  |  white=36064  | keep=73.3%
+     mask  1: F1=83.41%  |  drop=+5.59%  |  white=31360  | keep=66.7%
+     mask 22: F1=71.31%  |  drop=+17.69%  |  white=29792  | keep=60.0%
+   Smallest mask within 1.0% of baseline: mask15 | F1=89.00% | drop=-0.00% | white=31360 | keep=62.5%
+   ✓ Saved DFMs to hfss/DFM/AU12/FMAE_stage1_AU12_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=57.5%  drop=+0.3%  
+     AU02: F1=59.9%  drop=+0.2%  
+     AU04: F1=56.8%  drop=-0.8%  
+     AU06: F1=77.0%  drop=-0.2%  
+     AU07: F1=79.7%  drop=+1.3%  
+     AU10: F1=78.5%  drop=-1.5%  
+     AU12: F1=89.1%  drop=-0.1%  
+     AU14: F1=62.7%  drop=-0.2%  
+     AU15: F1=29.0%  drop=+6.9%  ▓
+     AU17: F1=59.5%  drop=+2.4%  
+     AU23: F1=44.1%  drop=+5.6%  ▓
+     AU24: F1=48.9%  drop=+5.3%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/FMAE_AU12_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU12/FMAE_stage1_AU12_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask  4: F1=89.08%  |  drop=-0.08%  |  white=15680  | keep=50.0% ◀ best
+     mask  7: F1=89.07%  |  drop=-0.07%  |  white=14112  | keep=40.9%
+     mask  5: F1=88.89%  |  drop=+0.11%  |  white=20384  | keep=54.2%
+     mask  1: F1=88.86%  |  drop=+0.14%  |  white=23520  | keep=60.0%
+     mask  3: F1=88.77%  |  drop=+0.24%  |  white=20384  | keep=54.2%
+     mask 29: F1=88.06%  |  drop=+0.94%  |  white=21952  | keep=56.0%
+     mask 17: F1=87.81%  |  drop=+1.20%  |  white=21952  | keep=53.8%
+     mask  6: F1=87.77%  |  drop=+1.23%  |  white=15680  | keep=41.7%
+     mask 27: F1=87.77%  |  drop=+1.23%  |  white=18816  | keep=50.0%
+     mask 14: F1=86.94%  |  drop=+2.06%  |  white=18816  | keep=40.0%
+     mask  9: F1=86.61%  |  drop=+2.39%  |  white=18816  | keep=48.0%
+     mask 16: F1=86.61%  |  drop=+2.39%  |  white=15680  | keep=50.0%
+     mask 20: F1=86.52%  |  drop=+2.48%  |  white=15680  | keep=40.0%
+     mask 15: F1=86.52%  |  drop=+2.48%  |  white=12544  | keep=40.0%
+     mask 13: F1=86.51%  |  drop=+2.49%  |  white=18816  | keep=48.0%
+     mask 10: F1=86.37%  |  drop=+2.64%  |  white=18816  | keep=54.5%
+     mask 23: F1=86.33%  |  drop=+2.67%  |  white=18816  | keep=60.0%
+     mask  0: F1=86.31%  |  drop=+2.69%  |  white=14112  | keep=45.0%
+     mask  2: F1=86.09%  |  drop=+2.92%  |  white=15680  | keep=45.5%
+     mask 24: F1=86.07%  |  drop=+2.93%  |  white=15680  | keep=47.6%
+     mask 22: F1=86.06%  |  drop=+2.94%  |  white=14112  | keep=40.9%
+     mask 21: F1=85.71%  |  drop=+3.29%  |  white=14112  | keep=42.9%
+     mask 18: F1=85.11%  |  drop=+3.89%  |  white=14112  | keep=42.9%
+     mask 12: F1=84.39%  |  drop=+4.61%  |  white=17248  | keep=45.8%
+     mask 28: F1=80.66%  |  drop=+8.34%  |  white=21952  | keep=53.8%
+     mask 11: F1=77.00%  |  drop=+12.01%  |  white=17248  | keep=45.8%
+     mask  8: F1=73.10%  |  drop=+15.90%  |  white=21952  | keep=58.3%
+     mask 26: F1=71.32%  |  drop=+17.68%  |  white=12544  | keep=40.0%
+     mask 19: F1=54.82%  |  drop=+34.18%  |  white=20384  | keep=54.2%
+     mask 25: F1=0.65%  |  drop=+88.35%  |  white=14112  | keep=40.9%
+   Smallest mask within 1.0% of baseline: mask7 | F1=89.07% | drop=-0.07% | white=14112 | keep=40.9%
+   ✓ Saved DFMs to hfss/DFM/AU12/FMAE_stage2_AU12_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=56.7%  drop=+1.1%  
+     AU02: F1=59.7%  drop=+0.4%  
+     AU04: F1=56.5%  drop=-0.5%  
+     AU06: F1=77.5%  drop=-0.7%  
+     AU07: F1=79.8%  drop=+1.3%  
+     AU10: F1=78.3%  drop=-1.2%  
+     AU12: F1=89.1%  drop=-0.1%  
+     AU14: F1=61.6%  drop=+0.9%  
+     AU15: F1=33.6%  drop=+2.3%  
+     AU17: F1=60.8%  drop=+1.2%  
+     AU23: F1=49.2%  drop=+0.5%  
+     AU24: F1=55.7%  drop=-1.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/FMAE_AU12_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU12/FMAE_stage2_AU12_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.00%
+
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask 28: F1=88.17%  |  drop=+0.83%  |  white=4312  | keep=30.6% ◀ best
+     mask 26: F1=87.89%  |  drop=+1.11%  |  white=4704  | keep=25.0%
+     mask  7: F1=87.63%  |  drop=+1.37%  |  white=8232  | keep=37.5%
+     mask 11: F1=87.40%  |  drop=+1.60%  |  white=4704  | keep=30.0%
+     mask  9: F1=86.91%  |  drop=+2.09%  |  white=8232  | keep=35.0%
+     mask 23: F1=86.81%  |  drop=+2.19%  |  white=8232  | keep=40.4%
+     mask 16: F1=86.79%  |  drop=+2.21%  |  white=5880  | keep=37.5%
+     mask 10: F1=86.70%  |  drop=+2.30%  |  white=5096  | keep=36.1%
+     mask  0: F1=86.69%  |  drop=+2.31%  |  white=6664  | keep=32.7%
+     mask  6: F1=86.45%  |  drop=+2.55%  |  white=3528  | keep=25.0%
+     mask 22: F1=86.40%  |  drop=+2.61%  |  white=8232  | keep=37.5%
+     mask 19: F1=86.22%  |  drop=+2.78%  |  white=5488  | keep=35.0%
+     mask 29: F1=86.14%  |  drop=+2.86%  |  white=6664  | keep=35.4%
+     mask 21: F1=86.08%  |  drop=+2.93%  |  white=7840  | keep=38.5%
+     mask 18: F1=85.93%  |  drop=+3.07%  |  white=4312  | keep=21.2%
+     mask  8: F1=85.56%  |  drop=+3.45%  |  white=4704  | keep=30.0%
+     mask 27: F1=84.16%  |  drop=+4.84%  |  white=4704  | keep=25.0%
+     mask 24: F1=82.83%  |  drop=+6.17%  |  white=5488  | keep=23.3%
+     mask  3: F1=79.62%  |  drop=+9.38%  |  white=3920  | keep=25.0%
+     mask 13: F1=75.59%  |  drop=+13.41%  |  white=7056  | keep=30.0%
+     mask  1: F1=74.28%  |  drop=+14.72%  |  white=5096  | keep=32.5%
+     mask  2: F1=73.78%  |  drop=+15.23%  |  white=7056  | keep=32.1%
+     mask 17: F1=73.63%  |  drop=+15.37%  |  white=5488  | keep=35.0%
+     mask 12: F1=72.50%  |  drop=+16.51%  |  white=5488  | keep=25.0%
+     mask  5: F1=72.38%  |  drop=+16.63%  |  white=5096  | keep=27.1%
+     mask 25: F1=72.04%  |  drop=+16.96%  |  white=3528  | keep=22.5%
+     mask 14: F1=71.97%  |  drop=+17.03%  |  white=5096  | keep=27.1%
+     mask  4: F1=71.23%  |  drop=+17.77%  |  white=4704  | keep=30.0%
+     mask 20: F1=69.54%  |  drop=+19.46%  |  white=4312  | keep=30.6%
+     mask 15: F1=41.62%  |  drop=+47.38%  |  white=4704  | keep=25.0%
+   Smallest mask within 1.0% of baseline: mask28 | F1=88.17% | drop=+0.83% | white=4312 | keep=30.6%
+   ✓ Saved DFMs to hfss/DFM/AU12/FMAE_stage3_AU12_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=45.4%  drop=+12.4%  ▓▓
+     AU02: F1=54.5%  drop=+5.6%  ▓
+     AU04: F1=53.8%  drop=+2.2%  
+     AU06: F1=76.1%  drop=+0.7%  
+     AU07: F1=78.4%  drop=+2.7%  
+     AU10: F1=81.1%  drop=-4.1%  
+     AU12: F1=88.2%  drop=+0.8%  
+     AU14: F1=61.7%  drop=+0.7%  
+     AU15: F1=24.1%  drop=+11.8%  ▓▓
+     AU17: F1=53.2%  drop=+8.7%  ▓
+     AU23: F1=41.0%  drop=+8.7%  ▓
+     AU24: F1=49.3%  drop=+4.9%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/FMAE_AU12_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU12/FMAE_stage3_AU12_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU12/FMAE_AU12_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU14
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.21%  |  drop=-0.75%  |  white=31360  | keep=62.5% ◀ best
+     mask 25: F1=63.01%  |  drop=-0.54%  |  white=34496  | keep=60.0%
+     mask  6: F1=62.90%  |  drop=-0.44%  |  white=37632  | keep=75.0%
+     mask 21: F1=62.76%  |  drop=-0.30%  |  white=37632  | keep=75.0%
+     mask 15: F1=62.75%  |  drop=-0.29%  |  white=37632  | keep=75.0%
+     mask 16: F1=62.73%  |  drop=-0.27%  |  white=32928  | keep=66.7%
+     mask 14: F1=62.62%  |  drop=-0.16%  |  white=43904  | keep=65.2%
+     mask  1: F1=62.60%  |  drop=-0.14%  |  white=36064  | keep=66.7%
+     mask 19: F1=62.58%  |  drop=-0.12%  |  white=40768  | keep=73.3%
+     mask 13: F1=62.56%  |  drop=-0.10%  |  white=31360  | keep=66.7%
+     mask  7: F1=62.56%  |  drop=-0.09%  |  white=37632  | keep=73.3%
+     mask 22: F1=62.55%  |  drop=-0.09%  |  white=34496  | keep=66.7%
+     mask 17: F1=62.54%  |  drop=-0.08%  |  white=47040  | keep=73.9%
+     mask 20: F1=62.54%  |  drop=-0.08%  |  white=42336  | keep=65.2%
+     mask  2: F1=62.49%  |  drop=-0.03%  |  white=47040  | keep=73.9%
+     mask 23: F1=62.49%  |  drop=-0.03%  |  white=47040  | keep=73.9%
+     mask  4: F1=62.30%  |  drop=+0.16%  |  white=29792  | keep=60.0%
+     mask 28: F1=62.23%  |  drop=+0.23%  |  white=32928  | keep=73.3%
+     mask 26: F1=62.09%  |  drop=+0.37%  |  white=45472  | keep=60.9%
+     mask 29: F1=62.00%  |  drop=+0.46%  |  white=47040  | keep=73.9%
+     mask  5: F1=61.94%  |  drop=+0.52%  |  white=40768  | keep=65.2%
+     mask 12: F1=60.03%  |  drop=+2.43%  |  white=37632  | keep=75.0%
+     mask  9: F1=59.33%  |  drop=+3.14%  |  white=31360  | keep=62.5%
+     mask 18: F1=58.37%  |  drop=+4.09%  |  white=37632  | keep=75.0%
+     mask 11: F1=56.32%  |  drop=+6.14%  |  white=42336  | keep=60.9%
+     mask  3: F1=56.21%  |  drop=+6.26%  |  white=37632  | keep=75.0%
+     mask 27: F1=55.77%  |  drop=+6.70%  |  white=37632  | keep=75.0%
+     mask  8: F1=55.04%  |  drop=+7.42%  |  white=47040  | keep=69.6%
+     mask 24: F1=50.71%  |  drop=+11.75%  |  white=31360  | keep=62.5%
+     mask 10: F1=44.21%  |  drop=+18.26%  |  white=31360  | keep=66.7%
+   Smallest mask within 1.0% of baseline: mask4 | F1=62.30% | drop=+0.16% | white=29792 | keep=60.0%
+   ✓ Saved DFMs to hfss/DFM/AU14/FMAE_stage1_AU14_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=58.0%  drop=-0.2%  
+     AU02: F1=60.4%  drop=-0.4%  
+     AU04: F1=56.0%  drop=-0.0%  
+     AU06: F1=76.7%  drop=+0.1%  
+     AU07: F1=81.0%  drop=+0.1%  
+     AU10: F1=77.2%  drop=-0.2%  
+     AU12: F1=89.0%  drop=-0.0%  
+     AU14: F1=63.2%  drop=-0.7%  
+     AU15: F1=35.8%  drop=+0.2%  
+     AU17: F1=61.1%  drop=+0.9%  
+     AU23: F1=49.3%  drop=+0.4%  
+     AU24: F1=55.1%  drop=-0.9%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/FMAE_AU14_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU14/FMAE_stage1_AU14_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask  7: F1=63.00%  |  drop=-0.54%  |  white=21952  | keep=53.8% ◀ best
+     mask 25: F1=62.72%  |  drop=-0.26%  |  white=15680  | keep=41.7%
+     mask 22: F1=62.66%  |  drop=-0.20%  |  white=14112  | keep=45.0%
+     mask 11: F1=62.28%  |  drop=+0.19%  |  white=17248  | keep=55.0%
+     mask 15: F1=62.16%  |  drop=+0.31%  |  white=21952  | keep=53.8%
+     mask 28: F1=62.09%  |  drop=+0.37%  |  white=20384  | keep=61.9%
+     mask  6: F1=62.00%  |  drop=+0.46%  |  white=20384  | keep=50.0%
+     mask 19: F1=61.95%  |  drop=+0.51%  |  white=20384  | keep=56.5%
+     mask 14: F1=59.50%  |  drop=+2.97%  |  white=17248  | keep=45.8%
+     mask 10: F1=58.35%  |  drop=+4.12%  |  white=23520  | keep=53.6%
+     mask 24: F1=58.11%  |  drop=+4.36%  |  white=15680  | keep=41.7%
+     mask  2: F1=57.99%  |  drop=+4.47%  |  white=17248  | keep=45.8%
+     mask  0: F1=57.98%  |  drop=+4.49%  |  white=18816  | keep=46.2%
+     mask 27: F1=57.96%  |  drop=+4.51%  |  white=15680  | keep=45.5%
+     mask 12: F1=56.86%  |  drop=+5.60%  |  white=20384  | keep=46.4%
+     mask 16: F1=56.39%  |  drop=+6.07%  |  white=15680  | keep=41.7%
+     mask 26: F1=56.09%  |  drop=+6.37%  |  white=18816  | keep=50.0%
+     mask 20: F1=56.05%  |  drop=+6.41%  |  white=18816  | keep=52.2%
+     mask 17: F1=56.00%  |  drop=+6.46%  |  white=12544  | keep=40.0%
+     mask  8: F1=55.99%  |  drop=+6.48%  |  white=14112  | keep=45.0%
+     mask 29: F1=55.83%  |  drop=+6.63%  |  white=18816  | keep=60.0%
+     mask  5: F1=55.55%  |  drop=+6.92%  |  white=21952  | keep=58.3%
+     mask  9: F1=55.31%  |  drop=+7.15%  |  white=17248  | keep=42.3%
+     mask 13: F1=55.13%  |  drop=+7.34%  |  white=14112  | keep=45.0%
+     mask 21: F1=53.78%  |  drop=+8.68%  |  white=18816  | keep=52.2%
+     mask  4: F1=53.23%  |  drop=+9.23%  |  white=17248  | keep=45.8%
+     mask  3: F1=53.10%  |  drop=+9.36%  |  white=14112  | keep=45.0%
+     mask  1: F1=50.40%  |  drop=+12.06%  |  white=15680  | keep=43.5%
+     mask 18: F1=36.54%  |  drop=+25.92%  |  white=15680  | keep=43.5%
+     mask 23: F1=36.43%  |  drop=+26.03%  |  white=12544  | keep=40.0%
+   Smallest mask within 1.0% of baseline: mask22 | F1=62.66% | drop=-0.20% | white=14112 | keep=45.0%
+   ✓ Saved DFMs to hfss/DFM/AU14/FMAE_stage2_AU14_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=57.8%  drop=+0.0%  
+     AU02: F1=60.8%  drop=-0.7%  
+     AU04: F1=55.4%  drop=+0.6%  
+     AU06: F1=76.2%  drop=+0.6%  
+     AU07: F1=78.4%  drop=+2.7%  
+     AU10: F1=76.9%  drop=+0.2%  
+     AU12: F1=88.6%  drop=+0.4%  
+     AU14: F1=63.0%  drop=-0.5%  
+     AU15: F1=37.2%  drop=-1.2%  
+     AU17: F1=61.3%  drop=+0.6%  
+     AU23: F1=48.7%  drop=+1.0%  
+     AU24: F1=52.7%  drop=+1.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/FMAE_AU14_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU14/FMAE_stage2_AU14_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 62.46%
+
+
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask 25: F1=63.24%  |  drop=-0.78%  |  white=5880  | keep=34.1% ◀ best
+     mask 13: F1=61.41%  |  drop=+1.05%  |  white=7840  | keep=35.7%
+     mask 11: F1=61.14%  |  drop=+1.32%  |  white=5880  | keep=34.1%
+     mask  5: F1=61.14%  |  drop=+1.33%  |  white=5880  | keep=34.1%
+     mask  8: F1=60.96%  |  drop=+1.51%  |  white=5880  | keep=26.8%
+     mask 23: F1=59.70%  |  drop=+2.77%  |  white=7056  | keep=34.6%
+     mask  3: F1=59.41%  |  drop=+3.05%  |  white=6664  | keep=32.7%
+     mask  2: F1=59.03%  |  drop=+3.44%  |  white=4704  | keep=21.4%
+     mask 19: F1=58.93%  |  drop=+3.54%  |  white=6664  | keep=32.7%
+     mask  4: F1=58.82%  |  drop=+3.65%  |  white=3136  | keep=22.2%
+     mask 20: F1=57.90%  |  drop=+4.56%  |  white=3920  | keep=22.7%
+     mask 18: F1=57.36%  |  drop=+5.10%  |  white=6272  | keep=40.0%
+     mask 10: F1=57.28%  |  drop=+5.18%  |  white=5096  | keep=25.0%
+     mask 28: F1=57.26%  |  drop=+5.20%  |  white=3920  | keep=25.0%
+     mask  1: F1=56.76%  |  drop=+5.71%  |  white=5488  | keep=31.8%
+     mask  0: F1=56.09%  |  drop=+6.37%  |  white=5096  | keep=25.0%
+     mask 12: F1=55.42%  |  drop=+7.04%  |  white=4704  | keep=30.0%
+     mask 27: F1=54.57%  |  drop=+7.90%  |  white=5488  | keep=26.9%
+     mask 16: F1=54.27%  |  drop=+8.19%  |  white=7840  | keep=35.7%
+     mask 24: F1=50.03%  |  drop=+12.44%  |  white=3920  | keep=25.0%
+     mask 21: F1=39.35%  |  drop=+23.12%  |  white=5096  | keep=23.2%
+     mask 14: F1=36.85%  |  drop=+25.61%  |  white=5488  | keep=26.9%
+     mask  7: F1=33.66%  |  drop=+28.80%  |  white=3528  | keep=20.5%
+     mask 29: F1=33.15%  |  drop=+29.32%  |  white=5880  | keep=34.1%
+     mask 22: F1=30.65%  |  drop=+31.82%  |  white=7056  | keep=34.6%
+     mask 26: F1=16.47%  |  drop=+45.99%  |  white=3920  | keep=25.0%
+     mask  6: F1=13.29%  |  drop=+49.17%  |  white=7448  | keep=36.5%
+     mask 15: F1=13.06%  |  drop=+49.40%  |  white=3920  | keep=22.7%
+     mask  9: F1=1.02%  |  drop=+61.45%  |  white=5880  | keep=28.8%
+     mask 17: F1=0.10%  |  drop=+62.37%  |  white=4704  | keep=23.1%
+   Smallest mask within 1.0% of baseline: mask25 | F1=63.24% | drop=-0.78% | white=5880 | keep=34.1%
+   ✓ Saved DFMs to hfss/DFM/AU14/FMAE_stage3_AU14_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=56.0%  drop=+1.8%  
+     AU02: F1=56.5%  drop=+3.6%  
+     AU04: F1=56.6%  drop=-0.6%  
+     AU06: F1=76.9%  drop=-0.0%  
+     AU07: F1=78.6%  drop=+2.5%  
+     AU10: F1=79.2%  drop=-2.2%  
+     AU12: F1=89.3%  drop=-0.3%  
+     AU14: F1=63.2%  drop=-0.8%  
+     AU15: F1=28.2%  drop=+7.7%  ▓
+     AU17: F1=59.7%  drop=+2.3%  
+     AU23: F1=43.7%  drop=+6.0%  ▓
+     AU24: F1=48.0%  drop=+6.2%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/FMAE_AU14_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU14/FMAE_stage3_AU14_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU14/FMAE_AU14_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU15
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask 20: F1=38.14%  |  drop=-2.19%  |  white=45472  | keep=69.6% ◀ best
+     mask 10: F1=36.59%  |  drop=-0.64%  |  white=43904  | keep=80.0%
+     mask  2: F1=36.58%  |  drop=-0.63%  |  white=37632  | keep=69.6%
+     mask 14: F1=36.56%  |  drop=-0.61%  |  white=47040  | keep=73.9%
+     mask 16: F1=36.50%  |  drop=-0.55%  |  white=39200  | keep=73.3%
+     mask 12: F1=36.47%  |  drop=-0.52%  |  white=31360  | keep=62.5%
+     mask 22: F1=36.47%  |  drop=-0.52%  |  white=42336  | keep=80.0%
+     mask 25: F1=36.24%  |  drop=-0.29%  |  white=29792  | keep=60.0%
+     mask 17: F1=36.13%  |  drop=-0.18%  |  white=45472  | keep=69.6%
+     mask 26: F1=36.12%  |  drop=-0.17%  |  white=47040  | keep=69.6%
+     mask 29: F1=36.03%  |  drop=-0.08%  |  white=42336  | keep=65.2%
+     mask 24: F1=35.97%  |  drop=-0.02%  |  white=31360  | keep=62.5%
+     mask  5: F1=35.94%  |  drop=+0.01%  |  white=48608  | keep=73.9%
+     mask  8: F1=35.88%  |  drop=+0.07%  |  white=45472  | keep=69.6%
+     mask 21: F1=35.85%  |  drop=+0.10%  |  white=37632  | keep=75.0%
+     mask 11: F1=35.78%  |  drop=+0.17%  |  white=43904  | keep=65.2%
+     mask 28: F1=35.73%  |  drop=+0.22%  |  white=37632  | keep=73.3%
+     mask  3: F1=35.37%  |  drop=+0.58%  |  white=37632  | keep=75.0%
+     mask 27: F1=30.42%  |  drop=+5.53%  |  white=37632  | keep=75.0%
+     mask  6: F1=30.01%  |  drop=+5.94%  |  white=37632  | keep=75.0%
+     mask  9: F1=30.01%  |  drop=+5.94%  |  white=37632  | keep=75.0%
+     mask  1: F1=28.99%  |  drop=+6.96%  |  white=32928  | keep=60.0%
+     mask  4: F1=28.64%  |  drop=+7.31%  |  white=36064  | keep=73.3%
+     mask 19: F1=27.87%  |  drop=+8.08%  |  white=28224  | keep=60.0%
+     mask 23: F1=24.91%  |  drop=+11.04%  |  white=43904  | keep=69.6%
+     mask 15: F1=18.39%  |  drop=+17.56%  |  white=31360  | keep=62.5%
+     mask 18: F1=18.01%  |  drop=+17.94%  |  white=31360  | keep=62.5%
+     mask  7: F1=12.94%  |  drop=+23.01%  |  white=37632  | keep=73.3%
+     mask  0: F1=0.00%  |  drop=+35.95%  |  white=31360  | keep=62.5%
+     mask 13: F1=0.00%  |  drop=+35.95%  |  white=25088  | keep=66.7%
+   Smallest mask within 1.0% of baseline: mask25 | F1=36.24% | drop=-0.29% | white=29792 | keep=60.0%
+   ✓ Saved DFMs to hfss/DFM/AU15/FMAE_stage1_AU15_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=53.6%  drop=+4.2%  
+     AU02: F1=47.3%  drop=+12.8%  ▓▓
+     AU04: F1=55.2%  drop=+0.7%  
+     AU06: F1=76.3%  drop=+0.5%  
+     AU07: F1=81.0%  drop=+0.1%  
+     AU10: F1=79.4%  drop=-2.3%  
+     AU12: F1=88.1%  drop=+0.9%  
+     AU14: F1=57.9%  drop=+4.6%  
+     AU15: F1=38.1%  drop=-2.2%  
+     AU17: F1=62.7%  drop=-0.7%  
+     AU23: F1=47.0%  drop=+2.7%  
+     AU24: F1=58.8%  drop=-4.6%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/FMAE_AU15_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU15/FMAE_stage1_AU15_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask  1: F1=37.73%  |  drop=-1.78%  |  white=23520  | keep=53.6% ◀ best
+     mask  6: F1=37.21%  |  drop=-1.26%  |  white=25088  | keep=57.1%
+     mask  2: F1=36.97%  |  drop=-1.02%  |  white=20384  | keep=43.3%
+     mask 16: F1=36.75%  |  drop=-0.80%  |  white=17248  | keep=55.0%
+     mask 15: F1=36.30%  |  drop=-0.35%  |  white=20384  | keep=52.0%
+     mask 20: F1=34.56%  |  drop=+1.39%  |  white=21952  | keep=46.7%
+     mask 26: F1=34.43%  |  drop=+1.52%  |  white=14112  | keep=45.0%
+     mask 23: F1=33.07%  |  drop=+2.88%  |  white=17248  | keep=44.0%
+     mask 29: F1=24.44%  |  drop=+11.51%  |  white=18816  | keep=44.4%
+     mask 10: F1=24.03%  |  drop=+11.92%  |  white=21952  | keep=50.0%
+     mask 19: F1=23.26%  |  drop=+12.69%  |  white=21952  | keep=58.3%
+     mask 27: F1=22.37%  |  drop=+13.58%  |  white=18816  | keep=48.0%
+     mask 18: F1=22.33%  |  drop=+13.62%  |  white=18816  | keep=41.4%
+     mask 28: F1=21.89%  |  drop=+14.06%  |  white=26656  | keep=56.7%
+     mask 21: F1=21.86%  |  drop=+14.09%  |  white=23520  | keep=55.6%
+     mask  8: F1=20.61%  |  drop=+15.34%  |  white=20384  | keep=52.0%
+     mask 13: F1=20.37%  |  drop=+15.57%  |  white=12544  | keep=40.0%
+     mask 24: F1=20.22%  |  drop=+15.73%  |  white=21952  | keep=56.0%
+     mask 17: F1=14.47%  |  drop=+21.48%  |  white=17248  | keep=55.0%
+     mask  4: F1=13.26%  |  drop=+22.69%  |  white=12544  | keep=40.0%
+     mask 11: F1=10.65%  |  drop=+25.30%  |  white=21952  | keep=50.0%
+     mask 12: F1=8.18%  |  drop=+27.77%  |  white=23520  | keep=51.7%
+     mask  3: F1=6.50%  |  drop=+29.45%  |  white=20384  | keep=48.1%
+     mask  0: F1=4.89%  |  drop=+31.06%  |  white=12544  | keep=42.1%
+     mask  7: F1=4.12%  |  drop=+31.83%  |  white=18816  | keep=41.4%
+     mask  5: F1=2.34%  |  drop=+33.61%  |  white=20384  | keep=43.3%
+     mask 22: F1=2.01%  |  drop=+33.94%  |  white=17248  | keep=39.3%
+     mask 25: F1=0.90%  |  drop=+35.05%  |  white=21952  | keep=50.0%
+     mask  9: F1=0.77%  |  drop=+35.18%  |  white=17248  | keep=44.0%
+     mask 14: F1=0.13%  |  drop=+35.82%  |  white=20384  | keep=54.2%
+   Smallest mask within 1.0% of baseline: mask16 | F1=36.75% | drop=-0.80% | white=17248 | keep=55.0%
+   ✓ Saved DFMs to hfss/DFM/AU15/FMAE_stage2_AU15_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=57.8%  drop=-0.0%  
+     AU02: F1=60.7%  drop=-0.6%  
+     AU04: F1=55.8%  drop=+0.2%  
+     AU06: F1=76.1%  drop=+0.7%  
+     AU07: F1=78.6%  drop=+2.4%  
+     AU10: F1=76.7%  drop=+0.3%  
+     AU12: F1=88.7%  drop=+0.3%  
+     AU14: F1=63.4%  drop=-0.9%  
+     AU15: F1=37.7%  drop=-1.8%  
+     AU17: F1=61.2%  drop=+0.8%  
+     AU23: F1=48.6%  drop=+1.1%  
+     AU24: F1=53.1%  drop=+1.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/FMAE_AU15_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU15/FMAE_stage2_AU15_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 35.95%
+
+
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask 18: F1=33.73%  |  drop=+2.22%  |  white=6272  | keep=36.4% ◀ best
+     mask 21: F1=31.65%  |  drop=+4.30%  |  white=5488  | keep=31.8%
+     mask 12: F1=29.47%  |  drop=+6.48%  |  white=7448  | keep=36.5%
+     mask 22: F1=29.15%  |  drop=+6.80%  |  white=9408  | keep=40.0%
+     mask  3: F1=26.08%  |  drop=+9.87%  |  white=8232  | keep=35.0%
+     mask 27: F1=24.19%  |  drop=+11.76%  |  white=7448  | keep=36.5%
+     mask 10: F1=22.92%  |  drop=+13.03%  |  white=3920  | keep=22.7%
+     mask 25: F1=22.33%  |  drop=+13.62%  |  white=7840  | keep=31.2%
+     mask  4: F1=20.64%  |  drop=+15.31%  |  white=8232  | keep=32.8%
+     mask  7: F1=20.50%  |  drop=+15.45%  |  white=8232  | keep=32.8%
+     mask 23: F1=20.20%  |  drop=+15.75%  |  white=5880  | keep=28.8%
+     mask 28: F1=19.94%  |  drop=+16.01%  |  white=5488  | keep=21.9%
+     mask 14: F1=19.21%  |  drop=+16.74%  |  white=4704  | keep=21.4%
+     mask 20: F1=17.51%  |  drop=+18.44%  |  white=5488  | keep=26.9%
+     mask 15: F1=15.68%  |  drop=+20.27%  |  white=5488  | keep=38.9%
+     mask 11: F1=15.50%  |  drop=+20.45%  |  white=6664  | keep=38.6%
+     mask 26: F1=14.38%  |  drop=+21.57%  |  white=5488  | keep=23.3%
+     mask  5: F1=14.33%  |  drop=+21.62%  |  white=7056  | keep=30.0%
+     mask 29: F1=10.57%  |  drop=+25.38%  |  white=4704  | keep=21.4%
+     mask  2: F1=9.86%  |  drop=+26.09%  |  white=4704  | keep=20.0%
+     mask 16: F1=9.30%  |  drop=+26.65%  |  white=4312  | keep=21.2%
+     mask  9: F1=6.29%  |  drop=+29.66%  |  white=5096  | keep=29.5%
+     mask  6: F1=5.38%  |  drop=+30.57%  |  white=5488  | keep=21.9%
+     mask 13: F1=4.40%  |  drop=+31.55%  |  white=7056  | keep=32.1%
+     mask  0: F1=4.37%  |  drop=+31.58%  |  white=4704  | keep=23.1%
+     mask  1: F1=0.83%  |  drop=+35.12%  |  white=6664  | keep=30.4%
+     mask 24: F1=0.03%  |  drop=+35.92%  |  white=3136  | keep=22.2%
+     mask  8: F1=0.00%  |  drop=+35.95%  |  white=6664  | keep=38.6%
+     mask 17: F1=0.00%  |  drop=+35.95%  |  white=3920  | keep=22.7%
+     mask 19: F1=0.00%  |  drop=+35.95%  |  white=6272  | keep=33.3%
+   No mask is within 1.0% of baseline.
+   ✓ Saved DFMs to hfss/DFM/AU15/FMAE_stage3_AU15_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=52.8%  drop=+5.0%  
+     AU02: F1=56.2%  drop=+3.9%  
+     AU04: F1=55.2%  drop=+0.8%  
+     AU06: F1=76.8%  drop=-0.0%  
+     AU07: F1=77.8%  drop=+3.3%  
+     AU10: F1=78.4%  drop=-1.4%  
+     AU12: F1=87.5%  drop=+1.5%  
+     AU14: F1=62.4%  drop=+0.1%  
+     AU15: F1=33.7%  drop=+2.2%  
+     AU17: F1=61.6%  drop=+0.3%  
+     AU23: F1=50.3%  drop=-0.6%  
+     AU24: F1=60.6%  drop=-6.4%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/FMAE_AU15_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU15/FMAE_stage3_AU15_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU15/FMAE_AU15_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU17
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask  2: F1=61.95%  |  drop=+0.00%  |  white=42336  | keep=65.2% ◀ best
+     mask 23: F1=61.92%  |  drop=+0.03%  |  white=48608  | keep=69.6%
+     mask 29: F1=61.88%  |  drop=+0.07%  |  white=47040  | keep=65.2%
+     mask 11: F1=61.81%  |  drop=+0.14%  |  white=40768  | keep=65.2%
+     mask  8: F1=61.79%  |  drop=+0.16%  |  white=42336  | keep=65.2%
+     mask 14: F1=61.77%  |  drop=+0.19%  |  white=47040  | keep=73.9%
+     mask  7: F1=61.73%  |  drop=+0.22%  |  white=39200  | keep=80.0%
+     mask 16: F1=61.70%  |  drop=+0.25%  |  white=36064  | keep=73.3%
+     mask 22: F1=61.69%  |  drop=+0.26%  |  white=29792  | keep=66.7%
+     mask  4: F1=61.62%  |  drop=+0.33%  |  white=40768  | keep=73.3%
+     mask 10: F1=61.59%  |  drop=+0.37%  |  white=36064  | keep=73.3%
+     mask 24: F1=61.56%  |  drop=+0.40%  |  white=37632  | keep=75.0%
+     mask 17: F1=61.53%  |  drop=+0.42%  |  white=43904  | keep=69.6%
+     mask 18: F1=61.49%  |  drop=+0.46%  |  white=31360  | keep=62.5%
+     mask  3: F1=61.47%  |  drop=+0.49%  |  white=31360  | keep=62.5%
+     mask  1: F1=61.46%  |  drop=+0.49%  |  white=37632  | keep=66.7%
+     mask 21: F1=61.39%  |  drop=+0.56%  |  white=37632  | keep=75.0%
+     mask  9: F1=61.25%  |  drop=+0.70%  |  white=31360  | keep=62.5%
+     mask  5: F1=61.23%  |  drop=+0.72%  |  white=47040  | keep=73.9%
+     mask 26: F1=61.15%  |  drop=+0.80%  |  white=42336  | keep=65.2%
+     mask 20: F1=61.05%  |  drop=+0.90%  |  white=40768  | keep=65.2%
+     mask 12: F1=61.05%  |  drop=+0.91%  |  white=37632  | keep=75.0%
+     mask 15: F1=61.01%  |  drop=+0.94%  |  white=31360  | keep=62.5%
+     mask 27: F1=60.89%  |  drop=+1.06%  |  white=37632  | keep=75.0%
+     mask  0: F1=60.81%  |  drop=+1.14%  |  white=37632  | keep=75.0%
+     mask  6: F1=60.72%  |  drop=+1.23%  |  white=31360  | keep=62.5%
+     mask 19: F1=59.61%  |  drop=+2.34%  |  white=34496  | keep=60.0%
+     mask 13: F1=54.43%  |  drop=+7.52%  |  white=42336  | keep=80.0%
+     mask 28: F1=54.39%  |  drop=+7.56%  |  white=37632  | keep=66.7%
+     mask 25: F1=53.80%  |  drop=+8.15%  |  white=34496  | keep=73.3%
+   Smallest mask within 1.0% of baseline: mask22 | F1=61.69% | drop=+0.26% | white=29792 | keep=66.7%
+   ✓ Saved DFMs to hfss/DFM/AU17/FMAE_stage1_AU17_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=57.9%  drop=-0.1%  
+     AU02: F1=60.3%  drop=-0.2%  
+     AU04: F1=55.7%  drop=+0.3%  
+     AU06: F1=76.8%  drop=+0.1%  
+     AU07: F1=80.9%  drop=+0.1%  
+     AU10: F1=76.9%  drop=+0.1%  
+     AU12: F1=88.9%  drop=+0.1%  
+     AU14: F1=62.5%  drop=-0.1%  
+     AU15: F1=36.0%  drop=-0.1%  
+     AU17: F1=61.9%  drop=+0.0%  
+     AU23: F1=49.5%  drop=+0.2%  
+     AU24: F1=54.1%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/FMAE_AU17_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU17/FMAE_stage1_AU17_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask  5: F1=62.66%  |  drop=-0.71%  |  white=20384  | keep=56.5% ◀ best
+     mask 19: F1=61.61%  |  drop=+0.34%  |  white=23520  | keep=50.0%
+     mask 10: F1=61.56%  |  drop=+0.39%  |  white=26656  | keep=56.7%
+     mask  8: F1=61.32%  |  drop=+0.63%  |  white=20384  | keep=48.1%
+     mask 16: F1=61.25%  |  drop=+0.70%  |  white=21952  | keep=53.8%
+     mask  7: F1=61.14%  |  drop=+0.81%  |  white=23520  | keep=57.7%
+     mask 21: F1=61.10%  |  drop=+0.85%  |  white=21952  | keep=51.9%
+     mask 24: F1=61.09%  |  drop=+0.86%  |  white=20384  | keep=50.0%
+     mask 25: F1=61.04%  |  drop=+0.91%  |  white=18816  | keep=46.2%
+     mask 27: F1=60.94%  |  drop=+1.01%  |  white=17248  | keep=47.8%
+     mask 28: F1=60.72%  |  drop=+1.23%  |  white=21952  | keep=53.8%
+     mask 11: F1=60.59%  |  drop=+1.36%  |  white=21952  | keep=51.9%
+     mask 15: F1=60.56%  |  drop=+1.39%  |  white=21952  | keep=46.7%
+     mask 20: F1=60.35%  |  drop=+1.60%  |  white=17248  | keep=44.0%
+     mask 14: F1=60.34%  |  drop=+1.61%  |  white=17248  | keep=47.8%
+     mask  6: F1=60.25%  |  drop=+1.70%  |  white=25088  | keep=59.3%
+     mask 12: F1=59.95%  |  drop=+2.00%  |  white=20384  | keep=43.3%
+     mask 18: F1=59.07%  |  drop=+2.88%  |  white=25088  | keep=51.6%
+     mask 13: F1=58.96%  |  drop=+2.99%  |  white=18816  | keep=46.2%
+     mask  0: F1=57.19%  |  drop=+4.76%  |  white=17248  | keep=40.7%
+     mask 23: F1=53.85%  |  drop=+8.10%  |  white=21952  | keep=46.7%
+     mask 29: F1=53.52%  |  drop=+8.43%  |  white=20384  | keep=52.0%
+     mask  3: F1=53.24%  |  drop=+8.71%  |  white=15680  | keep=52.6%
+     mask  2: F1=50.64%  |  drop=+11.31%  |  white=23520  | keep=55.6%
+     mask  4: F1=50.42%  |  drop=+11.54%  |  white=25088  | keep=51.6%
+     mask 22: F1=47.66%  |  drop=+14.29%  |  white=14112  | keep=47.4%
+     mask  1: F1=20.89%  |  drop=+41.06%  |  white=17248  | keep=42.3%
+     mask 26: F1=0.37%  |  drop=+61.58%  |  white=17248  | keep=40.7%
+     mask  9: F1=0.01%  |  drop=+61.94%  |  white=17248  | keep=57.9%
+     mask 17: F1=0.00%  |  drop=+61.95%  |  white=18816  | keep=46.2%
+   Smallest mask within 1.0% of baseline: mask25 | F1=61.04% | drop=+0.91% | white=18816 | keep=46.2%
+   ✓ Saved DFMs to hfss/DFM/AU17/FMAE_stage2_AU17_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=51.7%  drop=+6.1%  ▓
+     AU02: F1=49.2%  drop=+10.8%  ▓▓
+     AU04: F1=54.6%  drop=+1.4%  
+     AU06: F1=76.4%  drop=+0.4%  
+     AU07: F1=78.9%  drop=+2.1%  
+     AU10: F1=79.0%  drop=-2.0%  
+     AU12: F1=87.0%  drop=+2.0%  
+     AU14: F1=59.2%  drop=+3.3%  
+     AU15: F1=38.0%  drop=-2.1%  
+     AU17: F1=62.7%  drop=-0.7%  
+     AU23: F1=46.1%  drop=+3.6%  
+     AU24: F1=59.7%  drop=-5.5%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/FMAE_AU17_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU17/FMAE_stage2_AU17_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.95%
+
+
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask 14: F1=62.06%  |  drop=-0.11%  |  white=6272  | keep=36.4% ◀ best
+     mask  6: F1=60.48%  |  drop=+1.47%  |  white=3528  | keep=20.5%
+     mask 15: F1=59.48%  |  drop=+2.47%  |  white=8624  | keep=36.7%
+     mask 26: F1=58.01%  |  drop=+3.94%  |  white=5880  | keep=25.0%
+     mask 28: F1=56.83%  |  drop=+5.12%  |  white=4704  | keep=21.4%
+     mask  7: F1=56.62%  |  drop=+5.34%  |  white=5880  | keep=28.8%
+     mask  2: F1=55.33%  |  drop=+6.62%  |  white=9016  | keep=38.3%
+     mask 27: F1=53.83%  |  drop=+8.12%  |  white=6664  | keep=28.3%
+     mask 12: F1=52.26%  |  drop=+9.70%  |  white=7056  | keep=34.6%
+     mask 21: F1=51.26%  |  drop=+10.69%  |  white=5096  | keep=25.0%
+     mask  3: F1=50.95%  |  drop=+11.00%  |  white=7056  | keep=37.5%
+     mask  8: F1=49.88%  |  drop=+12.07%  |  white=6272  | keep=28.6%
+     mask  0: F1=48.69%  |  drop=+13.26%  |  white=9800  | keep=36.8%
+     mask 19: F1=48.38%  |  drop=+13.57%  |  white=4704  | keep=21.4%
+     mask 16: F1=48.32%  |  drop=+13.63%  |  white=5096  | keep=23.2%
+     mask 13: F1=48.23%  |  drop=+13.72%  |  white=4312  | keep=25.0%
+     mask 11: F1=47.89%  |  drop=+14.06%  |  white=5096  | keep=23.2%
+     mask  1: F1=47.86%  |  drop=+14.09%  |  white=4312  | keep=21.2%
+     mask 29: F1=46.72%  |  drop=+15.24%  |  white=7840  | keep=38.5%
+     mask 17: F1=45.55%  |  drop=+16.40%  |  white=5880  | keep=31.2%
+     mask 20: F1=44.59%  |  drop=+17.36%  |  white=5880  | keep=28.8%
+     mask  4: F1=43.80%  |  drop=+18.15%  |  white=4704  | keep=23.1%
+     mask 24: F1=43.18%  |  drop=+18.78%  |  white=4704  | keep=21.4%
+     mask  5: F1=35.51%  |  drop=+26.45%  |  white=5880  | keep=22.1%
+     mask 25: F1=28.01%  |  drop=+33.94%  |  white=4312  | keep=21.2%
+     mask 22: F1=7.41%  |  drop=+54.54%  |  white=7448  | keep=31.7%
+     mask 23: F1=3.04%  |  drop=+58.91%  |  white=5880  | keep=26.8%
+     mask  9: F1=0.00%  |  drop=+61.95%  |  white=6272  | keep=33.3%
+     mask 10: F1=0.00%  |  drop=+61.95%  |  white=6664  | keep=32.7%
+     mask 18: F1=0.00%  |  drop=+61.95%  |  white=4312  | keep=21.2%
+   Smallest mask within 1.0% of baseline: mask14 | F1=62.06% | drop=-0.11% | white=6272 | keep=36.4%
+   ✓ Saved DFMs to hfss/DFM/AU17/FMAE_stage3_AU17_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=51.4%  drop=+6.4%  ▓
+     AU02: F1=48.2%  drop=+11.8%  ▓▓
+     AU04: F1=51.1%  drop=+4.8%  
+     AU06: F1=74.7%  drop=+2.2%  
+     AU07: F1=73.3%  drop=+7.8%  ▓
+     AU10: F1=76.6%  drop=+0.4%  
+     AU12: F1=85.2%  drop=+3.8%  
+     AU14: F1=54.4%  drop=+8.0%  ▓
+     AU15: F1=19.3%  drop=+16.7%  ▓▓▓
+     AU17: F1=62.1%  drop=-0.1%  
+     AU23: F1=38.5%  drop=+11.2%  ▓▓
+     AU24: F1=57.9%  drop=-3.7%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/FMAE_AU17_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU17/FMAE_stage3_AU17_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU17/FMAE_AU17_per_au_drop_heatmap.png
+
+==================================================
+Search target: AU23
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+
+🔍 Stage stage1: Testing 30 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+
+   stage1 — all masks (sorted by masked F1, high→low):
+     mask  8: F1=49.77%  |  drop=-0.06%  |  white=47040  | keep=69.6% ◀ best
+     mask 26: F1=49.73%  |  drop=-0.02%  |  white=48608  | keep=73.9%
+     mask  5: F1=49.72%  |  drop=-0.02%  |  white=50176  | keep=73.9%
+     mask 29: F1=49.71%  |  drop=-0.00%  |  white=47040  | keep=73.9%
+     mask 15: F1=49.65%  |  drop=+0.06%  |  white=37632  | keep=75.0%
+     mask 21: F1=49.65%  |  drop=+0.06%  |  white=37632  | keep=75.0%
+     mask 27: F1=49.65%  |  drop=+0.06%  |  white=37632  | keep=75.0%
+     mask  4: F1=49.59%  |  drop=+0.12%  |  white=39200  | keep=80.0%
+     mask 22: F1=49.57%  |  drop=+0.13%  |  white=36064  | keep=73.3%
+     mask 28: F1=49.56%  |  drop=+0.15%  |  white=39200  | keep=66.7%
+     mask  3: F1=49.55%  |  drop=+0.16%  |  white=37632  | keep=75.0%
+     mask 20: F1=49.52%  |  drop=+0.18%  |  white=43904  | keep=65.2%
+     mask 23: F1=49.51%  |  drop=+0.19%  |  white=47040  | keep=78.3%
+     mask  1: F1=49.30%  |  drop=+0.40%  |  white=31360  | keep=60.0%
+     mask  7: F1=49.20%  |  drop=+0.50%  |  white=29792  | keep=66.7%
+     mask  6: F1=49.20%  |  drop=+0.51%  |  white=37632  | keep=75.0%
+     mask  9: F1=49.20%  |  drop=+0.51%  |  white=37632  | keep=75.0%
+     mask 10: F1=49.03%  |  drop=+0.67%  |  white=40768  | keep=73.3%
+     mask 11: F1=48.98%  |  drop=+0.72%  |  white=45472  | keep=69.6%
+     mask 14: F1=48.78%  |  drop=+0.93%  |  white=42336  | keep=73.9%
+     mask  2: F1=46.44%  |  drop=+3.26%  |  white=45472  | keep=65.2%
+     mask 17: F1=46.43%  |  drop=+3.27%  |  white=48608  | keep=65.2%
+     mask 16: F1=43.63%  |  drop=+6.07%  |  white=29792  | keep=66.7%
+     mask 13: F1=43.19%  |  drop=+6.51%  |  white=26656  | keep=66.7%
+     mask  0: F1=37.53%  |  drop=+12.18%  |  white=31360  | keep=62.5%
+     mask 18: F1=37.30%  |  drop=+12.40%  |  white=31360  | keep=62.5%
+     mask 12: F1=34.93%  |  drop=+14.78%  |  white=31360  | keep=62.5%
+     mask 24: F1=31.78%  |  drop=+17.93%  |  white=31360  | keep=62.5%
+     mask 19: F1=23.57%  |  drop=+26.14%  |  white=42336  | keep=80.0%
+     mask 25: F1=22.99%  |  drop=+26.72%  |  white=39200  | keep=66.7%
+   Smallest mask within 1.0% of baseline: mask7 | F1=49.20% | drop=+0.50% | white=29792 | keep=66.7%
+   ✓ Saved DFMs to hfss/DFM/AU23/FMAE_stage1_AU23_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage1)...
+   Per-AU breakdown — stage1 maskbest:
+     AU01: F1=57.8%  drop=+0.0%  
+     AU02: F1=60.1%  drop=+0.0%  
+     AU04: F1=56.0%  drop=+0.0%  
+     AU06: F1=76.8%  drop=-0.0%  
+     AU07: F1=81.1%  drop=-0.0%  
+     AU10: F1=77.1%  drop=-0.0%  
+     AU12: F1=89.0%  drop=-0.0%  
+     AU14: F1=62.5%  drop=-0.0%  
+     AU15: F1=35.9%  drop=+0.1%  
+     AU17: F1=61.9%  drop=+0.0%  
+     AU23: F1=49.8%  drop=-0.1%  
+     AU24: F1=54.2%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/FMAE_AU23_stage1_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU23/FMAE_stage1_AU23_best_mask_advanced.png
+   Keep-ratio target for stage2: 40.0% - 60.0%
+
+🔍 Stage stage2: Testing 30 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+
+
+   stage2 — all masks (sorted by masked F1, high→low):
+     mask  1: F1=48.98%  |  drop=+0.72%  |  white=21952  | keep=56.0% ◀ best
+     mask 27: F1=48.85%  |  drop=+0.85%  |  white=18816  | keep=50.0%
+     mask  0: F1=48.79%  |  drop=+0.91%  |  white=28224  | keep=56.2%
+     mask 23: F1=48.68%  |  drop=+1.02%  |  white=18816  | keep=50.0%
+     mask 26: F1=48.59%  |  drop=+1.11%  |  white=28224  | keep=60.0%
+     mask 10: F1=45.34%  |  drop=+4.37%  |  white=15680  | keep=41.7%
+     mask  6: F1=45.33%  |  drop=+4.37%  |  white=26656  | keep=54.8%
+     mask  5: F1=43.74%  |  drop=+5.96%  |  white=28224  | keep=58.1%
+     mask 15: F1=43.67%  |  drop=+6.03%  |  white=15680  | keep=41.7%
+     mask  4: F1=43.66%  |  drop=+6.05%  |  white=21952  | keep=58.3%
+     mask 22: F1=42.35%  |  drop=+7.36%  |  white=18816  | keep=52.2%
+     mask 13: F1=42.09%  |  drop=+7.61%  |  white=17248  | keep=44.0%
+     mask  9: F1=41.66%  |  drop=+8.04%  |  white=18816  | keep=48.0%
+     mask 14: F1=38.17%  |  drop=+11.53%  |  white=15680  | keep=43.5%
+     mask  3: F1=37.27%  |  drop=+12.44%  |  white=21952  | keep=46.7%
+     mask 19: F1=36.64%  |  drop=+13.06%  |  white=21952  | keep=43.8%
+     mask 25: F1=29.64%  |  drop=+20.06%  |  white=20384  | keep=43.3%
+     mask 17: F1=28.95%  |  drop=+20.76%  |  white=17248  | keep=45.8%
+     mask 20: F1=26.39%  |  drop=+23.32%  |  white=18816  | keep=50.0%
+     mask 28: F1=15.41%  |  drop=+34.30%  |  white=18816  | keep=50.0%
+     mask  7: F1=12.16%  |  drop=+37.54%  |  white=28224  | keep=60.0%
+     mask 11: F1=2.61%  |  drop=+47.10%  |  white=20384  | keep=54.2%
+     mask  8: F1=0.96%  |  drop=+48.74%  |  white=17248  | keep=44.0%
+     mask  2: F1=0.57%  |  drop=+49.14%  |  white=20384  | keep=43.3%
+     mask 16: F1=0.27%  |  drop=+49.43%  |  white=17248  | keep=47.8%
+     mask 29: F1=0.20%  |  drop=+49.50%  |  white=15680  | keep=41.7%
+     mask 18: F1=0.17%  |  drop=+49.53%  |  white=28224  | keep=60.0%
+     mask 12: F1=0.00%  |  drop=+49.70%  |  white=17248  | keep=45.8%
+     mask 21: F1=0.00%  |  drop=+49.70%  |  white=18816  | keep=40.0%
+     mask 24: F1=0.00%  |  drop=+49.70%  |  white=20384  | keep=41.9%
+   Smallest mask within 1.0% of baseline: mask27 | F1=48.85% | drop=+0.85% | white=18816 | keep=50.0%
+   ✓ Saved DFMs to hfss/DFM/AU23/FMAE_stage2_AU23_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage2)...
+   Per-AU breakdown — stage2 maskbest:
+     AU01: F1=57.1%  drop=+0.7%  
+     AU02: F1=59.8%  drop=+0.2%  
+     AU04: F1=55.8%  drop=+0.2%  
+     AU06: F1=76.6%  drop=+0.2%  
+     AU07: F1=79.8%  drop=+1.2%  
+     AU10: F1=77.1%  drop=-0.0%  
+     AU12: F1=88.8%  drop=+0.2%  
+     AU14: F1=63.1%  drop=-0.6%  
+     AU15: F1=36.4%  drop=-0.5%  
+     AU17: F1=61.4%  drop=+0.5%  
+     AU23: F1=49.0%  drop=+0.7%  
+     AU24: F1=54.1%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/FMAE_AU23_stage2_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU23/FMAE_stage2_AU23_best_mask_advanced.png
+   Keep-ratio target for stage3: 20.0% - 40.0%
+
+🔍 Stage stage3: Testing 30 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 49.70%
+
+   stage3 — all masks (sorted by masked F1, high→low):
+     mask  7: F1=48.97%  |  drop=+0.74%  |  white=5880  | keep=31.2% ◀ best
+     mask  1: F1=46.57%  |  drop=+3.13%  |  white=10584  | keep=37.5%
+     mask  3: F1=42.28%  |  drop=+7.42%  |  white=4312  | keep=27.5%
+     mask 11: F1=40.52%  |  drop=+9.19%  |  white=7056  | keep=32.1%
+     mask 20: F1=37.15%  |  drop=+12.56%  |  white=5880  | keep=26.8%
+     mask 15: F1=36.77%  |  drop=+12.93%  |  white=8232  | keep=30.9%
+     mask  4: F1=33.68%  |  drop=+16.02%  |  white=7056  | keep=37.5%
+     mask 28: F1=33.08%  |  drop=+16.62%  |  white=4704  | keep=21.4%
+     mask 17: F1=32.73%  |  drop=+16.97%  |  white=10584  | keep=37.5%
+     mask 14: F1=30.14%  |  drop=+19.56%  |  white=5488  | keep=35.0%
+     mask 19: F1=26.06%  |  drop=+23.65%  |  white=7840  | keep=29.4%
+     mask 29: F1=26.05%  |  drop=+23.65%  |  white=5096  | keep=32.5%
+     mask 22: F1=24.17%  |  drop=+25.53%  |  white=8232  | keep=29.2%
+     mask 24: F1=22.19%  |  drop=+27.52%  |  white=4704  | keep=25.0%
+     mask 16: F1=20.30%  |  drop=+29.40%  |  white=9408  | keep=35.3%
+     mask 13: F1=19.00%  |  drop=+30.70%  |  white=10192  | keep=36.1%
+     mask  2: F1=18.02%  |  drop=+31.68%  |  white=4704  | keep=21.4%
+     mask  5: F1=16.43%  |  drop=+33.28%  |  white=4704  | keep=21.4%
+     mask  6: F1=14.05%  |  drop=+35.65%  |  white=7840  | keep=35.7%
+     mask  0: F1=12.18%  |  drop=+37.52%  |  white=5488  | keep=25.0%
+     mask 25: F1=8.73%  |  drop=+40.97%  |  white=5880  | keep=26.8%
+     mask 23: F1=8.32%  |  drop=+41.38%  |  white=7448  | keep=26.4%
+     mask 27: F1=6.75%  |  drop=+42.95%  |  white=7448  | keep=27.9%
+     mask  8: F1=6.11%  |  drop=+43.59%  |  white=6272  | keep=23.5%
+     mask 26: F1=5.31%  |  drop=+44.40%  |  white=10976  | keep=38.9%
+     mask 10: F1=1.11%  |  drop=+48.59%  |  white=7056  | keep=32.1%
+     mask  9: F1=0.32%  |  drop=+49.38%  |  white=5488  | keep=35.0%
+     mask 12: F1=0.00%  |  drop=+49.70%  |  white=7448  | keep=26.4%
+     mask 18: F1=0.00%  |  drop=+49.70%  |  white=6664  | keep=23.6%
+     mask 21: F1=0.00%  |  drop=+49.70%  |  white=4704  | keep=21.4%
+   Smallest mask within 1.0% of baseline: mask7 | F1=48.97% | drop=+0.74% | white=5880 | keep=31.2%
+   ✓ Saved DFMs to hfss/DFM/AU23/FMAE_stage3_AU23_DFMs.pkl
+
+   🔬 Per-AU eval for best mask (stage3)...
+   Per-AU breakdown — stage3 maskbest:
+     AU01: F1=52.9%  drop=+4.9%  
+     AU02: F1=59.1%  drop=+1.0%  
+     AU04: F1=54.8%  drop=+1.2%  
+     AU06: F1=77.5%  drop=-0.6%  
+     AU07: F1=78.5%  drop=+2.6%  
+     AU10: F1=79.4%  drop=-2.4%  
+     AU12: F1=88.8%  drop=+0.2%  
+     AU14: F1=61.4%  drop=+1.1%  
+     AU15: F1=33.0%  drop=+2.9%  
+     AU17: F1=60.7%  drop=+1.3%  
+     AU23: F1=49.0%  drop=+0.7%  
+     AU24: F1=60.9%  drop=-6.7%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/FMAE_AU23_stage3_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/AU23/FMAE_stage3_AU23_best_mask_advanced.png
+   🌡️ Saved per-AU heatmap to hfss/figures/AU23/FMAE_AU23_per_au_drop_heatmap.png

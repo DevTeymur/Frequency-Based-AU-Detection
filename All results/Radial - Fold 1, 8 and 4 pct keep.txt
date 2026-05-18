@@ -1,0 +1,73 @@
+======================================================================
+HFSS Search for AU Detection - FMAE
+Model: models/FMAE_BP4D_fold1.pth | Device: cuda
+Seed: 42
+Log file: hfss/logs/hfss_run_20260418_115610.txt
+======================================================================
+using ID adversarial: 0.0
+num AUs: 12, num subjects: 0
+✓ Loaded FMAE model
+building dataset from: BP4D/BP4D_test1.json
+dataset path: BP4D/BP4D_cropped/
+<util.datasets.BP4D_dataset object at 0x14ee74ad6b50>
+✓ Loaded 50605 TEST samples (evaluating on unseen data)
+
+🧭 Radial HFSS mode ON (deterministic masks)
+
+==================================================
+Search target: macro
+==================================================
+   Radial stage 1/2 (radial_step_01): keep=8.0% | white=4017
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=mean F1 (macro)
+   Baseline mean F1: 63.51% (mean per-AU)
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.26s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.26s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=62.35%  |  drop=+1.15%  |  white=4017  | keep=8.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/FMAE_radial_step_01_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=56.5%  drop=+1.3%  
+     AU02: F1=59.0%  drop=+1.1%  
+     AU04: F1=56.7%  drop=-0.7%  
+     AU06: F1=76.8%  drop=+0.0%  
+     AU07: F1=81.7%  drop=-0.6%  
+     AU10: F1=79.3%  drop=-2.2%  
+     AU12: F1=89.3%  drop=-0.3%  
+     AU14: F1=62.6%  drop=-0.1%  
+     AU15: F1=30.9%  drop=+5.0%  ▓
+     AU17: F1=59.9%  drop=+2.0%  
+     AU23: F1=45.1%  drop=+4.6%  
+     AU24: F1=50.5%  drop=+3.7%  
+   📊 Saved per-AU grouped bar to hfss/figures/FMAE_radial_step_01_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/FMAE_radial_step_01_best_mask_advanced.png
+   Radial stage 2/2 (radial_step_02): keep=4.0% | white=2009
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=mean F1 (macro)
+   Baseline mean F1: 63.51% (mean per-AU)
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:02<00:00, 122.84s/it]   Testing masks: 100%|##########| 1/1 [02:02<00:00, 122.84s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=59.99%  |  drop=+3.52%  |  white=2009  | keep=4.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/FMAE_radial_step_02_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=54.5%  drop=+3.3%  
+     AU02: F1=55.3%  drop=+4.8%  
+     AU04: F1=57.6%  drop=-1.6%  
+     AU06: F1=77.0%  drop=-0.2%  
+     AU07: F1=79.2%  drop=+1.8%  
+     AU10: F1=78.4%  drop=-1.3%  
+     AU12: F1=89.0%  drop=+0.0%  
+     AU14: F1=62.6%  drop=-0.1%  
+     AU15: F1=21.6%  drop=+14.3%  ▓▓
+     AU17: F1=59.1%  drop=+2.9%  
+     AU23: F1=40.6%  drop=+9.1%  ▓
+     AU24: F1=45.1%  drop=+9.1%  ▓
+   📊 Saved per-AU grouped bar to hfss/figures/FMAE_radial_step_02_per_au_grouped_bar.png
+   🖼  Advanced mask visualization saved to hfss/figures/FMAE_radial_step_02_best_mask_advanced.png
+
+======================================================================
+✅ HFSS Search Complete!
+======================================================================
