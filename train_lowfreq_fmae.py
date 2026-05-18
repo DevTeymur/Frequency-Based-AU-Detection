@@ -198,15 +198,29 @@ def _distance_grid(height: int, width: int, device: torch.device) -> torch.Tenso
     return dist
 
 
-def apply_random_lowpass_mask(
+def apply_random_frequency_mask(
     images: torch.Tensor,
     min_keep: float,
     max_keep: float,
+    mask_type: str = "low",
 ) -> torch.Tensor:
+    """Apply frequency mask to images.
+
+    Args:
+        images: [batch, channels, height, width] tensor
+        min_keep: minimum keep ratio (0.0 to 1.0)
+        max_keep: maximum keep ratio (0.0 to 1.0)
+        mask_type: 'low' (keep center low frequencies), 'high' (keep outer high frequencies), or 'full' (no masking)
+    """
+    if mask_type == "full":
+        return images
+
     if images.ndim != 4:
         raise ValueError(f"Expected 4D image batch, got shape {tuple(images.shape)}")
     if not (0.0 <= min_keep <= max_keep <= 1.0):
         raise ValueError("min_keep/max_keep must satisfy 0 <= min_keep <= max_keep <= 1")
+    if mask_type not in ("low", "high"):
+        raise ValueError(f"mask_type must be 'low', 'high', or 'full', got {mask_type}")
 
     batch_size, _, height, width = images.shape
     device = images.device
@@ -217,12 +231,26 @@ def apply_random_lowpass_mask(
     radius_scale = float(min(height, width)) / 2.0
     radii = keep_ratios * radius_scale
 
-    mask = (dist.unsqueeze(0) <= radii[:, None, None]).to(dtype=images.dtype)
+    if mask_type == "low":
+        # Low-pass: keep center frequencies (dist <= radii)
+        mask = (dist.unsqueeze(0) <= radii[:, None, None]).to(dtype=images.dtype)
+    else:  # high
+        # High-pass: keep outer frequencies (dist >= radii)
+        mask = (dist.unsqueeze(0) >= radii[:, None, None]).to(dtype=images.dtype)
 
     freq = torch.fft.fftshift(torch.fft.fft2(images, dim=(-2, -1)), dim=(-2, -1))
     freq = freq * mask.unsqueeze(1)
     filtered = torch.fft.ifft2(torch.fft.ifftshift(freq, dim=(-2, -1)), dim=(-2, -1)).real
     return filtered
+
+
+def apply_random_lowpass_mask(
+    images: torch.Tensor,
+    min_keep: float,
+    max_keep: float,
+) -> torch.Tensor:
+    """Backward-compatible wrapper for low-pass masking."""
+    return apply_random_frequency_mask(images, min_keep, max_keep, mask_type="low")
 
 
 def train_one_epoch_lowfreq(
@@ -236,6 +264,7 @@ def train_one_epoch_lowfreq(
     min_keep: float,
     max_keep: float,
     loss_scaler: Optional[NativeScaler],
+    mask_type: str = "low",
 ) -> dict[str, float]:
     model.train(True)
     metric_logger = misc.MetricLogger(delimiter="  ")
@@ -247,6 +276,10 @@ def train_one_epoch_lowfreq(
     optimizer.zero_grad()
 
     data_loader_len = len(data_loader)
+
+    # Temporarily redirect stdout to stderr to keep progress bars out of log file
+    sys.stdout = sys.__stdout__
+
     for data_iter_step, (samples, targets) in enumerate(metric_logger.log_every(data_loader, 50, header)):
         if data_iter_step % accum_iter == 0:
             lr_sched.adjust_learning_rate(optimizer, data_iter_step / max(data_loader_len, 1) + epoch, args)
@@ -254,7 +287,7 @@ def train_one_epoch_lowfreq(
         samples = samples.to(device, non_blocking=True)
         targets = targets[0] if isinstance(targets, (tuple, list)) else targets
         targets = targets.to(device, non_blocking=True)
-        samples = apply_random_lowpass_mask(samples, min_keep=min_keep, max_keep=max_keep)
+        samples = apply_random_frequency_mask(samples, min_keep=min_keep, max_keep=max_keep, mask_type=mask_type)
 
         with torch.cuda.amp.autocast(enabled=use_amp):
             outputs = model(samples)
@@ -371,6 +404,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model_path", type=str, required=True, help="Path to pretrained checkpoint")
     parser.add_argument("--train_json", type=str, required=True, help="Path to BP4D train JSON")
     parser.add_argument("--test_json", type=str, required=True, help="Path to BP4D test JSON")
+    parser.add_argument("--mask_type", type=str, default="low", choices=["low", "high", "full"], help="Frequency mask type: 'low' (keep center), 'high' (keep outer), 'full' (no mask)")
     parser.add_argument("--min_keep", type=float, default=0.08, help="Minimum keep ratio (default 8%)")
     parser.add_argument("--max_keep", type=float, default=0.20, help="Maximum keep ratio (default 20%)")
     parser.add_argument("--epochs", type=int, default=30, help="Number of training epochs")
@@ -409,10 +443,10 @@ def main() -> None:
     sys.stdout = TeeStream(orig_stdout, log_fp)
 
     print(f"\n{'='*70}")
-    print(f"Training {args.model_type} on BP4D fold {args.fold} with low-frequency masking")
+    print(f"Training {args.model_type} on BP4D fold {args.fold} with {args.mask_type}-frequency masking")
     print(f"{'='*70}")
     print(f"Device: {device} | Model: {args.model_type}")
-    print(f"Keep ratio range: [{args.min_keep:.1%}, {args.max_keep:.1%}]")
+    print(f"Mask type: {args.mask_type} | Keep ratio range: [{args.min_keep:.1%}, {args.max_keep:.1%}]")
     if args.num_samples:
         print(f"Using subset: {args.num_samples} samples (test mode)")
     print(f"Output: {output_dir}")
@@ -470,7 +504,12 @@ def main() -> None:
             min_keep=args.min_keep,
             max_keep=args.max_keep,
             loss_scaler=loss_scaler,
+            mask_type=args.mask_type,
         )
+
+        # Restore TeeStream for logging epoch summary
+        sys.stdout = TeeStream(orig_stdout, log_fp)
+
         test_f1 = evaluate_au_macro_f1(model, test_loader, device)
 
         row = {
@@ -512,30 +551,61 @@ if __name__ == "__main__":
 ============================================================================
 EXAMPLE COMMANDS
 ============================================================================
-For quick testing (50 samples):
 
+=== LOW-FREQUENCY TRAINING (Original - Default) ===
+
+Quick test FMAE (50 samples, 2 epochs):
 python train_lowfreq_fmae.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth \
     --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
+    --mask_type low --min_keep 0.08 --max_keep 0.20 \
     --fold 1 --num_samples 50 --epochs 2
 
-
-Full training FMAE fold 1 (8-20% low-pass):
-
+Full training FMAE fold 1 (low-frequency 8-20%):
 python train_lowfreq_fmae.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth \
     --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
-    --fold 1 --min_keep 0.08 --max_keep 0.20 --epochs 30 --output_dir output/lowfreq_fmae_fold1
+    --mask_type low --min_keep 0.08 --max_keep 0.20 \
+    --fold 1 --epochs 30 --output_dir output/lowfreq_fmae_fold1
 
-
-For quick testing IAT (50 samples):
-
+Quick test IAT (50 samples, 2 epochs):
 python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth \
     --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
+    --mask_type low --min_keep 0.08 --max_keep 0.20 \
     --fold 1 --num_samples 50 --epochs 2
 
-
-Full training IAT fold 1 (8-20% low-pass):
-
+Full training IAT fold 1 (low-frequency 8-20%):
 python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth \
     --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
-    --fold 1 --min_keep 0.08 --max_keep 0.20 --epochs 30 --output_dir output/lowfreq_iat_fold1
+    --mask_type low --min_keep 0.08 --max_keep 0.20 \
+    --fold 1 --epochs 30 --output_dir output/lowfreq_iat_fold1
+
+
+=== HIGH-FREQUENCY TRAINING (New - For Supervisor's Experiment) ===
+
+Full training FMAE fold 1 (high-frequency, remove center 15%):
+python train_lowfreq_fmae.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth \
+    --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
+    --mask_type high --min_keep 0.15 --max_keep 1.0 \
+    --fold 1 --epochs 30 --output_dir output/highfreq_fmae_fold1
+
+Full training IAT fold 1 (high-frequency, remove center 15%):
+python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth \
+    --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
+    --mask_type high --min_keep 0.15 --max_keep 1.0 \
+    --fold 1 --epochs 30 --output_dir output/highfreq_iat_fold1
+
+
+=== NO MASKING (Baseline - Full Image) ===
+
+Full training FMAE fold 1 (no masking, full image):
+python train_lowfreq_fmae.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth \
+    --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
+    --mask_type full \
+    --fold 1 --epochs 30 --output_dir output/fullfreq_fmae_fold1
+
+Full training IAT fold 1 (no masking, full image):
+python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth \
+    --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
+    --mask_type full \
+    --fold 1 --epochs 30 --output_dir output/fullfreq_iat_fold1
+
 '''
