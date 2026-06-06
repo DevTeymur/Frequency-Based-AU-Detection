@@ -85,6 +85,24 @@ DEFAULT_TRANSFORM_ARGS = {
 _RADIAL_DISTANCE_CACHE: dict[tuple[str, int, int], torch.Tensor] = {}
 
 
+def _radial_keep_mask(height: int, width: int, keep_pct: float, mask_type: str, device: torch.device) -> torch.Tensor:
+    """Build a deterministic radial low/high-pass mask from an exact keep percentage."""
+    if mask_type not in ("low", "high"):
+        raise ValueError(f"mask_type must be 'low' or 'high' for exact radial masking, got {mask_type}")
+
+    keep_pct = float(np.clip(keep_pct, 0.0, 100.0))
+    dist = _distance_grid(height, width, device)
+
+    if mask_type == "low":
+        radius = float(torch.quantile(dist.flatten(), keep_pct / 100.0).item())
+        mask = (dist <= radius)
+    else:
+        radius = float(torch.quantile(dist.flatten(), 1.0 - keep_pct / 100.0).item())
+        mask = (dist >= radius)
+
+    return mask.to(dtype=torch.float32)
+
+
 def set_seed(seed: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
@@ -203,6 +221,7 @@ def apply_random_frequency_mask(
     min_keep: float,
     max_keep: float,
     mask_type: str = "low",
+    exact_keep_pct: Optional[float] = None,
 ) -> torch.Tensor:
     """Apply frequency mask to images.
 
@@ -211,6 +230,7 @@ def apply_random_frequency_mask(
         min_keep: minimum keep ratio (0.0 to 1.0)
         max_keep: maximum keep ratio (0.0 to 1.0)
         mask_type: 'low' (keep center low frequencies), 'high' (keep outer high frequencies), or 'full' (no masking)
+        exact_keep_pct: optional exact keep percentage for deterministic masking
     """
     if mask_type == "full":
         return images
@@ -224,22 +244,32 @@ def apply_random_frequency_mask(
 
     batch_size, _, height, width = images.shape
     device = images.device
-    dist = _distance_grid(height, width, device)
 
-    keep_ratios = torch.rand(batch_size, device=device, dtype=torch.float32)
-    keep_ratios = keep_ratios * (max_keep - min_keep) + min_keep
-    radius_scale = float(min(height, width)) / 2.0
-    radii = keep_ratios * radius_scale
+    if exact_keep_pct is not None:
+        mask_2d = _radial_keep_mask(height, width, exact_keep_pct, mask_type, device)
+        mask = mask_2d.unsqueeze(0).expand(batch_size, -1, -1)
+    else:
+        dist = _distance_grid(height, width, device)
 
-    if mask_type == "low":
-        # Low-pass: keep center frequencies (dist <= radii)
-        mask = (dist.unsqueeze(0) <= radii[:, None, None]).to(dtype=images.dtype)
-    else:  # high
-        # High-pass: keep outer frequencies (dist >= radii)
-        mask = (dist.unsqueeze(0) >= radii[:, None, None]).to(dtype=images.dtype)
+        keep_ratios = torch.rand(batch_size, device=device, dtype=torch.float32)
+        keep_ratios = keep_ratios * (max_keep - min_keep) + min_keep
+        radius_scale = float(min(height, width)) / 2.0
+        radii = keep_ratios * radius_scale
+
+        if mask_type == "low":
+            # Low-pass: keep center frequencies (dist <= radii)
+            mask = (dist.unsqueeze(0) <= radii[:, None, None]).to(dtype=images.dtype)
+        else:  # high
+            # High-pass: keep outer frequencies (dist >= radii)
+            mask = (dist.unsqueeze(0) >= radii[:, None, None]).to(dtype=images.dtype)
+
+    if exact_keep_pct is not None:
+        mask = mask.to(dtype=images.dtype).unsqueeze(1)
+    else:
+        mask = mask.unsqueeze(1)
 
     freq = torch.fft.fftshift(torch.fft.fft2(images, dim=(-2, -1)), dim=(-2, -1))
-    freq = freq * mask.unsqueeze(1)
+    freq = freq * mask
     filtered = torch.fft.ifft2(torch.fft.ifftshift(freq, dim=(-2, -1)), dim=(-2, -1)).real
     return filtered
 
@@ -248,9 +278,10 @@ def apply_random_lowpass_mask(
     images: torch.Tensor,
     min_keep: float,
     max_keep: float,
+    exact_keep_pct: Optional[float] = None,
 ) -> torch.Tensor:
     """Backward-compatible wrapper for low-pass masking."""
-    return apply_random_frequency_mask(images, min_keep, max_keep, mask_type="low")
+    return apply_random_frequency_mask(images, min_keep, max_keep, mask_type="low", exact_keep_pct=exact_keep_pct)
 
 
 def train_one_epoch_lowfreq(
@@ -265,6 +296,7 @@ def train_one_epoch_lowfreq(
     max_keep: float,
     loss_scaler: Optional[NativeScaler],
     mask_type: str = "low",
+    exact_keep_pct: Optional[float] = None,
 ) -> dict[str, float]:
     model.train(True)
     metric_logger = misc.MetricLogger(delimiter="  ")
@@ -287,7 +319,13 @@ def train_one_epoch_lowfreq(
         samples = samples.to(device, non_blocking=True)
         targets = targets[0] if isinstance(targets, (tuple, list)) else targets
         targets = targets.to(device, non_blocking=True)
-        samples = apply_random_frequency_mask(samples, min_keep=min_keep, max_keep=max_keep, mask_type=mask_type)
+        samples = apply_random_frequency_mask(
+            samples,
+            min_keep=min_keep,
+            max_keep=max_keep,
+            mask_type=mask_type,
+            exact_keep_pct=exact_keep_pct,
+        )
 
         with torch.cuda.amp.autocast(enabled=use_amp):
             outputs = model(samples)
@@ -330,7 +368,13 @@ def train_one_epoch_lowfreq(
 
 
 @torch.no_grad()
-def evaluate_au_macro_f1(model: nn.Module, data_loader: Iterable, device: torch.device) -> float:
+def evaluate_au_macro_f1(
+    model: nn.Module,
+    data_loader: Iterable,
+    device: torch.device,
+    mask_type: str = "full",
+    exact_keep_pct: Optional[float] = None,
+) -> float:
     model.eval()
     all_probs = []
     all_targets = []
@@ -338,6 +382,15 @@ def evaluate_au_macro_f1(model: nn.Module, data_loader: Iterable, device: torch.
     for images, (au_labels, _) in data_loader:
         images = images.to(device, non_blocking=True)
         au_labels = au_labels.to(device, non_blocking=True)
+
+        if exact_keep_pct is not None and mask_type in ("low", "high"):
+            images = apply_random_frequency_mask(
+                images,
+                min_keep=0.0,
+                max_keep=1.0,
+                mask_type=mask_type,
+                exact_keep_pct=exact_keep_pct,
+            )
 
         with torch.cuda.amp.autocast(enabled=device.type == "cuda"):
             outputs = model(images)
@@ -407,6 +460,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mask_type", type=str, default="low", choices=["low", "high", "full"], help="Frequency mask type: 'low' (keep center), 'high' (keep outer), 'full' (no mask)")
     parser.add_argument("--min_keep", type=float, default=0.08, help="Minimum keep ratio (default 8%)")
     parser.add_argument("--max_keep", type=float, default=0.20, help="Maximum keep ratio (default 20%)")
+    parser.add_argument("--exact_keep_pct", type=float, default=None, help="Exact keep percentage for deterministic radial masking, e.g. 99 for high-pass keep-99%")
     parser.add_argument("--epochs", type=int, default=30, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size")
     parser.add_argument("--blr", type=float, default=5e-4, help="Base learning rate")
@@ -446,7 +500,10 @@ def main() -> None:
     print(f"Training {args.model_type} on BP4D fold {args.fold} with {args.mask_type}-frequency masking")
     print(f"{'='*70}")
     print(f"Device: {device} | Model: {args.model_type}")
-    print(f"Mask type: {args.mask_type} | Keep ratio range: [{args.min_keep:.1%}, {args.max_keep:.1%}]")
+    if args.exact_keep_pct is not None:
+        print(f"Mask type: {args.mask_type} | Exact keep percentage: {args.exact_keep_pct:.1f}%")
+    else:
+        print(f"Mask type: {args.mask_type} | Keep ratio range: [{args.min_keep:.1%}, {args.max_keep:.1%}]")
     if args.num_samples:
         print(f"Using subset: {args.num_samples} samples (test mode)")
     print(f"Output: {output_dir}")
@@ -505,12 +562,19 @@ def main() -> None:
             max_keep=args.max_keep,
             loss_scaler=loss_scaler,
             mask_type=args.mask_type,
+            exact_keep_pct=args.exact_keep_pct,
         )
 
         # Restore TeeStream for logging epoch summary
         sys.stdout = TeeStream(orig_stdout, log_fp)
 
-        test_f1 = evaluate_au_macro_f1(model, test_loader, device)
+        test_f1 = evaluate_au_macro_f1(
+            model,
+            test_loader,
+            device,
+            mask_type=args.mask_type,
+            exact_keep_pct=args.exact_keep_pct,
+        )
 
         row = {
             "epoch": epoch + 1,
@@ -579,20 +643,18 @@ python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_
     --fold 1 --epochs 30 --output_dir output/lowfreq_iat_fold1
 
 
+
 === HIGH-FREQUENCY TRAINING (New - For Supervisor's Experiment) ===
 
 Full training FMAE fold 1 (high-frequency, remove center 15%):
-python train_lowfreq_fmae.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth \
-    --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
-    --mask_type high --min_keep 0.15 --max_keep 1.0 \
-    --fold 1 --epochs 30 --output_dir output/highfreq_fmae_fold1
+python train_lowfreq_fmae.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json --mask_type high --min_keep 0.15 --max_keep 1.0 --fold 1 --epochs 30 --output_dir output/highfreq_fmae_fold1
+
+python train_lowfreq_fmae.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json --mask_type high --exact_keep_pct 99 --fold 1 --epochs 30 --output_dir output/highfreq_fmae_fold1
 
 Full training IAT fold 1 (high-frequency, remove center 15%):
-python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth \
-    --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json \
-    --mask_type high --min_keep 0.15 --max_keep 1.0 \
-    --fold 1 --epochs 30 --output_dir output/highfreq_iat_fold1
+python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json --mask_type high --min_keep 0.15 --max_keep 1.0 --fold 1 --epochs 30 --output_dir output/highfreq_iat_fold1
 
+python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json --mask_type high --exact_keep_pct 99 --fold 1 --epochs 30 --output_dir output/highfreq_iat_fold1
 
 === NO MASKING (Baseline - Full Image) ===
 
@@ -608,4 +670,9 @@ python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_
     --mask_type full \
     --fold 1 --epochs 30 --output_dir output/fullfreq_iat_fold1
 
+    
+python train_lowfreq_fmae.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json --mask_type low --min_keep 0.04 --max_keep 0.10 --fold 1 --epochs 30 --output_dir output/lowfreq_fmae_fold1_4_10
+
+
+python train_lowfreq_fmae.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth --train_json BP4D/BP4D_train1.json --test_json BP4D/BP4D_test1.json --mask_type low --min_keep 0.04 --max_keep 0.10 --fold 1 --epochs 30 --output_dir output/lowfreq_iat_fold1_4_10
 '''
