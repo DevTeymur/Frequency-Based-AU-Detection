@@ -66,7 +66,7 @@ FIXED_SEED = 42
 FIXED_RADIAL_STEPS = 10
 FIXED_RADIAL_START_KEEP_PCT =100.0
 FIXED_RADIAL_DIRECTION = 'big_to_small'  # 'big_to_small' | 'small_to_big'
-
+FIXED_PERCENTAGES_TO_KEEP = [8, 4, 2, 1]
 
 class TeeStream:
     """Write stream output to multiple targets (terminal + log file)."""
@@ -1053,6 +1053,32 @@ def generate_radial_mask_candidates(
     return masks
 
 
+def generate_radial_mask_candidates_from_percentages(percentages_to_keep, mode='low-pass'):
+    """Create deterministic radial masks from an explicit list of keep percentages."""
+    if mode != 'low-pass':
+        raise ValueError("Explicit FIXED_PERCENTAGES_TO_KEEP is only supported for low-pass radial search.")
+
+    h = IMG_SIZE
+    w = IMG_SIZE
+    cy, cx = h // 2, w // 2
+    ys, xs = np.ogrid[:h, :w]
+    dist = np.sqrt((xs - cx) ** 2 + (ys - cy) ** 2)
+
+    masks = []
+    for keep_pct in percentages_to_keep:
+        keep_pct = float(np.clip(keep_pct, 0.1, 100.0))
+        radius = float(np.quantile(dist, keep_pct / 100.0))
+        mask = (dist <= radius).astype(np.float32)
+
+        wm = White_Mask(mask)
+        wm.white_count = int(np.sum(mask > 0.5))
+        wm.keep_pct = float(np.mean(mask > 0.5))
+        wm.target_keep_pct = keep_pct
+        wm.radius = radius
+        masks.append(wm)
+    return masks
+
+
 def run_random_hfss_search(
     args,
     model,
@@ -1238,18 +1264,27 @@ def run_radial_hfss_search(
     """
     print("\n🧭 Radial HFSS mode ON (deterministic masks)")
     radial_mode = 'low-pass'
-    radial_direction = FIXED_RADIAL_DIRECTION
-    stage_masks = generate_radial_mask_candidates(
-        args.radial_steps,
-        mode=radial_mode,
-        start_keep_pct=args.radial_start_keep_pct,
-        direction=args.radial_direction,
-    )
-    print(
-        f"   Direction: {args.radial_direction} "
-        f"| steps={args.radial_steps} "
-        f"| start_keep={args.radial_start_keep_pct:.1f}%"
-    )
+    explicit_percentages = list(FIXED_PERCENTAGES_TO_KEEP) if FIXED_PERCENTAGES_TO_KEEP else []
+    if explicit_percentages:
+        stage_masks = generate_radial_mask_candidates_from_percentages(
+            explicit_percentages,
+            mode=radial_mode,
+        )
+        print(
+            f"   Explicit keep percentages: {', '.join(f'{p:.1f}%' for p in explicit_percentages)}"
+        )
+    else:
+        stage_masks = generate_radial_mask_candidates(
+            args.radial_steps,
+            mode=radial_mode,
+            start_keep_pct=args.radial_start_keep_pct,
+            direction=args.radial_direction,
+        )
+        print(
+            f"   Direction: {args.radial_direction} "
+            f"| steps={args.radial_steps} "
+            f"| start_keep={args.radial_start_keep_pct:.1f}%"
+        )
     all_results = {}
 
     if args.per_au_search:
@@ -1271,7 +1306,10 @@ def run_radial_hfss_search(
 
         all_results[target_name] = {}
         prev_masks = None
-        radial_stage_names = [f"radial_step_{i + 1:02d}" for i in range(len(stage_masks))]
+        if explicit_percentages:
+            radial_stage_names = [f"radial_keep_{int(round(p)):02d}pct" for p in explicit_percentages]
+        else:
+            radial_stage_names = [f"radial_step_{i + 1:02d}" for i in range(len(stage_masks))]
 
         for stage_index, stage_name in enumerate(radial_stage_names):
             stage_mask = stage_masks[min(stage_index, len(stage_masks) - 1)]
