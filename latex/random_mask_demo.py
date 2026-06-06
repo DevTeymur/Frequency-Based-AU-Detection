@@ -84,6 +84,24 @@ def parse_args():
         choices=["big_to_small", "small_to_big"],
         help="Direction of keep progression",
     )
+    parser.add_argument(
+        "--keep_pcts",
+        type=str,
+        default=None,
+        help="Comma-separated keep percentages for random masks (e.g. '100,50,20,10').",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="RNG seed for deterministic random masks",
+    )
+    parser.add_argument(
+        "--out",
+        type=str,
+        default=str(OUTPUT_DIR / "random_radial_masks_2x4.png"),
+        help="Output path for the 2x4 comparison image",
+    )
     return parser.parse_args()
 
 
@@ -133,6 +151,22 @@ def generate_radial_mask(keep_pct, mode="low-pass", dist=None):
         radius = float(np.quantile(dist, 1.0 - keep_pct / 100.0))
         mask = (dist >= radius).astype(np.float32)
 
+    return mask, radius
+
+
+def generate_random_mask(keep_pct, seed=42, dist=None):
+    """Generate a random binary mask with approximately the requested keep percentage.
+
+    Returns (mask, radius) where radius is the radial-quantile for visualization only.
+    """
+    if dist is None:
+        dist = radial_distance_map(IMG_SIZE)
+    target_prop = float(np.clip(keep_pct, 0.1, 100.0)) / 100.0
+    rng = np.random.default_rng(seed)
+    flat = rng.random(size=(IMG_SIZE * IMG_SIZE,))
+    thresh = np.quantile(flat, 1.0 - target_prop)
+    mask = (flat >= thresh).astype(np.float32).reshape((IMG_SIZE, IMG_SIZE))
+    radius = float(np.quantile(dist, target_prop))
     return mask, radius
 
 
@@ -254,8 +288,7 @@ def save_original_vs_masked_2x2(
 
     plt.tight_layout()
     mode_slug = mode.replace("-", "_")
-    # output_path = OUTPUT_DIR / f"radial_mask_2x2_{mode_slug}_keep_{int(round(keep_pct))}.png"
-    output_path = OUTPUT_DIR / f"test.png"
+    output_path = OUTPUT_DIR / f"radial_mask_2x2_{mode_slug}_keep_{int(round(keep_pct))}.png"
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
     print(f"Saved: {output_path}")
     plt.close(fig)
@@ -269,25 +302,43 @@ def main():
     original_img = tensor_to_image(img_tensor)
     original_spec = original_spectrum_map(img_tensor)
 
-    # Radial workflow: either one explicit keep_pct or HFSS-style schedule.
-    if args.keep_pct is not None:
+    # Determine keep percentages for this demo: explicit list for random-mode or radial schedule.
+    if args.keep_pcts:
+        try:
+            keep_list = [float(x) for x in args.keep_pcts.split(',') if x.strip()]
+        except Exception:
+            keep_list = [100.0, 50.0, 20.0, 10.0]
+        # build radial_items using random masks
         dist = radial_distance_map(IMG_SIZE)
-        mask, radius = generate_radial_mask(args.keep_pct, mode=args.mode, dist=dist)
-        radial_items = [
-            {
+        radial_items = []
+        for idx, k in enumerate(keep_list):
+            mask, radius = generate_random_mask(k, seed=(args.seed + idx), dist=dist)
+            radial_items.append({
                 "mask": mask,
                 "radius": float(radius),
-                "target_keep_pct": float(args.keep_pct),
+                "target_keep_pct": float(k),
                 "keep_pct": float(np.mean(mask > 0.5) * 100.0),
-            }
-        ]
+            })
     else:
-        radial_items = generate_radial_mask_candidates(
-            num_steps=args.radial_steps,
-            mode=args.mode,
-            start_keep_pct=args.radial_start_keep_pct,
-            direction=args.radial_direction,
-        )
+        # Radial workflow: either one explicit keep_pct or HFSS-style schedule.
+        if args.keep_pct is not None:
+            dist = radial_distance_map(IMG_SIZE)
+            mask, radius = generate_radial_mask(args.keep_pct, mode=args.mode, dist=dist)
+            radial_items = [
+                {
+                    "mask": mask,
+                    "radius": float(radius),
+                    "target_keep_pct": float(args.keep_pct),
+                    "keep_pct": float(np.mean(mask > 0.5) * 100.0),
+                }
+            ]
+        else:
+            radial_items = generate_radial_mask_candidates(
+                num_steps=args.radial_steps,
+                mode=args.mode,
+                start_keep_pct=args.radial_start_keep_pct,
+                direction=args.radial_direction,
+            )
 
     masked_images = []
     spectra = []
@@ -329,32 +380,32 @@ def main():
 
     # Comparison figure: top row masked images, bottom row masked spectra
     cols = len(keep_pcts)
-    fig, axes = plt.subplots(2, cols, figsize=(4 * cols, 8))
+    fig, axes = plt.subplots(2, cols, figsize=(3 * cols, 6))
     if cols == 1:
         axes = np.array([[axes[0]], [axes[1]]])
 
     for idx, (keep_pct, img, spec, radius) in enumerate(zip(keep_pcts, masked_images, spectra, radii)):
-        axes[0, idx].imshow(img)
+        axes[0, idx].imshow(img, interpolation="nearest")
         axes[0, idx].set_title(
             f"{args.mode} | Keep: {keep_pct:.1f}%",
-            fontsize=12,
+            fontsize=10,
             fontweight="bold",
         )
         axes[0, idx].axis("off")
 
-        axes[1, idx].imshow(spec, cmap="magma")
-        circle = plt.Circle((IMG_SIZE // 2, IMG_SIZE // 2), radius, color="cyan", fill=False, linewidth=1.5)
+        axes[1, idx].imshow(spec, cmap="magma", interpolation="nearest")
+        circle = plt.Circle((IMG_SIZE // 2, IMG_SIZE // 2), radius, color="cyan", fill=False, linewidth=1.0)
         axes[1, idx].add_patch(circle)
-        axes[1, idx].set_title("Masked Spectrum", fontsize=10)
+        axes[1, idx].set_title("Masked Spectrum", fontsize=9)
         axes[1, idx].axis("off")
 
-    plt.tight_layout()
+    plt.subplots_adjust(left=0.0, right=1.0, top=0.98, bottom=0.02, wspace=0.03, hspace=0.06)
 
     mode_slug = args.mode.replace("-", "_")
-    # output_path = OUTPUT_DIR / f"radial_masks_comparison_{mode_slug}.png"
-    output_path = OUTPUT_DIR / "test.png"
-    plt.savefig(output_path, dpi=150, bbox_inches="tight")
-    print(f"\nSaved: {output_path}")
+    out_path = Path(args.out) if getattr(args, 'out', None) else OUTPUT_DIR / f"radial_masks_comparison_{mode_slug}.png"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
+    print(f"\nSaved: {out_path}")
     plt.close(fig)
 
 

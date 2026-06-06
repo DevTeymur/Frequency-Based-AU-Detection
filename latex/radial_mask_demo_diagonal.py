@@ -1,17 +1,10 @@
 """
-Radial frequency masking demo.
+Radial frequency masking demo (diagonal-based radius semantics).
 
-Features:
-- low-pass mode: keep center frequencies
-- high-pass mode: keep outer-ring frequencies
-- radial deterministic keep schedule (HFSS-style)
-- optional single keep percentage for one 2x2 visualization
+This variant defines the circle radius as a percentage of the image half-diagonal:
+  radius = (keep_pct/100) * (sqrt(h^2 + w^2) / 2)
 
-Outputs:
-- One 2x2 figure per keep ratio:
-  original image | original spectrum
-  masked image   | masked spectrum
-- One comparison figure with all keep ratios.
+Everything else mirrors `radial_mask_demo.py` but outputs files with a `_diagonal` suffix.
 """
 
 import argparse
@@ -45,7 +38,7 @@ FIXED_RADIAL_DIRECTION = "big_to_small"  # big_to_small | small_to_big
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Radial frequency masking demo")
+    parser = argparse.ArgumentParser(description="Radial frequency masking demo (diagonal semantics)")
     parser.add_argument(
         "--mode",
         type=str,
@@ -116,21 +109,26 @@ def radial_distance_map(size=IMG_SIZE):
     return np.sqrt((xs - cx) ** 2 + (ys - cy) ** 2)
 
 
-def generate_radial_mask(keep_pct, mode="low-pass", dist=None):
-    """Generate radial low-pass/high-pass mask from target keep percentage."""
+def generate_radial_mask(keep_pct, mode="low-pass", dist=None, size=IMG_SIZE):
+    """Generate radial low-pass/high-pass mask using diagonal-based radius.
+
+    Radius is defined as a percentage of the image half-diagonal, so `keep_pct`
+    now controls how large the circle radius is relative to the full diagonal.
+    """
     if mode not in ("low-pass", "high-pass"):
         raise ValueError(f"Invalid mode: {mode}. Use 'low-pass' or 'high-pass'.")
 
     keep_pct = float(np.clip(keep_pct, 0.1, 100.0))
+    h, w = size, size
     if dist is None:
-        dist = radial_distance_map(IMG_SIZE)
+        dist = radial_distance_map(size)
+
+    half_diag = float(np.sqrt(h ** 2 + w ** 2) / 2.0)
+    radius = (keep_pct / 100.0) * half_diag
 
     if mode == "low-pass":
-        radius = float(np.quantile(dist, keep_pct / 100.0))
         mask = (dist <= radius).astype(np.float32)
     else:
-        # Keep outer ring with approximately keep_pct retained area.
-        radius = float(np.quantile(dist, 1.0 - keep_pct / 100.0))
         mask = (dist >= radius).astype(np.float32)
 
     return mask, radius
@@ -142,7 +140,7 @@ def generate_radial_mask_candidates(
     start_keep_pct=100.0,
     direction="big_to_small",
 ):
-    """Deterministic radial schedule aligned with hfss_search_au.py style."""
+    """Deterministic diagonal-based schedule: steps of keep_pct applied to diagonal."""
     if num_steps < 2:
         num_steps = 2
     if direction not in ("big_to_small", "small_to_big"):
@@ -159,7 +157,7 @@ def generate_radial_mask_candidates(
     dist = radial_distance_map(IMG_SIZE)
     items = []
     for target in target_keep_pcts:
-        mask, radius = generate_radial_mask(target, mode=mode, dist=dist)
+        mask, radius = generate_radial_mask(target, mode=mode, dist=dist, size=IMG_SIZE)
         items.append(
             {
                 "mask": mask,
@@ -236,7 +234,7 @@ def save_original_vs_masked_2x2(
 
     axes[1, 0].imshow(masked_img)
     axes[1, 0].set_title(
-        f"{mode} Masked Image (Keep {keep_pct:.1f}%)",
+        f"{mode} Keep {keep_pct:.1f}% ",
         fontsize=12,
         fontweight="bold",
     )
@@ -246,7 +244,7 @@ def save_original_vs_masked_2x2(
     circle = plt.Circle((IMG_SIZE // 2, IMG_SIZE // 2), radius, color="cyan", fill=False, linewidth=1.5)
     axes[1, 1].add_patch(circle)
     axes[1, 1].set_title(
-        f"{mode} Masked Spectrum (Keep {keep_pct:.1f}%)",
+        f"{mode} Masked (Keep {keep_pct:.1f}%)",
         fontsize=12,
         fontweight="bold",
     )
@@ -254,7 +252,7 @@ def save_original_vs_masked_2x2(
 
     plt.tight_layout()
     mode_slug = mode.replace("-", "_")
-    # output_path = OUTPUT_DIR / f"radial_mask_2x2_{mode_slug}_keep_{int(round(keep_pct))}.png"
+    # output_path = OUTPUT_DIR / f"radial_mask_2x2_{mode_slug}_keep_{int(round(keep_pct))}_diagonal.png"
     output_path = OUTPUT_DIR / f"test.png"
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
     print(f"Saved: {output_path}")
@@ -272,7 +270,7 @@ def main():
     # Radial workflow: either one explicit keep_pct or HFSS-style schedule.
     if args.keep_pct is not None:
         dist = radial_distance_map(IMG_SIZE)
-        mask, radius = generate_radial_mask(args.keep_pct, mode=args.mode, dist=dist)
+        mask, radius = generate_radial_mask(args.keep_pct, mode=args.mode, dist=dist, size=IMG_SIZE)
         radial_items = [
             {
                 "mask": mask,
@@ -314,14 +312,14 @@ def main():
             original_spec,
             masked_img_np,
             masked_spec,
-            keep_pct,
+            target_keep_pct,
             radius,
             args.mode,
         )
 
         print(
-            f"Applied {args.mode} mask: target_keep={target_keep_pct:.1f}% "
-            f"| actual_keep={keep_pct:.1f}% | radius={radius:.2f}"
+            f"Applied {args.mode} diagonal mask: target_keep(diag)={target_keep_pct:.1f}% "
+            f"| actual_keep(area)={keep_pct:.1f}% | radius={radius:.2f}"
         )
 
     if args.keep_pct is not None:
@@ -336,7 +334,7 @@ def main():
     for idx, (keep_pct, img, spec, radius) in enumerate(zip(keep_pcts, masked_images, spectra, radii)):
         axes[0, idx].imshow(img)
         axes[0, idx].set_title(
-            f"{args.mode} | Keep: {keep_pct:.1f}%",
+            f"{args.mode} | Keep(diag): {keep_pct:.1f}%",
             fontsize=12,
             fontweight="bold",
         )
@@ -351,8 +349,8 @@ def main():
     plt.tight_layout()
 
     mode_slug = args.mode.replace("-", "_")
-    # output_path = OUTPUT_DIR / f"radial_masks_comparison_{mode_slug}.png"
-    output_path = OUTPUT_DIR / "test.png"
+    # output_path = OUTPUT_DIR / f"radial_masks_comparison_{mode_slug}_diagonal.png"
+    output_path = OUTPUT_DIR / f"test.png"
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
     print(f"\nSaved: {output_path}")
     plt.close(fig)
@@ -361,10 +359,8 @@ def main():
 if __name__ == "__main__":
     main()
 
-"""
-python3 latex/radial_mask_demo.py --mode low-pass --keep_pct 3
-python3 latex/radial_mask_demo.py --mode high-pass --keep_pct 10
 
-python3 latex/radial_mask_demo.py --mode low-pass --image_index 0 --keep_pct 10
-python3 latex/radial_mask_demo.py --mode high-pass --image_index 0 --keep_pct 90
+"""
+python3 latex/radial_mask_demo_diagonal.py --mode low-pass --keep_pct 10 --image_index 0
+python3 latex/radial_mask_demo_diagonal.py --mode high-pass --keep_pct 10 --image_index 0
 """
