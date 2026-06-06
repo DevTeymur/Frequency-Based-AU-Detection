@@ -3,3 +3,6 @@ BP4D/
 
 # Generated checkpoints and artifacts
 models/
+
+hfss/
+fmae/
