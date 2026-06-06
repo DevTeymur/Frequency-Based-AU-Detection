@@ -59,6 +59,7 @@ FIXED_PROBE_WEIGHT_DECAY = 0.0
 FIXED_RADIAL_STEPS = 10
 FIXED_RADIAL_START_KEEP_PCT = 100.0
 FIXED_RADIAL_DIRECTION = "big_to_small"  # 'big_to_small' | 'small_to_big'
+FIXED_PERCENTAGES_TO_KEEP = [8, 4, 2, 1]
 
 
 def terminal_tqdm(iterable, **kwargs):
@@ -577,6 +578,34 @@ def generate_radial_masks(num_steps, start_keep_pct=100.0, direction="small_to_b
     return records
 
 
+def generate_radial_masks_from_percentages(percentages_to_keep):
+    """Generate deterministic radial masks for an explicit keep-percentage list."""
+    h = IMG_SIZE
+    w = IMG_SIZE
+    cy, cx = h // 2, w // 2
+    ys, xs = np.ogrid[:h, :w]
+    dist = np.sqrt((xs - cx) ** 2 + (ys - cy) ** 2)
+
+    records = []
+    for idx, keep_pct in enumerate(percentages_to_keep):
+        keep_pct = float(np.clip(keep_pct, 0.1, 100.0))
+        radius = float(np.quantile(dist, keep_pct / 100.0))
+        mask = (dist <= radius).astype(np.float32)
+        wm = White_Mask(mask)
+        wm.white_count = int(np.sum(mask > 0.5))
+        wm.keep_pct = float(np.mean(mask > 0.5))
+        wm.target_keep_pct = keep_pct
+        records.append(
+            MaskRecord(
+                step=idx + 1,
+                path=Path(f"generated_radial_keep_{int(round(keep_pct)):02d}pct"),
+                mask=wm,
+                target_keep_pct=keep_pct,
+            )
+        )
+    return records
+
+
 def _mask_keep_ratio_pct(mask_obj):
     mask_array = mask_obj.mask if hasattr(mask_obj, "mask") else np.asarray(mask_obj)
     return float(np.mean(mask_array > 0.5) * 100.0)
@@ -860,7 +889,15 @@ def main():
         print(f"   Baseline AU macro F1: {baseline_macro_f1*100:.2f}%")
 
         print("\n[5] Preparing radial masks")
-        if args.mask_source == "generated":
+        if FIXED_PERCENTAGES_TO_KEEP:
+            mask_records = generate_radial_masks_from_percentages(FIXED_PERCENTAGES_TO_KEEP)
+            print(
+                "   Using fixed keep percentages: "
+                + ", ".join(f"{p:.1f}%" for p in FIXED_PERCENTAGES_TO_KEEP)
+            )
+            if args.mask_source == "saved":
+                print("   Note: --mask_source saved is ignored here because fixed percentages are requested.")
+        elif args.mask_source == "generated":
             mask_records = generate_radial_masks(
                 num_steps=FIXED_RADIAL_STEPS,
                 start_keep_pct=FIXED_RADIAL_START_KEEP_PCT,
