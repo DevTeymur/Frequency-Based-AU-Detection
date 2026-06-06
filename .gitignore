@@ -1,2 +1,5 @@
-BP4D
-models
+# Local dataset checkout
+BP4D/
+
+# Generated checkpoints and artifacts
+models/

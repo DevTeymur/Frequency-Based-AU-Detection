@@ -1,0 +1,4 @@
+label,checkpoint_path,test_id_accuracy,au_macro_f1
+epoch2,output/lowfreq_iat_fold1/fold1_epoch002.pth,0.804065,0.633621
+epoch30,output/lowfreq_iat_fold1/fold1_epoch030.pth,0.897561,0.597501
+baseline_iat,models/FMAE_IAT_BP4D_fold1.pth,0.692683,0.6588

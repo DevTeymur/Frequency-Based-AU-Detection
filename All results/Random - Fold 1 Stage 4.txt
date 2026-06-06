@@ -1,0 +1,66 @@
+======================================================================
+HFSS Search for AU Detection - FMAE
+Model: models/FMAE_BP4D_fold1.pth | Device: cuda
+Log file: hfss/logs/hfss_run_20260330_141522.txt
+======================================================================
+using ID adversarial: 0.0
+num AUs: 12, num subjects: 0
+✓ Loaded FMAE model
+building dataset from: BP4D/BP4D_test1.json
+dataset path: BP4D/BP4D_cropped/
+<util.datasets.BP4D_dataset object at 0x153e71256490>
+✓ Loaded 50605 TEST samples (evaluating on unseen data)
+
+==================================================
+Search target: macro
+==================================================
+   Keep-ratio target for stage1: 60.0% - 80.0%
+   ♻ Reusing saved stage masks from hfss/DFM/FMAE_stage1_DFMs.pkl (count=10)
+   Keep-ratio target for stage2: 40.0% - 60.0%
+   ♻ Reusing saved stage masks from hfss/DFM/FMAE_stage2_DFMs.pkl (count=10)
+   Keep-ratio target for stage3: 20.0% - 40.0%
+   ♻ Reusing saved stage masks from hfss/DFM/FMAE_stage3_DFMs.pkl (count=10)
+   Keep-ratio target for stage4: 15.0% - 30.0%
+
+🔍 Stage stage4: Testing 30 candidates (P=0.8) | objective=mean F1 (macro)
+   Baseline mean F1: 63.51% (mean per-AU)
+   Testing masks:   0%|          | 0/30 [00:00<?, ?it/s]   Testing masks:   3%|3         | 1/30 [02:00<58:28, 120.97s/it]   Testing masks:   7%|6         | 2/30 [04:05<57:24, 123.03s/it]   Testing masks:  10%|#         | 3/30 [06:10<55:52, 124.18s/it]   Testing masks:  13%|#3        | 4/30 [08:16<54:05, 124.84s/it]   Testing masks:  17%|#6        | 5/30 [10:22<52:11, 125.26s/it]   Testing masks:  20%|##        | 6/30 [12:28<50:12, 125.51s/it]   Testing masks:  23%|##3       | 7/30 [14:34<48:10, 125.67s/it]   Testing masks:  27%|##6       | 8/30 [16:40<46:06, 125.76s/it]   Testing masks:  30%|###       | 9/30 [18:46<44:02, 125.82s/it]   Testing masks:  33%|###3      | 10/30 [20:52<41:56, 125.85s/it]   Testing masks:  37%|###6      | 11/30 [22:58<39:51, 125.89s/it]   Testing masks:  40%|####      | 12/30 [25:04<37:46, 125.91s/it]   Testing masks:  43%|####3     | 13/30 [27:10<35:40, 125.92s/it]   Testing masks:  47%|####6     | 14/30 [29:16<33:35, 125.96s/it]   Testing masks:  50%|#####     | 15/30 [31:22<31:29, 126.00s/it]   Testing masks:  53%|#####3    | 16/30 [33:28<29:24, 126.00s/it]   Testing masks:  57%|#####6    | 17/30 [35:34<27:17, 125.98s/it]   Testing masks:  60%|######    | 18/30 [37:40<25:11, 125.96s/it]   Testing masks:  63%|######3   | 19/30 [39:46<23:05, 125.96s/it]   Testing masks:  67%|######6   | 20/30 [41:52<20:59, 125.97s/it]   Testing masks:  70%|#######   | 21/30 [43:58<18:53, 125.99s/it]   Testing masks:  73%|#######3  | 22/30 [46:04<16:47, 125.98s/it]   Testing masks:  77%|#######6  | 23/30 [48:10<14:41, 125.88s/it]   Testing masks:  80%|########  | 24/30 [50:15<12:35, 125.87s/it]   Testing masks:  83%|########3 | 25/30 [52:21<10:28, 125.80s/it]   Testing masks:  87%|########6 | 26/30 [54:27<08:22, 125.72s/it]   Testing masks:  90%|######### | 27/30 [56:32<06:17, 125.69s/it]   Testing masks:  93%|#########3| 28/30 [58:38<04:11, 125.71s/it]   Testing masks:  97%|#########6| 29/30 [1:00:44<02:05, 125.74s/it]   Testing masks: 100%|##########| 30/30 [1:02:50<00:00, 125.77s/it]   Testing masks: 100%|##########| 30/30 [1:02:50<00:00, 125.67s/it]
+
+   stage4 — all masks (sorted by masked F1, high→low):
+     mask 25: F1=45.07%  |  drop=+18.44%  |  white=1568  | keep=18.8% ◀ best
+     mask 20: F1=42.46%  |  drop=+21.04%  |  white=1512  | keep=18.4%
+     mask 11: F1=41.59%  |  drop=+21.91%  |  white=2088  | keep=23.3%
+     mask 13: F1=40.78%  |  drop=+22.73%  |  white=1832  | keep=28.2%
+     mask 16: F1=38.62%  |  drop=+24.88%  |  white=1560  | keep=18.4%
+     mask 18: F1=37.98%  |  drop=+25.52%  |  white=2304  | keep=24.8%
+     mask  1: F1=36.35%  |  drop=+27.15%  |  white=1936  | keep=28.2%
+     mask 17: F1=36.34%  |  drop=+27.16%  |  white=2360  | keep=22.7%
+     mask 27: F1=35.73%  |  drop=+27.78%  |  white=1720  | keep=26.4%
+     mask 14: F1=34.43%  |  drop=+29.07%  |  white=2440  | keep=28.1%
+     mask  7: F1=33.92%  |  drop=+29.59%  |  white=2376  | keep=26.4%
+     mask 21: F1=33.70%  |  drop=+29.80%  |  white=1336  | keep=17.7%
+     mask  3: F1=32.70%  |  drop=+30.81%  |  white=2112  | keep=23.5%
+     mask  4: F1=32.49%  |  drop=+31.02%  |  white=1800  | keep=19.8%
+     mask 29: F1=32.32%  |  drop=+31.18%  |  white=1968  | keep=28.1%
+     mask 26: F1=32.25%  |  drop=+31.26%  |  white=2032  | keep=26.3%
+     mask 22: F1=32.11%  |  drop=+31.40%  |  white=2600  | keep=24.5%
+     mask  0: F1=31.91%  |  drop=+31.59%  |  white=1800  | keep=25.0%
+     mask 12: F1=31.77%  |  drop=+31.74%  |  white=1360  | keep=21.9%
+     mask 19: F1=30.31%  |  drop=+33.20%  |  white=1416  | keep=18.8%
+     mask  6: F1=28.54%  |  drop=+34.96%  |  white=1872  | keep=28.2%
+     mask  5: F1=28.37%  |  drop=+35.14%  |  white=1232  | keep=18.4%
+     mask  9: F1=27.82%  |  drop=+35.68%  |  white=1736  | keep=19.5%
+     mask  2: F1=27.55%  |  drop=+35.95%  |  white=1192  | keep=16.5%
+     mask  8: F1=27.51%  |  drop=+36.00%  |  white=1616  | keep=25.3%
+     mask 15: F1=26.74%  |  drop=+36.76%  |  white=2144  | keep=21.2%
+     mask 28: F1=26.53%  |  drop=+36.98%  |  white=1248  | keep=20.7%
+     mask 23: F1=26.38%  |  drop=+37.13%  |  white=1624  | keep=21.2%
+     mask 24: F1=24.08%  |  drop=+39.42%  |  white=2160  | keep=23.5%
+     mask 10: F1=23.90%  |  drop=+39.61%  |  white=1872  | keep=26.0%
+   No mask is within 1.0% of baseline.
+   ✓ Saved DFMs to hfss/DFM/FMAE_stage4_DFMs.pkl
+   ⛔ Early stop: best drop 18.44% > stop threshold 5.00%
+
+======================================================================
+✅ HFSS Search Complete!
+======================================================================

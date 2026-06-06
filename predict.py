@@ -1,6 +1,6 @@
 """
-Predict AU labels with HFSS frequency filtering
-Load image → Apply HFSS → Predict with model → Compare results
+Predict AU labels with HFSS frequency filtering.
+Loads one image, applies a filter, and compares AU predictions.
 """
 
 import json
@@ -260,6 +260,11 @@ def visualize_prediction(sample, results_dict):
 # ============================================================================
 # MAIN
 # ============================================================================
+"""
+Example runs:
+python predict.py
+Edit DATA_ROOT, JSON_FILE, and MODEL_PATH first if your local paths differ.
+"""
 def main():
     # Load dataset
     print("\n📊 Loading dataset...")

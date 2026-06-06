@@ -1,3 +1,8 @@
+"""
+Report BP4D AU distributions and inspect saved HFSS mask artifacts.
+Also renders summary plots for fold JSON files and PKL masks.
+"""
+
 import argparse
 import json
 import math
@@ -294,6 +299,11 @@ def parse_args():
 	return parser.parse_args()
 
 
+"""
+Example runs:
+python stats.py --fold_json BP4D/BP4D_test1.json
+python stats.py --mask_pkl hfss/DFM/AU01/FMAE_stage3_AU01_DFMs.pkl --lowest_n 10
+"""
 def main():
 	args = parse_args()
 

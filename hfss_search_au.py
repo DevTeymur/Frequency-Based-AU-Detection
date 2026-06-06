@@ -65,8 +65,8 @@ FIXED_DEVICE = 'cuda'
 FIXED_SEED = 42
 FIXED_RADIAL_STEPS = 10
 FIXED_RADIAL_START_KEEP_PCT =100.0
-FIXED_RADIAL_DIRECTION = 'small_to_big'  # 'big_to_small' | 'small_to_big'
-
+FIXED_RADIAL_DIRECTION = 'big_to_small'  # 'big_to_small' | 'small_to_big'
+FIXED_PERCENTAGES_TO_KEEP = [8, 4, 2, 1]
 
 class TeeStream:
     """Write stream output to multiple targets (terminal + log file)."""
@@ -120,9 +120,18 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
     - IAT checkpoints work with IAT model_type
     - FMAE checkpoints can be loaded into IAT model (ID_head uninitialized)
     """
+    checkpoint = torch.load(model_path, map_location='cpu')
+    state_dict = checkpoint.get('model', checkpoint)
+
+    # Auto-correct model type when checkpoint clearly contains IAT ID head.
+    has_id_head = any(k.startswith('ID_head.') for k in state_dict.keys())
+    if has_id_head and model_type != 'IAT':
+        print("⚠ Checkpoint contains ID_head.* but --model_type is FMAE. Switching to IAT automatically.")
+        model_type = 'IAT'
+
     grad_reverse = 1.0 if model_type == 'IAT' else 0.0
     num_subjects = 41 if model_type == 'IAT' else 0
-    
+
     model = models_vit.vit_large_patch16(
         num_classes=12,
         num_subjects=num_subjects,
@@ -130,9 +139,6 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
         global_pool=True,
         grad_reverse=grad_reverse,
     )
-    
-    checkpoint = torch.load(model_path, map_location='cpu')
-    state_dict = checkpoint.get('model', checkpoint)
     
     try:
         # Try strict loading first (all keys must match exactly)
@@ -1047,6 +1053,32 @@ def generate_radial_mask_candidates(
     return masks
 
 
+def generate_radial_mask_candidates_from_percentages(percentages_to_keep, mode='low-pass'):
+    """Create deterministic radial masks from an explicit list of keep percentages."""
+    if mode != 'low-pass':
+        raise ValueError("Explicit FIXED_PERCENTAGES_TO_KEEP is only supported for low-pass radial search.")
+
+    h = IMG_SIZE
+    w = IMG_SIZE
+    cy, cx = h // 2, w // 2
+    ys, xs = np.ogrid[:h, :w]
+    dist = np.sqrt((xs - cx) ** 2 + (ys - cy) ** 2)
+
+    masks = []
+    for keep_pct in percentages_to_keep:
+        keep_pct = float(np.clip(keep_pct, 0.1, 100.0))
+        radius = float(np.quantile(dist, keep_pct / 100.0))
+        mask = (dist <= radius).astype(np.float32)
+
+        wm = White_Mask(mask)
+        wm.white_count = int(np.sum(mask > 0.5))
+        wm.keep_pct = float(np.mean(mask > 0.5))
+        wm.target_keep_pct = keep_pct
+        wm.radius = radius
+        masks.append(wm)
+    return masks
+
+
 def run_random_hfss_search(
     args,
     model,
@@ -1232,18 +1264,27 @@ def run_radial_hfss_search(
     """
     print("\n🧭 Radial HFSS mode ON (deterministic masks)")
     radial_mode = 'low-pass'
-    radial_direction = FIXED_RADIAL_DIRECTION
-    stage_masks = generate_radial_mask_candidates(
-        FIXED_RADIAL_STEPS,
-        mode=radial_mode,
-        start_keep_pct=FIXED_RADIAL_START_KEEP_PCT,
-        direction=radial_direction,
-    )
-    print(
-        f"   Direction: {radial_direction} "
-        f"| steps={FIXED_RADIAL_STEPS} "
-        f"| start_keep={FIXED_RADIAL_START_KEEP_PCT:.1f}%"
-    )
+    explicit_percentages = list(FIXED_PERCENTAGES_TO_KEEP) if FIXED_PERCENTAGES_TO_KEEP else []
+    if explicit_percentages:
+        stage_masks = generate_radial_mask_candidates_from_percentages(
+            explicit_percentages,
+            mode=radial_mode,
+        )
+        print(
+            f"   Explicit keep percentages: {', '.join(f'{p:.1f}%' for p in explicit_percentages)}"
+        )
+    else:
+        stage_masks = generate_radial_mask_candidates(
+            args.radial_steps,
+            mode=radial_mode,
+            start_keep_pct=args.radial_start_keep_pct,
+            direction=args.radial_direction,
+        )
+        print(
+            f"   Direction: {args.radial_direction} "
+            f"| steps={args.radial_steps} "
+            f"| start_keep={args.radial_start_keep_pct:.1f}%"
+        )
     all_results = {}
 
     if args.per_au_search:
@@ -1265,7 +1306,10 @@ def run_radial_hfss_search(
 
         all_results[target_name] = {}
         prev_masks = None
-        radial_stage_names = [f"radial_step_{i + 1:02d}" for i in range(len(stage_masks))]
+        if explicit_percentages:
+            radial_stage_names = [f"radial_keep_{int(round(p)):02d}pct" for p in explicit_percentages]
+        else:
+            radial_stage_names = [f"radial_step_{i + 1:02d}" for i in range(len(stage_masks))]
 
         for stage_index, stage_name in enumerate(radial_stage_names):
             stage_mask = stage_masks[min(stage_index, len(stage_masks) - 1)]
@@ -1366,6 +1410,13 @@ def main():
                         help='For per-AU runs starting at stage2+, initialize parents from macro stage1 PKL')
     parser.add_argument('--profile_timing', action='store_true',
                         help='Print detailed timing breakdown for data/FFT/mask/inference during stage search')
+    parser.add_argument('--radial_steps', type=int, default=FIXED_RADIAL_STEPS,
+                        help='Number of radial keep-ratio steps')
+    parser.add_argument('--radial_start_keep_pct', type=float, default=FIXED_RADIAL_START_KEEP_PCT,
+                        help='Starting keep ratio percentage for radial mode')
+    parser.add_argument('--radial_direction', type=str, default=FIXED_RADIAL_DIRECTION,
+                        choices=['big_to_small', 'small_to_big'],
+                        help='Direction of radial keep-ratio progression')
     args = parser.parse_args()
 
     # Fixed runtime knobs (removed from CLI, values unchanged from previous defaults).
@@ -1514,6 +1565,10 @@ python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
     --test_json BP4D/BP4D_test1.json --num_samples 999999 \
     --search_mode radial --per_au_search --per_au_eval
 
+python hfss_search_au.py --model_path models/FMAE_IAT_BP4D_fold1.pth \
+    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+    --search_mode radial --per_au_search --per_au_eval
+
 8) RADIAL, FULL TEST SET, SINGLE AU (e.g. AU12)
 python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
     --test_json BP4D/BP4D_test1.json --num_samples 999999 \
@@ -1535,4 +1590,24 @@ The reason you still see all AUs printed is that the script also runs a per-AU r
 
 If you want, I can also show you the exact line that controls this output and how to turn it off.
 
+"""
+
+
+"""
+IAT
+
+python hfss_search_au.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+  --search_mode radial --per_au_search --per_au_eval
+
+hfss_run_20260510_232928.txt - IAT model
+
+
+FMAE
+
+python hfss_search_au.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth \
+  --test_json BP4D/BP4D_test1.json --num_samples 999999 \
+  --search_mode radial --per_au_search
+
+hfss_run_20260510_233437.txt - FMAE model
 """

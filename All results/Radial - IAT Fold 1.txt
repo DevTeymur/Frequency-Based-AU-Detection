@@ -1,0 +1,3189 @@
+======================================================================
+HFSS Search for AU Detection - IAT
+Model: models/FMAE_IAT_BP4D_fold1.pth | Device: cuda
+Seed: 42
+Log file: hfss/logs/hfss_run_20260510_232928.txt
+======================================================================
+using ID adversarial: 1.0
+num AUs: 12, num subjects: 41
+activate ID adver head
+✓ Loaded IAT model from models/FMAE_IAT_BP4D_fold1.pth
+building dataset from: BP4D/BP4D_test1.json
+dataset path: BP4D/BP4D_cropped/
+<util.datasets.BP4D_dataset object at 0x152ef65e42b0>
+✓ Loaded 50605 TEST samples (evaluating on unseen data)
+
+🧭 Radial HFSS mode ON (deterministic masks)
+   Direction: big_to_small | steps=10 | start_keep=100.0%
+
+==================================================
+Search target: AU01
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [03:15<00:00, 195.65s/it]   Testing masks: 100%|##########| 1/1 [03:15<00:00, 195.65s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.40%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.40% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_01_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.63s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.63s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.46%  |  drop=-0.06%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.46% | drop=-0.06% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_02_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.84s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.84s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.48%  |  drop=-0.08%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.48% | drop=-0.08% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_03_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.21s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.21s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.35%  |  drop=+0.05%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.35% | drop=+0.05% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_04_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.97s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.97s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.30%  |  drop=+0.10%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.30% | drop=+0.10% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_05_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.45s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.46s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.24%  |  drop=+0.16%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.24% | drop=+0.16% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_06_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.91s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.91s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.69%  |  drop=-0.29%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.69% | drop=-0.29% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_07_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.37s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.38s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=59.21%  |  drop=-0.81%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=59.21% | drop=-0.81% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_08_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.06s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.06s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=59.65%  |  drop=-1.24%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=59.65% | drop=-1.24% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_09_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU01 F1
+   Baseline AU01 F1: 58.40%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.43s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.43s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=58.35%  |  drop=+0.05%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=58.35% | drop=+0.05% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU01/IAT_radial_step_10_AU01_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU01/IAT_AU01_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU02
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.01s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.01s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.05%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.05% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_01_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.36s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.38s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.05%  |  drop=+0.00%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.05% | drop=+0.00% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_02_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:25<00:00, 265.22s/it]   Testing masks: 100%|##########| 1/1 [04:25<00:00, 265.24s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.07%  |  drop=-0.02%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.07% | drop=-0.02% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_03_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.31s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.31s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.16%  |  drop=-0.11%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.16% | drop=-0.11% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_04_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 264.00s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 264.00s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.32%  |  drop=-0.27%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.32% | drop=-0.27% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_05_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.46s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.46s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.27%  |  drop=-0.22%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.27% | drop=-0.22% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_06_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.38s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.38s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.56%  |  drop=-0.51%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.56% | drop=-0.51% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_07_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.38s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.38s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.40%  |  drop=-0.35%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.40% | drop=-0.35% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_08_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.37s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.37s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=63.42%  |  drop=-0.37%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=63.42% | drop=-0.37% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_09_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU02 F1
+   Baseline AU02 F1: 63.05%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.70s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.70s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=64.43%  |  drop=-1.39%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=64.43% | drop=-1.39% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU02/IAT_radial_step_10_AU02_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU02/IAT_AU02_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU04
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.82s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.82s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.01%  |  drop=+0.01%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.01% | drop=+0.01% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_01_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.72s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.72s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.03%  |  drop=-0.02%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.03% | drop=-0.02% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_02_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.87s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.87s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.02%  |  drop=-0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.02% | drop=-0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_03_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.28s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.28s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.23%  |  drop=-0.22%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.23% | drop=-0.22% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_04_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.33s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.33s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.32%  |  drop=-0.31%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.32% | drop=-0.31% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_05_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.29s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.29s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.32%  |  drop=-0.30%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.32% | drop=-0.30% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_06_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.90s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.90s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.42%  |  drop=-0.40%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.42% | drop=-0.40% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_07_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.32s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.32s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.80%  |  drop=-0.79%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.80% | drop=-0.79% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_08_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.76s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.76s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.85%  |  drop=-0.83%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.85% | drop=-0.83% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_09_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU04 F1
+   Baseline AU04 F1: 61.01%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.27s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.27s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=62.24%  |  drop=-1.22%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=62.24% | drop=-1.22% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU04/IAT_radial_step_10_AU04_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU04/IAT_AU04_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU06
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.94s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.94s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.33%  |  drop=-0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.33% | drop=-0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_01_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.20s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.20s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.34%  |  drop=-0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.34% | drop=-0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_02_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.91s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.91s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.30%  |  drop=+0.03%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.30% | drop=+0.03% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_03_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.30s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.30s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.32%  |  drop=+0.01%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.32% | drop=+0.01% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_04_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.87s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.87s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.28%  |  drop=+0.05%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.28% | drop=+0.05% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_05_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:25<00:00, 265.70s/it]   Testing masks: 100%|##########| 1/1 [04:25<00:00, 265.70s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.31%  |  drop=+0.02%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.31% | drop=+0.02% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_06_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.53s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.53s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.25%  |  drop=+0.07%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.25% | drop=+0.07% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_07_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.37s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.37s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.28%  |  drop=+0.05%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.28% | drop=+0.05% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_08_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:22<00:00, 262.84s/it]   Testing masks: 100%|##########| 1/1 [04:22<00:00, 262.84s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.38%  |  drop=-0.06%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.38% | drop=-0.06% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_09_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU06 F1
+   Baseline AU06 F1: 76.33%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.57s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.57s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=76.41%  |  drop=-0.08%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=76.41% | drop=-0.08% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU06/IAT_radial_step_10_AU06_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU06/IAT_AU06_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU07
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.99s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.99s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.63%  |  drop=-0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.63% | drop=-0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_01_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.31s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.31s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.64%  |  drop=-0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.64% | drop=-0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_02_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.83s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.83s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.64%  |  drop=-0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.64% | drop=-0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_03_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.31s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.31s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.57%  |  drop=+0.06%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.57% | drop=+0.06% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_04_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.92s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.92s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.50%  |  drop=+0.13%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.50% | drop=+0.13% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_05_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.32s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.32s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.36%  |  drop=+0.27%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.36% | drop=+0.27% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_06_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.97s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.97s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.32%  |  drop=+0.31%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.32% | drop=+0.31% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_07_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:25<00:00, 265.37s/it]   Testing masks: 100%|##########| 1/1 [04:25<00:00, 265.37s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.20%  |  drop=+0.43%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.20% | drop=+0.43% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_08_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.59s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.59s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.22%  |  drop=+0.41%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.22% | drop=+0.41% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_09_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU07 F1
+   Baseline AU07 F1: 82.63%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.43s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.43s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=82.03%  |  drop=+0.60%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=82.03% | drop=+0.60% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU07/IAT_radial_step_10_AU07_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU07/IAT_AU07_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU10
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.32s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.32s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.07%  |  drop=-0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.07% | drop=-0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_01_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.32s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.32s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.08%  |  drop=-0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.08% | drop=-0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_02_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.41s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.41s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.09%  |  drop=-0.02%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.09% | drop=-0.02% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_03_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.23s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.23s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=79.98%  |  drop=+0.09%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=79.98% | drop=+0.09% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_04_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.99s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.99s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=79.94%  |  drop=+0.13%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=79.94% | drop=+0.13% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_05_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.83s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.83s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.11%  |  drop=-0.04%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.11% | drop=-0.04% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_06_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.39s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.39s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.19%  |  drop=-0.12%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.19% | drop=-0.12% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_07_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.36s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.36s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.36%  |  drop=-0.30%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.36% | drop=-0.30% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_08_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:25<00:00, 265.55s/it]   Testing masks: 100%|##########| 1/1 [04:25<00:00, 265.55s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=80.55%  |  drop=-0.48%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=80.55% | drop=-0.48% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_09_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU10 F1
+   Baseline AU10 F1: 80.07%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.54s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.54s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=81.54%  |  drop=-1.48%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=81.54% | drop=-1.48% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU10/IAT_radial_step_10_AU10_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU10/IAT_AU10_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU12
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.95s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.95s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.56%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.56% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_01_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.68s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.68s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.57%  |  drop=-0.00%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.57% | drop=-0.00% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_02_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.99s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.99s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.57%  |  drop=-0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.57% | drop=-0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_03_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.29s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.29s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.61%  |  drop=-0.04%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.61% | drop=-0.04% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_04_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.43s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.43s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.52%  |  drop=+0.05%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.52% | drop=+0.05% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_05_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.63s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.63s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.50%  |  drop=+0.07%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.50% | drop=+0.07% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_06_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.93s/it]   Testing masks: 100%|##########| 1/1 [04:23<00:00, 263.93s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.50%  |  drop=+0.07%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.50% | drop=+0.07% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_07_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.98s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.98s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.48%  |  drop=+0.08%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.48% | drop=+0.08% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_08_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.53s/it]   Testing masks: 100%|##########| 1/1 [04:24<00:00, 264.53s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.37%  |  drop=+0.19%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.37% | drop=+0.19% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_09_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU12 F1
+   Baseline AU12 F1: 89.56%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:59<00:00, 179.35s/it]   Testing masks: 100%|##########| 1/1 [02:59<00:00, 179.36s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=89.27%  |  drop=+0.30%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=89.27% | drop=+0.30% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU12/IAT_radial_step_10_AU12_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU12/IAT_AU12_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU14
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.05s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.06s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.97%  |  drop=-0.01%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.97% | drop=-0.01% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_01_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.39s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.39s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.97%  |  drop=-0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.97% | drop=-0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_02_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.09s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.09s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.95%  |  drop=+0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.95% | drop=+0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_03_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.40s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.41s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.82%  |  drop=+0.14%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.82% | drop=+0.14% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_04_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.35s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.35s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.55%  |  drop=+0.41%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.55% | drop=+0.41% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_05_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.12s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.12s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.55%  |  drop=+0.41%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.55% | drop=+0.41% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_06_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.07s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.07s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.55%  |  drop=+0.41%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.55% | drop=+0.41% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_07_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.10s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.10s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.62%  |  drop=+0.34%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.62% | drop=+0.34% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_08_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.05s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.05s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.81%  |  drop=+0.15%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.81% | drop=+0.15% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_09_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU14 F1
+   Baseline AU14 F1: 65.96%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.35s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.35s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=65.53%  |  drop=+0.43%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=65.53% | drop=+0.43% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU14/IAT_radial_step_10_AU14_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU14/IAT_AU14_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU15
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.37s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.37s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=50.48%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=50.48% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_01_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.40s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.40s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=50.49%  |  drop=-0.00%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=50.49% | drop=-0.00% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_02_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.41s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.41s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=50.48%  |  drop=+0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=50.48% | drop=+0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_03_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.11s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.11s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=50.59%  |  drop=-0.10%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=50.59% | drop=-0.10% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_04_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.38s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.38s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=50.79%  |  drop=-0.30%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=50.79% | drop=-0.30% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_05_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.10s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.10s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=50.68%  |  drop=-0.20%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=50.68% | drop=-0.20% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_06_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.03s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.03s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=50.65%  |  drop=-0.17%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=50.65% | drop=-0.17% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_07_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.31s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.31s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=50.36%  |  drop=+0.13%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=50.36% | drop=+0.13% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_08_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.04s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.04s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=50.04%  |  drop=+0.44%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=50.04% | drop=+0.44% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_09_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU15 F1
+   Baseline AU15 F1: 50.48%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.03s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.03s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=48.82%  |  drop=+1.66%  |  white=5025  | keep=10.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU15/IAT_radial_step_10_AU15_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU15/IAT_AU15_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU17
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [01:59<00:00, 120.00s/it]   Testing masks: 100%|##########| 1/1 [01:59<00:00, 120.00s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.39%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.39% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_01_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.35s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.35s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.39%  |  drop=-0.00%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.39% | drop=-0.00% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_02_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.32s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.32s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.35%  |  drop=+0.03%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.35% | drop=+0.03% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_03_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.33s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.33s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.32%  |  drop=+0.06%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.32% | drop=+0.06% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_04_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.03s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.03s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.49%  |  drop=-0.10%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.49% | drop=-0.10% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_05_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.04s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.04s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=61.26%  |  drop=+0.13%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=61.26% | drop=+0.13% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_06_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.34s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.34s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.72%  |  drop=+0.66%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.72% | drop=+0.66% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_07_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.34s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.34s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.75%  |  drop=+0.64%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.75% | drop=+0.64% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_08_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.32s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.32s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=60.66%  |  drop=+0.72%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=60.66% | drop=+0.72% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_09_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU17 F1
+   Baseline AU17 F1: 61.39%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.35s/it]   Testing masks: 100%|##########| 1/1 [02:01<00:00, 121.35s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=59.55%  |  drop=+1.84%  |  white=5025  | keep=10.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU17/IAT_radial_step_10_AU17_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU17/IAT_AU17_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU23
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.19s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.19s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=47.77%  |  drop=+0.00%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=47.77% | drop=+0.00% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_01_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.15s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.15s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=47.76%  |  drop=+0.01%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=47.76% | drop=+0.01% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_02_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.05s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.05s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=47.77%  |  drop=+0.00%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=47.77% | drop=+0.00% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_03_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.02s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.02s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=47.59%  |  drop=+0.18%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=47.59% | drop=+0.18% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_04_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.07s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.08s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=47.41%  |  drop=+0.36%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=47.41% | drop=+0.36% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_05_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.03s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.03s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=47.36%  |  drop=+0.41%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=47.36% | drop=+0.41% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_06_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.04s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.04s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=47.31%  |  drop=+0.46%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=47.31% | drop=+0.46% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_07_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.04s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.04s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=47.08%  |  drop=+0.69%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=47.08% | drop=+0.69% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_08_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.35s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.35s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=46.74%  |  drop=+1.03%  |  white=10037  | keep=20.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_09_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU23 F1
+   Baseline AU23 F1: 47.77%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.22s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.22s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=45.36%  |  drop=+2.41%  |  white=5025  | keep=10.0% ◀ best
+   No mask is within 1.0% of baseline.
+   ✓ Saved radial DFMs to hfss/DFM/AU23/IAT_radial_step_10_AU23_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU23/IAT_AU23_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+==================================================
+Search target: AU24
+==================================================
+   Radial stage 1/10 (radial_step_01): keep=100.0% | white=50176
+
+🔍 Stage radial_step_01: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.10s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.10s/it]
+
+   radial_step_01 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.91%  |  drop=-0.01%  |  white=50176  | keep=100.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.91% | drop=-0.01% | white=50176 | keep=100.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_01_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_01 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=+0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=+0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_01_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_01...
+     Subject ID accuracy: 0.3%
+   Radial stage 2/10 (radial_step_02): keep=90.0% | white=45163
+
+🔍 Stage radial_step_02: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.10s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.10s/it]
+
+   radial_step_02 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.88%  |  drop=+0.02%  |  white=45163  | keep=90.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.88% | drop=+0.02% | white=45163 | keep=90.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_02_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_02 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.0%  drop=+0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=-0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=-0.0%  
+     AU15: F1=50.5%  drop=-0.0%  
+     AU17: F1=61.4%  drop=-0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_02_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_02...
+     Subject ID accuracy: 0.3%
+   Radial stage 3/10 (radial_step_03): keep=80.0% | white=40143
+
+🔍 Stage radial_step_03: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.16s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.16s/it]
+
+   radial_step_03 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.90%  |  drop=+0.01%  |  white=40143  | keep=80.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.90% | drop=+0.01% | white=40143 | keep=80.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_03_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_03 maskbest:
+     AU01: F1=58.5%  drop=-0.1%  
+     AU02: F1=63.1%  drop=-0.0%  
+     AU04: F1=61.0%  drop=-0.0%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=-0.0%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=66.0%  drop=+0.0%  
+     AU15: F1=50.5%  drop=+0.0%  
+     AU17: F1=61.4%  drop=+0.0%  
+     AU23: F1=47.8%  drop=+0.0%  
+     AU24: F1=53.9%  drop=+0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_03_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_03...
+     Subject ID accuracy: 0.3%
+   Radial stage 4/10 (radial_step_04): keep=70.0% | white=35125
+
+🔍 Stage radial_step_04: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.45s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.45s/it]
+
+   radial_step_04 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.92%  |  drop=-0.01%  |  white=35125  | keep=70.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.92% | drop=-0.01% | white=35125 | keep=70.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_04_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_04 maskbest:
+     AU01: F1=58.4%  drop=+0.1%  
+     AU02: F1=63.2%  drop=-0.1%  
+     AU04: F1=61.2%  drop=-0.2%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.6%  drop=+0.1%  
+     AU10: F1=80.0%  drop=+0.1%  
+     AU12: F1=89.6%  drop=-0.0%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.6%  drop=-0.1%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.6%  drop=+0.2%  
+     AU24: F1=53.9%  drop=-0.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_04_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_04...
+     Subject ID accuracy: 0.4%
+   Radial stage 5/10 (radial_step_05): keep=60.0% | white=30113
+
+🔍 Stage radial_step_05: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.47s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.47s/it]
+
+   radial_step_05 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.85%  |  drop=+0.06%  |  white=30113  | keep=60.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.85% | drop=+0.06% | white=30113 | keep=60.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_05_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_05 maskbest:
+     AU01: F1=58.3%  drop=+0.1%  
+     AU02: F1=63.3%  drop=-0.3%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.5%  drop=+0.1%  
+     AU10: F1=79.9%  drop=+0.1%  
+     AU12: F1=89.5%  drop=+0.0%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.8%  drop=-0.3%  
+     AU17: F1=61.5%  drop=-0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.8%  drop=+0.1%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_05_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_05...
+     Subject ID accuracy: 0.4%
+   Radial stage 6/10 (radial_step_06): keep=50.0% | white=25089
+
+🔍 Stage radial_step_06: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.15s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.15s/it]
+
+   radial_step_06 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.70%  |  drop=+0.20%  |  white=25089  | keep=50.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.70% | drop=+0.20% | white=25089 | keep=50.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_06_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_06 maskbest:
+     AU01: F1=58.2%  drop=+0.2%  
+     AU02: F1=63.3%  drop=-0.2%  
+     AU04: F1=61.3%  drop=-0.3%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.4%  drop=+0.3%  
+     AU10: F1=80.1%  drop=-0.0%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=61.3%  drop=+0.1%  
+     AU23: F1=47.4%  drop=+0.4%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_06_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_06...
+     Subject ID accuracy: 0.4%
+   Radial stage 7/10 (radial_step_07): keep=40.0% | white=20081
+
+🔍 Stage radial_step_07: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.12s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.12s/it]
+
+   radial_step_07 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.38%  |  drop=+0.53%  |  white=20081  | keep=40.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.38% | drop=+0.53% | white=20081 | keep=40.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_07_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_07 maskbest:
+     AU01: F1=58.7%  drop=-0.3%  
+     AU02: F1=63.6%  drop=-0.5%  
+     AU04: F1=61.4%  drop=-0.4%  
+     AU06: F1=76.3%  drop=+0.1%  
+     AU07: F1=82.3%  drop=+0.3%  
+     AU10: F1=80.2%  drop=-0.1%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.4%  
+     AU15: F1=50.7%  drop=-0.2%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=47.3%  drop=+0.5%  
+     AU24: F1=53.4%  drop=+0.5%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_07_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_07...
+     Subject ID accuracy: 0.4%
+   Radial stage 8/10 (radial_step_08): keep=30.0% | white=15053
+
+🔍 Stage radial_step_08: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.17s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.17s/it]
+
+   radial_step_08 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.49%  |  drop=+0.42%  |  white=15053  | keep=30.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.49% | drop=+0.42% | white=15053 | keep=30.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_08_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_08 maskbest:
+     AU01: F1=59.2%  drop=-0.8%  
+     AU02: F1=63.4%  drop=-0.3%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.3%  drop=+0.0%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.4%  drop=-0.3%  
+     AU12: F1=89.5%  drop=+0.1%  
+     AU14: F1=65.6%  drop=+0.3%  
+     AU15: F1=50.4%  drop=+0.1%  
+     AU17: F1=60.7%  drop=+0.6%  
+     AU23: F1=47.1%  drop=+0.7%  
+     AU24: F1=53.5%  drop=+0.4%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_08_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_08...
+     Subject ID accuracy: 0.4%
+   Radial stage 9/10 (radial_step_09): keep=20.0% | white=10037
+
+🔍 Stage radial_step_09: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.14s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.14s/it]
+
+   radial_step_09 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=53.73%  |  drop=+0.17%  |  white=10037  | keep=20.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=53.73% | drop=+0.17% | white=10037 | keep=20.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_09_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_09 maskbest:
+     AU01: F1=59.6%  drop=-1.2%  
+     AU02: F1=63.4%  drop=-0.4%  
+     AU04: F1=61.8%  drop=-0.8%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.2%  drop=+0.4%  
+     AU10: F1=80.5%  drop=-0.5%  
+     AU12: F1=89.4%  drop=+0.2%  
+     AU14: F1=65.8%  drop=+0.1%  
+     AU15: F1=50.0%  drop=+0.4%  
+     AU17: F1=60.7%  drop=+0.7%  
+     AU23: F1=46.7%  drop=+1.0%  
+     AU24: F1=53.7%  drop=+0.2%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_09_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_09...
+     Subject ID accuracy: 0.4%
+   Radial stage 10/10 (radial_step_10): keep=10.0% | white=5025
+
+🔍 Stage radial_step_10: Testing 1 candidates (P=0.8) | objective=AU24 F1
+   Baseline AU24 F1: 53.90%
+   Testing masks:   0%|          | 0/1 [00:00<?, ?it/s]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.17s/it]   Testing masks: 100%|##########| 1/1 [02:00<00:00, 120.17s/it]
+
+   radial_step_10 — all masks (sorted by masked F1, high→low):
+     mask  0: F1=52.92%  |  drop=+0.99%  |  white=5025  | keep=10.0% ◀ best
+   Smallest mask within 1.0% of baseline: mask0 | F1=52.92% | drop=+0.99% | white=5025 | keep=10.0%
+   ✓ Saved radial DFMs to hfss/DFM/AU24/IAT_radial_step_10_AU24_DFMs.pkl
+   Per-AU breakdown — radial_step_10 maskbest:
+     AU01: F1=58.4%  drop=+0.0%  
+     AU02: F1=64.4%  drop=-1.4%  
+     AU04: F1=62.2%  drop=-1.2%  
+     AU06: F1=76.4%  drop=-0.1%  
+     AU07: F1=82.0%  drop=+0.6%  
+     AU10: F1=81.5%  drop=-1.5%  
+     AU12: F1=89.3%  drop=+0.3%  
+     AU14: F1=65.5%  drop=+0.4%  
+     AU15: F1=48.8%  drop=+1.7%  
+     AU17: F1=59.5%  drop=+1.8%  
+     AU23: F1=45.4%  drop=+2.4%  
+     AU24: F1=52.9%  drop=+1.0%  
+   📊 Saved per-AU grouped bar to hfss/figures/AU24/IAT_AU24_radial_step_10_per_au_grouped_bar.png
+   🔐 Identity evaluation for radial_step_10...
+     Subject ID accuracy: 0.3%
+
+======================================================================
+✅ HFSS Search Complete!
+======================================================================

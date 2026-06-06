@@ -1,0 +1,221 @@
+======================================================================
+Linear Probe Identity Analysis - BP4D
+Model type: IAT | Model: models/FMAE_IAT_BP4D_fold1.pth | Device: cuda
+Seed: 42
+Log file: /gpfs/work4/0/prjs0881/teymur/hfss/logs/linear_probe_20260503_195757.txt
+======================================================================
+using ID adversarial: 1.0
+num AUs: 12, num subjects: 41
+activate ID adver head
+   Checkpoint keys (first 5):
+     cls_token
+     pos_embed
+     patch_embed.proj.weight
+     patch_embed.proj.bias
+     blocks.0.norm1.weight
+   Checkpoint keys (last 5):
+     head.bias
+     fc_norm.weight
+     fc_norm.bias
+     ID_head.weight
+     ID_head.bias
+   IAT grad_reverse set to 0.0 for inference-time probing (GRL inactive)
+   ✓ Loaded IAT model with strict=True from models/FMAE_IAT_BP4D_fold1.pth
+   model.eval() set: True
+   Backbone feature dim: 1024
+   Feature extraction uses: backbone.forward_features(images) (pre-AU/ID heads)
+
+[1] Building probe datasets (fixed per-subject sampling: 70 train / 30 test)
+building dataset from: BP4D/BP4D_train1.json
+dataset path: BP4D/BP4D_cropped/
+<util.datasets.BP4D_dataset object at 0x15186e3bd8e0>
+building dataset from: BP4D/BP4D_train1.json
+dataset path: BP4D/BP4D_cropped/
+<util.datasets.BP4D_dataset object at 0x15186e3bde80>
+   Train samples: 2870
+   Test samples:  1230
+
+[2] Building AU evaluation dataset (subject-exclusive check)
+   AU split subjects | train=27 test=14 overlap=0
+building dataset from: BP4D/BP4D_test1.json
+dataset path: BP4D/BP4D_cropped/
+<util.datasets.BP4D_dataset object at 0x15186e3bd5b0>
+   AU evaluation samples (official test split): 50605
+
+[3] Training linear probe (online frozen-feature extraction)
+   Probe check: LinearProbe(
+  (classifier): Sequential(
+    (0): BatchNorm1d(1024, eps=1e-06, momentum=0.1, affine=False, track_running_stats=True)
+    (1): Linear(in_features=1024, out_features=41, bias=True)
+  )
+)
+   Probe optimizer: LARS | lr=0.025000 (blr=0.1, effective_batch_size=64) | weight_decay=0.0
+
+=== SANITY CHECKS ===
+Feature source: backbone.forward_features (global pooled transformer output, pre-head)
+Feature dim: 1024
+Backbone frozen: True
+Probe architecture: Linear(1024 -> 41)
+Train samples per subject: min=70, max=70, mean=70.00 (should all be 70)
+Test samples per subject: min=30, max=30, mean=30.00 (should all be 30)
+Train/test sample overlap per subject: 0 for all
+Subject mapping consistent: True
+model.training: False during feature extraction
+=== END SANITY CHECKS ===
+
+   Sampling examples (3 subjects):
+     F01 train frame indices (first 10): [676, 809, 725, 2690, 934, 136, 454, 53, 2546, 806]
+     F01 test frame indices (first 10):  [738, 187, 54, 784, 800, 1151, 369, 261, 765, 471]
+     F02 train frame indices (first 10): [1142, 178, 934, 716, 1774, 346, 1181, 151, 367, 387]
+     F02 test frame indices (first 10):  [211, 341, 1118, 724, 18, 1153, 373, 129, 209, 1648]
+     F03 train frame indices (first 10): [664, 993, 195, 517, 143, 474, 694, 51, 761, 1055]
+     F03 test frame indices (first 10):  [33, 641, 902, 979, 312, 921, 1192, 801, 478, 520]
+   Epoch 01/90: lr=0.002500 | loss=3.8444 | acc=1.85%
+   Epoch 02/90: lr=0.005000 | loss=3.8253 | acc=1.71%
+   Epoch 03/90: lr=0.007500 | loss=3.8204 | acc=2.40%
+   Epoch 04/90: lr=0.010000 | loss=3.8083 | acc=2.16%
+   Epoch 05/90: lr=0.012500 | loss=3.7907 | acc=2.23%
+   Epoch 06/90: lr=0.015000 | loss=3.7842 | acc=2.44%
+   Epoch 07/90: lr=0.017500 | loss=3.7600 | acc=2.86%
+   Epoch 08/90: lr=0.020000 | loss=3.7239 | acc=3.00%
+   Epoch 09/90: lr=0.022500 | loss=3.7081 | acc=3.41%
+   Epoch 10/90: lr=0.025000 | loss=3.6686 | acc=3.62%
+   Epoch 11/90: lr=0.025000 | loss=3.6340 | acc=4.88%
+   Epoch 12/90: lr=0.025000 | loss=3.6281 | acc=5.02%
+   Epoch 13/90: lr=0.025000 | loss=3.5862 | acc=6.52%
+   Epoch 14/90: lr=0.025000 | loss=3.5592 | acc=7.60%
+   Epoch 15/90: lr=0.025000 | loss=3.5338 | acc=8.26%
+   Epoch 16/90: lr=0.025000 | loss=3.5065 | acc=8.54%
+   Epoch 17/90: lr=0.025000 | loss=3.4893 | acc=8.95%
+   Epoch 18/90: lr=0.025000 | loss=3.4556 | acc=10.94%
+   Epoch 19/90: lr=0.025000 | loss=3.4285 | acc=11.39%
+   Epoch 20/90: lr=0.025000 | loss=3.4069 | acc=12.79%
+   Epoch 21/90: lr=0.025000 | loss=3.3781 | acc=13.14%
+   Epoch 22/90: lr=0.025000 | loss=3.3713 | acc=13.14%
+   Epoch 23/90: lr=0.025000 | loss=3.3494 | acc=14.25%
+   Epoch 24/90: lr=0.025000 | loss=3.3187 | acc=15.33%
+   Epoch 25/90: lr=0.025000 | loss=3.3095 | acc=15.51%
+   Epoch 26/90: lr=0.025000 | loss=3.2819 | acc=16.62%
+   Epoch 27/90: lr=0.025000 | loss=3.2592 | acc=18.57%
+   Epoch 28/90: lr=0.025000 | loss=3.2546 | acc=18.29%
+   Epoch 29/90: lr=0.025000 | loss=3.2304 | acc=19.48%
+   Epoch 30/90: lr=0.025000 | loss=3.2197 | acc=18.95%
+   Epoch 31/90: lr=0.025000 | loss=3.1817 | acc=20.87%
+   Epoch 32/90: lr=0.025000 | loss=3.1751 | acc=21.18%
+   Epoch 33/90: lr=0.025000 | loss=3.1431 | acc=21.36%
+   Epoch 34/90: lr=0.025000 | loss=3.1240 | acc=23.34%
+   Epoch 35/90: lr=0.025000 | loss=3.1007 | acc=23.66%
+   Epoch 36/90: lr=0.025000 | loss=3.0911 | acc=24.25%
+   Epoch 37/90: lr=0.025000 | loss=3.0725 | acc=24.88%
+   Epoch 38/90: lr=0.025000 | loss=3.0576 | acc=25.75%
+   Epoch 39/90: lr=0.025000 | loss=3.0563 | acc=26.06%
+   Epoch 40/90: lr=0.025000 | loss=3.0358 | acc=26.34%
+   Epoch 41/90: lr=0.025000 | loss=3.0092 | acc=27.28%
+   Epoch 42/90: lr=0.025000 | loss=3.0012 | acc=27.53%
+   Epoch 43/90: lr=0.025000 | loss=2.9928 | acc=27.94%
+   Epoch 44/90: lr=0.025000 | loss=2.9822 | acc=27.39%
+   Epoch 45/90: lr=0.025000 | loss=2.9453 | acc=30.80%
+   Epoch 46/90: lr=0.025000 | loss=2.9521 | acc=29.44%
+   Epoch 47/90: lr=0.025000 | loss=2.9314 | acc=30.59%
+   Epoch 48/90: lr=0.025000 | loss=2.9115 | acc=31.01%
+   Epoch 49/90: lr=0.025000 | loss=2.8951 | acc=31.60%
+   Epoch 50/90: lr=0.025000 | loss=2.9005 | acc=31.53%
+   Epoch 51/90: lr=0.025000 | loss=2.8646 | acc=33.41%
+   Epoch 52/90: lr=0.025000 | loss=2.8619 | acc=33.52%
+   Epoch 53/90: lr=0.025000 | loss=2.8539 | acc=33.14%
+   Epoch 54/90: lr=0.025000 | loss=2.8353 | acc=35.12%
+   Epoch 55/90: lr=0.025000 | loss=2.8391 | acc=33.00%
+   Epoch 56/90: lr=0.025000 | loss=2.8118 | acc=35.19%
+   Epoch 57/90: lr=0.025000 | loss=2.7957 | acc=34.67%
+   Epoch 58/90: lr=0.025000 | loss=2.7799 | acc=36.34%
+   Epoch 59/90: lr=0.025000 | loss=2.7749 | acc=36.24%
+   Epoch 60/90: lr=0.025000 | loss=2.7560 | acc=36.69%
+   Epoch 61/90: lr=0.025000 | loss=2.7419 | acc=36.97%
+   Epoch 62/90: lr=0.025000 | loss=2.7376 | acc=37.56%
+   Epoch 63/90: lr=0.025000 | loss=2.7105 | acc=38.99%
+   Epoch 64/90: lr=0.025000 | loss=2.7164 | acc=38.19%
+   Epoch 65/90: lr=0.025000 | loss=2.7082 | acc=39.02%
+   Epoch 66/90: lr=0.025000 | loss=2.6934 | acc=38.78%
+   Epoch 67/90: lr=0.025000 | loss=2.6936 | acc=39.58%
+   Epoch 68/90: lr=0.025000 | loss=2.6796 | acc=40.45%
+   Epoch 69/90: lr=0.025000 | loss=2.6425 | acc=40.73%
+   Epoch 70/90: lr=0.025000 | loss=2.6459 | acc=40.17%
+   Epoch 71/90: lr=0.025000 | loss=2.6384 | acc=40.63%
+   Epoch 72/90: lr=0.025000 | loss=2.6184 | acc=40.77%
+   Epoch 73/90: lr=0.025000 | loss=2.6139 | acc=42.44%
+   Epoch 74/90: lr=0.025000 | loss=2.6074 | acc=41.29%
+   Epoch 75/90: lr=0.025000 | loss=2.6079 | acc=41.85%
+   Epoch 76/90: lr=0.025000 | loss=2.5870 | acc=43.41%
+   Epoch 77/90: lr=0.025000 | loss=2.5722 | acc=42.65%
+   Epoch 78/90: lr=0.025000 | loss=2.5642 | acc=43.31%
+   Epoch 79/90: lr=0.025000 | loss=2.5437 | acc=44.36%
+   Epoch 80/90: lr=0.025000 | loss=2.5358 | acc=44.67%
+   Epoch 81/90: lr=0.025000 | loss=2.5207 | acc=44.74%
+   Epoch 82/90: lr=0.025000 | loss=2.5221 | acc=44.49%
+   Epoch 83/90: lr=0.025000 | loss=2.5041 | acc=45.47%
+   Epoch 84/90: lr=0.025000 | loss=2.5063 | acc=45.51%
+   Epoch 85/90: lr=0.025000 | loss=2.5048 | acc=44.88%
+   Epoch 86/90: lr=0.025000 | loss=2.4803 | acc=46.41%
+   Epoch 87/90: lr=0.025000 | loss=2.4947 | acc=45.51%
+   Epoch 88/90: lr=0.025000 | loss=2.4935 | acc=45.40%
+   Epoch 89/90: lr=0.025000 | loss=2.4703 | acc=46.13%
+   Epoch 90/90: lr=0.025000 | loss=2.4477 | acc=47.70%
+   ✓ Saved probe weights to hfss/DFM/linear_probe_identity.pth
+
+   Train ID accuracy (sanity): 46.90%
+
+   Unmasked test ID accuracy: 69.02%
+
+[4] Computing AU baseline (HFSS-aligned: sigmoid + thr=0.5 + macro F1)
+   Baseline AU macro F1: 65.88%
+
+[5] Preparing radial masks
+   Using saved masks from PKL files (model_type=IAT)
+   Loaded 10 radial mask files
+
+   Step 01 | file=IAT_radial_step_01_DFMs.pkl
+   Keep(target/actual)=100.0%/100.0% | ID accuracy: 69.02% | AU macro F1: 65.88% | AU F1 drop: -0.00%
+
+   Step 02 | file=IAT_radial_step_02_DFMs.pkl
+   Keep(target/actual)=90.0%/90.0% | ID accuracy: 69.19% | AU macro F1: 65.89% | AU F1 drop: -0.01%
+
+   Step 03 | file=IAT_radial_step_03_DFMs.pkl
+   Keep(target/actual)=80.0%/80.0% | ID accuracy: 69.27% | AU macro F1: 65.89% | AU F1 drop: -0.01%
+
+   Step 04 | file=IAT_radial_step_04_DFMs.pkl
+   Keep(target/actual)=70.0%/70.0% | ID accuracy: 69.27% | AU macro F1: 65.87% | AU F1 drop: +0.01%
+
+   Step 05 | file=IAT_radial_step_05_DFMs.pkl
+   Keep(target/actual)=60.0%/60.0% | ID accuracy: 69.27% | AU macro F1: 65.86% | AU F1 drop: +0.02%
+
+   Step 06 | file=IAT_radial_step_06_DFMs.pkl
+   Keep(target/actual)=50.0%/50.0% | ID accuracy: 68.21% | AU macro F1: 65.80% | AU F1 drop: +0.08%
+
+   Step 07 | file=IAT_radial_step_07_DFMs.pkl
+   Keep(target/actual)=40.0%/40.0% | ID accuracy: 69.19% | AU macro F1: 65.79% | AU F1 drop: +0.09%
+
+   Step 08 | file=IAT_radial_step_08_DFMs.pkl
+   Keep(target/actual)=30.0%/30.0% | ID accuracy: 69.43% | AU macro F1: 65.84% | AU F1 drop: +0.04%
+
+   Step 09 | file=IAT_radial_step_09_DFMs.pkl
+   Keep(target/actual)=20.0%/20.0% | ID accuracy: 69.19% | AU macro F1: 65.87% | AU F1 drop: +0.01%
+
+   Step 10 | file=IAT_radial_step_10_DFMs.pkl
+   Keep(target/actual)=10.0%/10.0% | ID accuracy: 67.56% | AU macro F1: 65.54% | AU F1 drop: +0.34%
+
+   ✓ Saved CSV results to hfss/DFM/linear_probe_identity_results.csv
+
+==============================================================================
+    Keep |    ID acc | AU macro F1 |  AU drop
+------------------------------------------------------------------------------
+  100.0% |    69.02% |      65.88% |   -0.00%
+   90.0% |    69.19% |      65.89% |   -0.01%
+   80.0% |    69.27% |      65.89% |   -0.01%
+   70.0% |    69.27% |      65.87% |    0.01%
+   60.0% |    69.27% |      65.86% |    0.02%
+   50.0% |    68.21% |      65.80% |    0.08%
+   40.0% |    69.19% |      65.79% |    0.09%
+   30.0% |    69.43% |      65.84% |    0.04%
+   20.0% |    69.19% |      65.87% |    0.01%
+   10.0% |    67.56% |      65.54% |    0.34%
+==============================================================================
