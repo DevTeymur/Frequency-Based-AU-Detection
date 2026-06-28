@@ -26,27 +26,31 @@ def _setup_figure():
 
 
 def plot_macro_f1_curve():
-    # FMAE Fold 1: extended to very low keep ratios.
-    fold1_keep = np.array([100, 90, 80, 70, 60, 50, 40, 30, 20, 14.2, 10, 8, 6.3, 4, 1.6], dtype=float)
-    fold1_f1 = np.array([63.51, 63.50, 63.50, 63.48, 63.45, 63.45, 63.40, 63.49, 63.58, 63.38, 62.69, 62.35, 61.62, 59.99, 55.99], dtype=float)
+    # FMAE Fold 1: 100% down to 4%
+    fold1_keep = np.array([100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 8, 4], dtype=float)
+    fold1_f1   = np.array([63.51, 63.50, 63.50, 63.48, 63.45, 63.45, 63.40, 63.49, 63.58, 62.69, 62.35, 59.99], dtype=float)
 
-    # FMAE Fold 2: extended with low-frequency points.
+    # FMAE Fold 2: 100% down to 4%
     fold2_keep = np.array([100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 8, 4], dtype=float)
-    fold2_f1 = np.array([68.37, 68.37, 68.37, 68.35, 68.46, 68.55, 68.64, 68.64, 68.73, 68.31, 67.83, 65.44], dtype=float)
+    fold2_f1   = np.array([68.37, 68.37, 68.37, 68.35, 68.46, 68.55, 68.64, 68.64, 68.73, 68.31, 67.83, 65.44], dtype=float)
+
+    # FMAE Fold 3: 100% down to 4%
+    fold3_keep = np.array([100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 8, 4], dtype=float)
+    fold3_f1   = np.array([64.52, 64.52, 64.54, 64.54, 64.78, 64.86, 64.89, 64.93, 64.89, 64.89, 64.79, 63.96], dtype=float)
 
     fig, ax = _setup_figure()
     color_fold1 = "#1f77b4"
     color_fold2 = "#ff7f0e"
+    color_fold3 = "#2ca02c"
 
-    # Plot lines with markers
     ax.plot(fold1_keep, fold1_f1, marker="o", linewidth=2.5, markersize=7, color=color_fold1, label="FMAE Fold 1")
     ax.plot(fold2_keep, fold2_f1, marker="s", linewidth=2.5, markersize=7, color=color_fold2, label="FMAE Fold 2")
+    ax.plot(fold3_keep, fold3_f1, marker="^", linewidth=2.5, markersize=7, color=color_fold3, label="FMAE Fold 3")
 
-    # Baseline horizontal dashed lines
     ax.axhline(63.51, linestyle="--", linewidth=1.8, color=color_fold1, alpha=0.8, label="Fold 1 baseline")
     ax.axhline(68.37, linestyle="--", linewidth=1.8, color=color_fold2, alpha=0.8, label="Fold 2 baseline")
+    ax.axhline(64.52, linestyle="--", linewidth=1.8, color=color_fold3, alpha=0.8, label="Fold 3 baseline")
 
-    # Vertical dashed line at 10% keep
     ax.axvline(10, linestyle="--", linewidth=1.5, color="grey", alpha=0.6, label="10% keep")
 
     ax.set_xlabel("Frequency Keep Ratio (%)", fontsize=12)
@@ -71,38 +75,38 @@ def plot_fmae_vs_iat_curve():
     # FMAE Fold 1
     fmae = np.array([63.51, 63.50, 63.50, 63.48, 63.45, 63.45, 63.40, 63.49, 63.58, 62.69], dtype=float)
 
-    # FMAE-IAT Fold 1: computed from AU averages
-    # Step 1 (100%): avg([58.4, 63.0, 61.0, 76.3, 82.6, 80.1, 89.6, 66.0, 50.5, 61.4, 47.8, 53.9]) = 65.88
-    # Step 2 (90%):  avg([58.5, 63.0, 61.0, 76.3, 82.6, 80.1, 89.6, 66.0, 50.5, 61.4, 47.8, 53.9]) = 65.89
-    # Step 3 (80%):  avg([58.5, 63.1, 61.0, 76.3, 82.6, 80.1, 89.6, 66.0, 50.5, 61.4, 47.8, 53.9]) = 65.90
-    # Step 4 (70%):  avg([58.4, 63.2, 61.2, 76.3, 82.6, 80.0, 89.6, 65.8, 50.6, 61.3, 47.6, 53.9]) = 65.88
-    # Step 5 (60%):  avg([58.3, 63.3, 61.3, 76.3, 82.5, 79.9, 89.5, 65.6, 50.8, 61.5, 47.4, 53.8]) = 65.85
-    # Step 6 (50%):  avg([58.2, 63.3, 61.3, 76.3, 82.4, 80.1, 89.5, 65.5, 50.7, 61.3, 47.4, 53.7]) = 65.81
-    # Step 7 (40%):  avg([58.7, 63.6, 61.4, 76.3, 82.3, 80.2, 89.5, 65.6, 50.7, 60.7, 47.3, 53.4]) = 65.81
-    # Step 8 (30%):  avg([59.2, 63.4, 61.8, 76.3, 82.2, 80.4, 89.5, 65.6, 50.4, 60.7, 47.1, 53.5]) = 65.84
-    # Step 9 (20%):  avg([59.6, 63.4, 61.8, 76.4, 82.2, 80.5, 89.4, 65.8, 50.0, 60.7, 46.7, 53.7]) = 65.85
-    # Step 10 (10%): avg([58.4, 64.4, 62.2, 76.4, 82.0, 81.5, 89.3, 65.5, 48.8, 59.5, 45.4, 52.9]) = 65.53
-    iat = np.array([65.88, 65.89, 65.90, 65.88, 65.85, 65.81, 65.81, 65.84, 65.85, 65.53], dtype=float)
+    # FMAE-IAT Fold 1
+    iat_fold1 = np.array([65.88, 65.89, 65.90, 65.88, 65.85, 65.81, 65.81, 65.84, 65.85, 65.53], dtype=float)
+
+    # FMAE-IAT Fold 2
+    iat_fold2 = np.array([69.03, 69.03, 69.02, 69.05, 69.15, 69.19, 69.27, 69.32, 69.16, 68.31], dtype=float)
+
+    # FMAE-IAT Fold 3
+    iat_fold3 = np.array([64.27, 64.27, 64.27, 64.29, 64.39, 64.38, 64.36, 64.46, 64.33, 64.02], dtype=float)
 
     fig, ax = _setup_figure()
-    color_fmae = "#1f77b4"
-    color_iat = "#ff7f0e"
+    color_fmae     = "#1f77b4"
+    color_iat_f1   = "#ff7f0e"
+    color_iat_f2   = "#2ca02c"
+    color_iat_f3   = "#d62728"
 
-    # Plot lines with markers
-    ax.plot(keep, fmae, marker="o", linewidth=2.5, markersize=7, color=color_fmae, label="FMAE")
-    ax.plot(keep, iat, marker="s", linewidth=2.5, markersize=7, color=color_iat, label="FMAE-IAT")
+    ax.plot(keep, fmae,      marker="o", linewidth=2.5, markersize=7, color=color_fmae,   label="FMAE Fold 1")
+    ax.plot(keep, iat_fold1, marker="s", linewidth=2.5, markersize=7, color=color_iat_f1, label="FMAE-IAT Fold 1")
+    ax.plot(keep, iat_fold2, marker="^", linewidth=2.5, markersize=7, color=color_iat_f2, label="FMAE-IAT Fold 2")
+    ax.plot(keep, iat_fold3, marker="D", linewidth=2.5, markersize=7, color=color_iat_f3, label="FMAE-IAT Fold 3")
 
-    # Baseline horizontal dashed lines
-    ax.axhline(63.51, linestyle="--", linewidth=1.8, color=color_fmae, alpha=0.8, label="FMAE baseline")
-    ax.axhline(65.88, linestyle="--", linewidth=1.8, color=color_iat, alpha=0.8, label="IAT baseline")
+    ax.axhline(63.51, linestyle="--", linewidth=1.8, color=color_fmae,   alpha=0.8, label="FMAE Fold 1 baseline")
+    ax.axhline(65.88, linestyle="--", linewidth=1.8, color=color_iat_f1, alpha=0.8, label="IAT Fold 1 baseline")
+    ax.axhline(69.03, linestyle="--", linewidth=1.8, color=color_iat_f2, alpha=0.8, label="IAT Fold 2 baseline")
+    ax.axhline(64.27, linestyle="--", linewidth=1.8, color=color_iat_f3, alpha=0.8, label="IAT Fold 3 baseline")
 
     ax.set_xlabel("Frequency Keep Ratio (%)", fontsize=12)
     ax.set_ylabel("Macro F1 (%)", fontsize=12)
     ax.set_xlim(100, 0)
-    ax.set_ylim(60, 70)
+    ax.set_ylim(60, 73)
     ax.set_xticks([100, 80, 60, 40, 20, 10])
     ax.grid(True, alpha=0.25)
-    ax.set_title("FMAE vs FMAE-IAT Macro F1 under Radial Masking (Fold 1)", fontsize=13, fontweight="bold")
+    ax.set_title("FMAE vs FMAE-IAT Macro F1 under Radial Masking (All Folds)", fontsize=13, fontweight="bold")
     ax.legend(loc="lower left", fontsize=10)
 
     output_path = FIGURES_DIR / "radial_fmae_vs_iat_curve.png"
