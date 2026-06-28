@@ -7,3 +7,5 @@ models/
 hfss/
 fmae/
 DISFA/
+
+.DS_Store
