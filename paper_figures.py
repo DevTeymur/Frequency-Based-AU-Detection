@@ -285,7 +285,7 @@ if __name__ == "__main__":
     main()
 
 """
-python3 paper_figures.py --mask radial --image_path BP4D/BP4D_cropped_v1/M007/T3/14.jpg --radial_mode low-pass --keep_pct 5 --figure_mode spectrum --output_path radial_14.png
+python3 paper_figures.py --mask radial --image_path BP4D/BP4D_cropped_v1/M007/T3/14.jpg --radial_mode low-pass --keep_pct 3 --figure_mode spectrum --output_path results/radial_mask.png
 
-python3 paper_figures.py --mask random --image_path BP4D/BP4D_cropped_v1/M007/T3/14.jpg --stage 3 --figure_mode spectrum --output_path random_stage3_14.png
+python3 paper_figures.py --mask random --image_path BP4D/BP4D_cropped_v1/M007/T3/14.jpg --stage 3 --figure_mode spectrum --output_path results/random_mask.png
 """
