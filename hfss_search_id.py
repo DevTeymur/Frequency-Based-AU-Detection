@@ -25,15 +25,18 @@ HFSS_PATH = PROJECT_ROOT / "hfss" / "hfss"
 sys.path.insert(0, str(FMAE_PATH))
 sys.path.insert(0, str(HFSS_PATH))
 
-import models_vit
-from util.datasets import BP4D_AU_dataset
+import models_vit # type: ignore
+from util.datasets import BP4D_AU_dataset, DISFA_AU_dataset # type: ignore
 
 from hfss_search_au import (
 	AU_LABELS,
+	DATASET_CONFIGS,
+	FIXED_PERCENTAGES_TO_KEEP,
 	IMG_SIZE,
 	TeeStream,
 	create_run_log_file,
 	generate_mask_candidates,
+	generate_radial_mask_candidates_from_percentages,
 	parse_keep_ranges,
 )
 
@@ -53,10 +56,10 @@ def set_global_seed(seed, device="cuda"):
 		torch.backends.cudnn.benchmark = False
 
 
-def load_iat_model(model_path, num_subjects=41, device="cuda"):
+def load_iat_model(model_path, num_subjects=41, device="cuda", num_classes=12):
 	"""Load IAT model with identity head enabled."""
 	model = models_vit.vit_large_patch16(
-		num_classes=12,
+		num_classes=num_classes,
 		num_subjects=num_subjects,
 		drop_path_rate=0.0,
 		global_pool=True,
@@ -388,12 +391,88 @@ def search_stage_identity(
 	return top_masks, rows, summary
 
 
+def run_radial_identity_search(args, model, dataloader, output_dir, baseline_identity, baseline_au):
+	"""Deterministic radial-mask identity search.
+
+	Each radial mask (one per keep percentage in FIXED_PERCENTAGES_TO_KEEP) is
+	evaluated independently — no parent/child hierarchy. Results are printed as a
+	table and every mask is saved as its own PKL.
+	"""
+	print("\n🧭 Radial identity search (deterministic masks)")
+	stage_masks = generate_radial_mask_candidates_from_percentages(FIXED_PERCENTAGES_TO_KEEP)
+	stage_names = [f"radial_keep_{int(round(p)):02d}pct" for p in FIXED_PERCENTAGES_TO_KEEP]
+	print(f"   Keep percentages: {', '.join(f'{p:.0f}%' for p in FIXED_PERCENTAGES_TO_KEEP)}")
+
+	stage_summaries = {}
+
+	for stage_name, stage_mask in zip(stage_names, stage_masks):
+		print(f"\n{'─'*60}")
+		print(
+			f"   {stage_name}: keep={stage_mask.keep_pct*100:.1f}% "
+			f"| white={stage_mask.white_count}"
+		)
+
+		id_metrics = evaluate_mask_identity(
+			mask_transform=stage_mask,
+			model=model,
+			dataloader=dataloader,
+			device=args.device,
+			compute_top5=args.compute_top5,
+		)
+		id_drop = baseline_identity[args.objective_metric] - id_metrics[args.objective_metric]
+
+		line = (
+			f"   ID: acc={id_metrics['acc']*100:.2f}% | "
+			f"f1={id_metrics['f1']*100:.2f}% | "
+			f"drop={id_drop*100:+.2f}%"
+		)
+		if args.compute_top5 and "top5_acc" in id_metrics:
+			line += f" | top5={id_metrics['top5_acc']*100:.2f}%"
+		print(line)
+
+		au_eval = None
+		if args.task in {"au", "both"} and baseline_au is not None:
+			au_eval = evaluate_mask_au_batch_style(
+				mask_transform=stage_mask,
+				model=model,
+				dataloader=dataloader,
+				device=args.device,
+				mode=args.au_eval_mode,
+				fixed_threshold=args.au_fixed_threshold,
+			)
+			au_drop = baseline_au["f1"] - au_eval["f1"]
+			print(
+				f"   AU: macro-F1={au_eval['f1']*100:.2f}% | "
+				f"drop={au_drop*100:+.2f}% | threshold={au_eval['threshold']:.2f}"
+			)
+
+		out_pkl = output_dir / f"IAT_{stage_name}_ID_DFMs.pkl"
+		with open(out_pkl, "wb") as f:
+			pickle.dump([stage_mask], f)
+		print(f"   💾 Saved to: {out_pkl}")
+
+		stage_summaries[stage_name] = {
+			"id_metrics": id_metrics,
+			"id_drop": id_drop,
+			"au_eval": au_eval,
+			"keep_pct": stage_mask.keep_pct,
+		}
+
+	return stage_summaries
+
+
 def main():
 	parser = argparse.ArgumentParser()
+	parser.add_argument("--dataset", default="BP4D", choices=["BP4D", "DISFA"],
+	                    help="Dataset to evaluate on (controls AU set, subject count, data root)")
 	parser.add_argument("--model_path", required=True)
 	parser.add_argument("--test_json", default="BP4D/BP4D_test1.json")
-	parser.add_argument("--data_root", default="BP4D/BP4D_cropped/")
-	parser.add_argument("--num_subjects", type=int, default=41)
+	parser.add_argument("--data_root", default=None,
+	                    help="Override the dataset image root path (default: derived from --dataset)")
+	parser.add_argument("--num_subjects", type=int, default=None,
+	                    help="Override number of subjects (default: derived from --dataset)")
+	parser.add_argument("--search_mode", default="radial", choices=["random", "radial"],
+	                    help="Mask search mode: radial (deterministic, recommended) or random (stage-based)")
 	parser.add_argument("--num_candidates", type=int, default=30)
 	parser.add_argument("--top_n", type=int, default=10)
 	parser.add_argument("--proportion", type=float, default=0.8)
@@ -405,7 +484,8 @@ def main():
 	parser.add_argument("--batch_size", type=int, default=24)
 	parser.add_argument("--num_workers", type=int, default=4)
 	parser.add_argument("--device", default="cuda")
-	parser.add_argument("--stages", nargs="+", default=["stage1", "stage2", "stage3"])
+	parser.add_argument("--stages", nargs="+", default=["stage1", "stage2", "stage3"],
+	                    help="Stages for random search mode only (ignored in radial mode)")
 	parser.add_argument("--task", choices=["id", "au", "both"], default="id")
 	parser.add_argument("--objective_metric", choices=["acc", "f1"], default="f1")
 	parser.add_argument("--compute_top5", action="store_true")
@@ -431,6 +511,15 @@ def main():
 	parser.add_argument("--output_dir", default="hfss/DFM_ID")
 	args = parser.parse_args()
 
+	# Resolve dataset config
+	ds_cfg = DATASET_CONFIGS[args.dataset]
+	AU_LABELS.clear()
+	AU_LABELS.extend(ds_cfg["au_labels"])
+	args.data_root = args.data_root if args.data_root is not None else ds_cfg["data_root"]
+	args.num_subjects = args.num_subjects if args.num_subjects is not None else ds_cfg["num_subjects"]
+	args.num_classes = ds_cfg["num_classes"]
+	args.dataset_fn = ds_cfg["dataset_fn"]
+
 	if args.task == "au":
 		print("⚠️ --task au selected in identity script. Objective remains ID; AU metrics are reported only.")
 
@@ -451,13 +540,20 @@ def main():
 
 	try:
 		print("=" * 70)
-		print("HFSS Search for Identity Prediction (separate path)")
+		print(f"HFSS Search for Identity Prediction | Dataset: {args.dataset} | Mode: {args.search_mode}")
+		print(f"AUs ({len(AU_LABELS)}): {AU_LABELS} | Subjects: {args.num_subjects}")
 		print(f"Model: {args.model_path} | Device: {args.device} | Seed: {args.seed}")
+		print(f"Data root: {args.data_root}")
 		print(f"Task: {args.task} | Objective: ID-{args.objective_metric}")
 		print(f"Log file: {log_file_path}")
 		print("=" * 70)
 
-		model = load_iat_model(args.model_path, num_subjects=args.num_subjects, device=args.device)
+		model = load_iat_model(
+			args.model_path,
+			num_subjects=args.num_subjects,
+			device=args.device,
+			num_classes=args.num_classes,
+		)
 
 		dataset_args = SimpleNamespace(
 			root_path=args.data_root,
@@ -468,7 +564,7 @@ def main():
 			remode="pixel",
 			recount=1,
 		)
-		dataset = BP4D_AU_dataset(args.test_json, is_train=False, args=dataset_args)
+		dataset = args.dataset_fn(args.test_json, is_train=False, args=dataset_args)
 		if args.num_samples and args.num_samples < len(dataset):
 			indices = np.random.choice(len(dataset), args.num_samples, replace=False)
 			dataset = Subset(dataset, indices)
@@ -501,38 +597,63 @@ def main():
 			)
 		)
 
-		prev_masks = None
-		stage_summaries = {}
-		for stage in args.stages:
-			keep_range = keep_ranges.get(stage)
-			top_masks, stage_rows, summary = search_stage_identity(
+		baseline_au = None
+		if args.task in {"au", "both"}:
+			baseline_au = evaluate_mask_au_batch_style(
+				mask_transform=lambda x: x,
 				model=model,
 				dataloader=dataloader,
-				stage=stage,
-				num_candidates=args.num_candidates,
-				proportion=args.proportion,
-				prev_masks=prev_masks,
 				device=args.device,
-				keep_ratio_range=keep_range,
-				top_n=args.top_n,
-				baseline_identity=baseline_identity,
-				objective_metric=args.objective_metric,
-				include_top5=args.compute_top5,
-				task=args.task,
-				au_eval_mode=args.au_eval_mode,
-				au_fixed_threshold=args.au_fixed_threshold,
-				au_drop_threshold_pct=args.au_drop_threshold_pct,
+				mode=args.au_eval_mode,
+				fixed_threshold=args.au_fixed_threshold,
 			)
-			prev_masks = [m.mask for m in top_masks]
-			stage_summaries[stage] = {
-				"summary": summary,
-				"rows": stage_rows,
-			}
+			print(
+				f"Baseline AU macro-F1: {baseline_au['f1']*100:.2f}% "
+				f"(threshold={baseline_au['threshold']:.2f})"
+			)
 
-			out_pkl = output_dir / f"IAT_{stage}_ID_DFMs.pkl"
-			with open(out_pkl, "wb") as f:
-				pickle.dump(top_masks, f)
-			print(f"💾 Saved top-{len(top_masks)} masks to: {out_pkl}")
+		if args.search_mode == "radial":
+			stage_summaries = run_radial_identity_search(
+				args=args,
+				model=model,
+				dataloader=dataloader,
+				output_dir=output_dir,
+				baseline_identity=baseline_identity,
+				baseline_au=baseline_au,
+			)
+		else:
+			prev_masks = None
+			stage_summaries = {}
+			for stage in args.stages:
+				keep_range = keep_ranges.get(stage)
+				top_masks, stage_rows, summary = search_stage_identity(
+					model=model,
+					dataloader=dataloader,
+					stage=stage,
+					num_candidates=args.num_candidates,
+					proportion=args.proportion,
+					prev_masks=prev_masks,
+					device=args.device,
+					keep_ratio_range=keep_range,
+					top_n=args.top_n,
+					baseline_identity=baseline_identity,
+					objective_metric=args.objective_metric,
+					include_top5=args.compute_top5,
+					task=args.task,
+					au_eval_mode=args.au_eval_mode,
+					au_fixed_threshold=args.au_fixed_threshold,
+					au_drop_threshold_pct=args.au_drop_threshold_pct,
+				)
+				prev_masks = [m.mask for m in top_masks]
+				stage_summaries[stage] = {
+					"summary": summary,
+					"rows": stage_rows,
+				}
+
+				out_pkl = output_dir / f"IAT_{stage}_ID_DFMs.pkl"
+				with open(out_pkl, "wb") as f:
+					pickle.dump(top_masks, f)
+				print(f"💾 Saved top-{len(top_masks)} masks to: {out_pkl}")
 
 		summary_file = output_dir / "identity_search_summary.pkl"
 		with open(summary_file, "wb") as f:
@@ -550,19 +671,76 @@ if __name__ == "__main__":
 	main()
 
 
-"""
-python3 hfss_search_id.py \
-  --model_path models/FMAE_IAT_BP4D_fold1.pth \
-  --test_json BP4D/BP4D_test1.json \
-  --data_root BP4D/BP4D_cropped/ \
-  --num_samples 200 \
-  --num_candidates 30 \
-  --top_n 10 \
-  --stages stage1 stage2 stage3 \
-  --task both \
-  --objective_metric f1 \
-  --au_eval_mode best_threshold \
-  --au_drop_threshold_pct 1.0 \
-  --device cuda \
-  --num_workers 4
-"""
+'''
+================================================================================
+RUN COMMANDS  —  run from project root on Snellius
+================================================================================
+
+Only IAT models are used here (identity head required).
+Default search mode is radial (matches FIXED_PERCENTAGES_TO_KEEP in hfss_search_au.py).
+
+--------------------------------------------------------------------------------
+BP4D — IAT model, radial identity search
+  Subjects: 41
+--------------------------------------------------------------------------------
+
+  Fold 1, identity only:
+    python hfss_search_id.py \
+      --dataset BP4D \
+      --model_path models/FMAE_IAT_BP4D_fold1.pth \
+      --test_json BP4D/BP4D_test1.json \
+      --search_mode radial --task id
+
+  Fold 1, identity + AU reported together:
+    python hfss_search_id.py \
+      --dataset BP4D \
+      --model_path models/FMAE_IAT_BP4D_fold1.pth \
+      --test_json BP4D/BP4D_test1.json \
+      --search_mode radial --task both
+
+  Fold 2:  --model_path models/FMAE_IAT_BP4D_fold2.pth  --test_json BP4D/BP4D_test2.json
+  Fold 3:  --model_path models/FMAE_IAT_BP4D_fold3.pth  --test_json BP4D/BP4D_test3.json
+
+--------------------------------------------------------------------------------
+DISFA — IAT model, radial identity search
+  Subjects: 27   AUs: [1, 2, 4, 6, 9, 12, 25, 26]
+--------------------------------------------------------------------------------
+
+  Fold 1, identity only:
+    python hfss_search_id.py \
+      --dataset DISFA \
+      --model_path models/FMAE_IAT_DISFA_fold1.pth \
+      --test_json DISFA/DISFA_test1.json \
+      --search_mode radial --task id
+
+  Fold 1, identity + AU reported together:
+    python hfss_search_id.py \
+      --dataset DISFA \
+      --model_path models/FMAE_IAT_DISFA_fold1.pth \
+      --test_json DISFA/DISFA_test1.json \
+      --search_mode radial --task both
+
+  Fold 2:  --model_path models/FMAE_IAT_DISFA_fold2.pth  --test_json DISFA/DISFA_test2.json
+  Fold 3:  --model_path models/FMAE_IAT_DISFA_fold3.pth  --test_json DISFA/DISFA_test3.json
+
+--------------------------------------------------------------------------------
+Optional flags (add to any command above)
+--------------------------------------------------------------------------------
+
+  --num_samples 500          use a subset instead of full test set (faster smoke test)
+  --compute_top5             also report top-5 identity accuracy
+  --objective_metric acc     optimize for accuracy instead of macro-F1 (default: f1)
+  --au_eval_mode fixed       use fixed threshold 0.5 instead of best-threshold sweep
+  --data_root <path>         override the default image folder
+  --num_subjects <n>         override subject count (only if model was trained differently)
+  --output_dir hfss/DFM_ID   change output folder
+
+--------------------------------------------------------------------------------
+Output locations
+--------------------------------------------------------------------------------
+
+  Logs:     hfss/logs/hfss_run_<timestamp>.txt
+  Masks:    hfss/DFM_ID/IAT_radial_keep_<xx>pct_ID_DFMs.pkl
+  Summary:  hfss/DFM_ID/identity_search_summary.pkl
+================================================================================
+'''
