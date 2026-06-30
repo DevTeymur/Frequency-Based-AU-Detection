@@ -34,11 +34,12 @@ sys.path.insert(0, str(FMAE_PATH))
 sys.path.insert(0, str(HFSS_PATH))
 
 import models_vit  # pyright: ignore[reportMissingImports]
-from util.datasets import BP4D_AU_dataset  # pyright: ignore[reportMissingImports]
+from util.datasets import BP4D_AU_dataset, DISFA_AU_dataset  # pyright: ignore[reportMissingImports]
 from util.lars import LARS  # pyright: ignore[reportMissingImports]
 from transforms_search_space import White_Mask  # pyright: ignore[reportMissingImports]
 
 from hfss_search_au import (
+    DATASET_CONFIGS,
     IMG_SIZE,
     TeeStream,
     load_masks_from_pkl,
@@ -46,12 +47,10 @@ from hfss_search_au import (
 )
 
 
-FIXED_DATA_ROOT = "BP4D/BP4D_cropped/"
 FIXED_BATCH_SIZE = 64
 FIXED_NUM_WORKERS = 4
 FIXED_DEVICE = "cuda"
 FIXED_SEED = 42
-FIXED_NUM_SUBJECTS = 41
 FIXED_PROBE_EPOCHS = 90
 FIXED_PROBE_LR = 1e-3
 FIXED_PROBE_BLR = 0.1
@@ -59,13 +58,24 @@ FIXED_PROBE_WEIGHT_DECAY = 0.0
 FIXED_RADIAL_STEPS = 10
 FIXED_RADIAL_START_KEEP_PCT = 100.0
 FIXED_RADIAL_DIRECTION = "big_to_small"  # 'big_to_small' | 'small_to_big'
-FIXED_PERCENTAGES_TO_KEEP = [8, 4, 2, 1]
+FIXED_PERCENTAGES_TO_KEEP = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 8, 4, 2]
 
 
 def terminal_tqdm(iterable, **kwargs):
     """Render tqdm in terminal only (exclude TeeStream file logger)."""
     stream = sys.__stderr__ if sys.__stderr__ is not None else sys.stderr
     return tqdm(iterable, file=stream, **kwargs)
+
+
+def _extract_subject_id(img_path, dataset_name):
+    """Extract subject ID string from an img_path entry.
+
+    BP4D paths: 'F001/frame_1.jpg'       → img_path[1:4]          → '001'
+    DISFA paths: 'RightVideoSN030/frame_1.jpg' → split('/')[0][-5:] → 'SN030'
+    """
+    if dataset_name == "DISFA":
+        return img_path.split('/')[0][-5:]
+    return img_path[1:4]
 
 
 def create_linear_probe_log_file(log_dir):
@@ -120,9 +130,11 @@ def build_dataset_args(data_root):
     )
 
 
-def build_dataloader(json_path, data_root, is_train, batch_size, num_workers, shuffle):
+def build_dataloader(json_path, data_root, is_train, batch_size, num_workers, shuffle, dataset_fn=None):
+    if dataset_fn is None:
+        dataset_fn = BP4D_AU_dataset
     dataset_args = build_dataset_args(data_root)
-    dataset = BP4D_AU_dataset(json_path, is_train=is_train, args=dataset_args)
+    dataset = dataset_fn(json_path, is_train=is_train, args=dataset_args)
     dataloader = DataLoader(
         dataset,
         batch_size=batch_size,
@@ -139,12 +151,14 @@ def _extract_frame_index(img_path):
     return int(match.group(1)) if match else None
 
 
-def build_fixed_samples_per_subject_split(all_json_paths, data_root, train_samples, test_samples, seed=42):
+def build_fixed_samples_per_subject_split(all_json_paths, data_root, train_samples, test_samples, seed=42, dataset_fn=None, dataset_name="BP4D"):
     """Sample exactly N train/test frames per subject from combined JSON files.
 
     This matches fixed-count per-subject sampling used by linear probe protocols.
     Subjects with insufficient frames are skipped with a warning.
     """
+    if dataset_fn is None:
+        dataset_fn = BP4D_AU_dataset
     if isinstance(all_json_paths, (str, Path)):
         all_json_paths = [all_json_paths]
 
@@ -160,11 +174,11 @@ def build_fixed_samples_per_subject_split(all_json_paths, data_root, train_sampl
                 combined_data.append(json.loads(line))
 
     if not combined_data:
-        raise ValueError("No BP4D samples found in the provided JSON paths.")
+        raise ValueError("No samples found in the provided JSON paths.")
 
     grouped_by_subject = {}
     for entry in combined_data:
-        subject_id = entry["img_path"][1:4]
+        subject_id = _extract_subject_id(entry["img_path"], dataset_name)
         grouped_by_subject.setdefault(subject_id, []).append(entry)
 
     rng = np.random.default_rng(seed)
@@ -195,7 +209,7 @@ def build_fixed_samples_per_subject_split(all_json_paths, data_root, train_sampl
         test_paths = {e["img_path"] for e in test_subject_entries}
         overlap_by_subject[subject_id] = len(train_paths.intersection(test_paths))
 
-        examples_by_subject[subject_id] = {
+        examples_by_subject[_extract_subject_id(train_subject_entries[0]["img_path"], dataset_name)] = {
             "train_frame_indices": [_extract_frame_index(e["img_path"]) for e in train_subject_entries],
             "test_frame_indices": [_extract_frame_index(e["img_path"]) for e in test_subject_entries],
         }
@@ -218,27 +232,27 @@ def build_fixed_samples_per_subject_split(all_json_paths, data_root, train_sampl
     rng.shuffle(test_entries)
 
     dataset_args = build_dataset_args(data_root)
-    train_dataset = BP4D_AU_dataset(all_json_paths[0], is_train=True, args=dataset_args)
-    test_dataset = BP4D_AU_dataset(all_json_paths[0], is_train=False, args=dataset_args)
+    train_dataset = dataset_fn(all_json_paths[0], is_train=True, args=dataset_args)
+    test_dataset = dataset_fn(all_json_paths[0], is_train=False, args=dataset_args)
     train_dataset.data = train_entries
     test_dataset.data = test_entries
     audit = SamplingAudit(examples_by_subject=examples_by_subject, overlap_by_subject=overlap_by_subject)
     return train_dataset, test_dataset, audit
 
 
-def _subject_set_from_json(json_path):
+def _subject_set_from_json(json_path, dataset_name="BP4D"):
     subjects = set()
     with open(json_path, "r", encoding="utf-8") as f:
         for line in f:
             entry = json.loads(line)
-            subjects.add(entry["img_path"][1:4])
+            subjects.add(_extract_subject_id(entry["img_path"], dataset_name))
     return subjects
 
 
-def ensure_subject_exclusive_au_split(train_json, test_json):
+def ensure_subject_exclusive_au_split(train_json, test_json, dataset_name="BP4D"):
     """Ensure AU evaluation uses a subject-exclusive test split."""
-    train_subjects = _subject_set_from_json(train_json)
-    test_subjects = _subject_set_from_json(test_json)
+    train_subjects = _subject_set_from_json(train_json, dataset_name)
+    test_subjects = _subject_set_from_json(test_json, dataset_name)
     overlap = train_subjects.intersection(test_subjects)
 
     print(f"   AU split subjects | train={len(train_subjects)} test={len(test_subjects)} overlap={len(overlap)}")
@@ -250,19 +264,18 @@ def ensure_subject_exclusive_au_split(train_json, test_json):
         )
 
 
-def validate_subject_mapping(dataset, split_name):
-    # BP4D labels are encoded as Fxx/Mxx in the dataset logic (img_path[1:4]).
-    subject_ids = sorted({entry["img_path"][1:4] for entry in dataset.data})
+def validate_subject_mapping(dataset, split_name, num_subjects, dataset_name="BP4D"):
+    subject_ids = sorted({_extract_subject_id(entry["img_path"], dataset_name) for entry in dataset.data})
     print(
         f"   {split_name} subject IDs: {len(subject_ids)} unique | "
         f"mapped classes: {len(dataset.IDs)}"
     )
     print(f"   Sample IDs: {', '.join(subject_ids[:5])}{' ...' if len(subject_ids) > 5 else ''}")
-    if len(dataset.IDs) != FIXED_NUM_SUBJECTS:
-        raise ValueError(f"Expected {FIXED_NUM_SUBJECTS} BP4D subject classes, got {len(dataset.IDs)}")
-    if len(subject_ids) != FIXED_NUM_SUBJECTS:
+    if len(dataset.IDs) != num_subjects:
+        raise ValueError(f"Expected {num_subjects} subject classes, got {len(dataset.IDs)}")
+    if len(subject_ids) != num_subjects:
         print(
-            f"   ⚠ {split_name} has {len(subject_ids)} observed subjects (mapping table still has {FIXED_NUM_SUBJECTS})."
+            f"   ⚠ {split_name} has {len(subject_ids)} observed subjects (mapping table still has {num_subjects})."
         )
     return set(subject_ids)
 
@@ -283,10 +296,10 @@ def print_subject_mapping(train_dataset, test_dataset):
     return consistent
 
 
-def load_backbone(model_path, model_type, device):
+def load_backbone(model_path, model_type, device, num_classes=12, num_subjects=41):
     model = models_vit.vit_large_patch16(
-        num_classes=12,
-        num_subjects=FIXED_NUM_SUBJECTS if model_type == "IAT" else 0,
+        num_classes=num_classes,
+        num_subjects=num_subjects if model_type == "IAT" else 0,
         drop_path_rate=0.0,
         global_pool=True,
         grad_reverse=1.0 if model_type == "IAT" else 0.0,
@@ -493,32 +506,39 @@ def load_radial_masks(dfm_dir):
 
 
 def load_radial_masks_saved(dfm_dir, model_type):
-    """Load saved canonical radial masks from PKL files."""
+    """Load saved canonical radial masks from PKL files.
+
+    Recognises both naming conventions:
+      - new: {model_type}_radial_keep_XXpct_DFMs.pkl  (hfss_search_au.py current output)
+      - old: {model_type}_radial_step_XX_DFMs.pkl     (legacy)
+    Sort key is the numeric value in the filename (keep pct or step number).
+    """
     dfm_dir = Path(dfm_dir)
     if not dfm_dir.exists():
         raise FileNotFoundError(f"DFM directory not found: {dfm_dir}")
 
     candidates = []
-    pattern = re.compile(rf"^{re.escape(model_type)}_radial_step_(\d+)_DFMs\.pkl$")
-    for pkl_path in dfm_dir.rglob("*.pkl"):
-        match = pattern.match(pkl_path.name)
-        if match is None:
-            continue
-        candidates.append((int(match.group(1)), pkl_path))
+    # New naming: radial_keep_XXpct
+    new_pattern = re.compile(rf"^{re.escape(model_type)}_radial_keep_(\d+)pct_DFMs\.pkl$")
+    # Old naming: radial_step_XX
+    old_pattern = re.compile(rf"^{re.escape(model_type)}_radial_step_(\d+)_DFMs\.pkl$")
+    fallback_pattern = re.compile(r"^radial_(?:keep_(\d+)pct|step_(\d+)).*\.pkl$")
 
-    if not candidates:
-        fallback = re.compile(r"^radial_step_(\d+).*\.pkl$")
-        for pkl_path in dfm_dir.rglob("*.pkl"):
-            match = fallback.match(pkl_path.name)
-            if match is None:
-                continue
-            candidates.append((int(match.group(1)), pkl_path))
+    for pkl_path in dfm_dir.rglob("*.pkl"):
+        m = new_pattern.match(pkl_path.name) or old_pattern.match(pkl_path.name)
+        if m:
+            candidates.append((int(m.group(1)), pkl_path))
+            continue
+        m = fallback_pattern.match(pkl_path.name)
+        if m:
+            num = int(m.group(1) or m.group(2))
+            candidates.append((num, pkl_path))
 
     candidates.sort(key=lambda item: item[0])
     if not candidates:
         raise FileNotFoundError(
             f"No saved radial masks found under {dfm_dir}. "
-            f"Expected files named {model_type}_radial_step_XX_DFMs.pkl"
+            f"Expected files named {model_type}_radial_keep_XXpct_DFMs.pkl"
         )
 
     records = []
@@ -693,18 +713,18 @@ def print_summary_table(rows):
     print("=" * 78)
 
 
-def _subject_sample_stats(entries):
+def _subject_sample_stats(entries, dataset_name="BP4D"):
     counts = {}
     for entry in entries:
-        subject_id = entry["img_path"][1:4]
+        subject_id = _extract_subject_id(entry["img_path"], dataset_name)
         counts[subject_id] = counts.get(subject_id, 0) + 1
     values = list(counts.values())
     return counts, min(values), max(values), float(np.mean(values))
 
 
-def run_sanity_checks(backbone, probe, train_dataset, test_dataset, sampling_audit, expected_train_samples, expected_test_samples):
-    train_counts, train_min, train_max, train_mean = _subject_sample_stats(train_dataset.data)
-    test_counts, test_min, test_max, test_mean = _subject_sample_stats(test_dataset.data)
+def run_sanity_checks(backbone, probe, train_dataset, test_dataset, sampling_audit, expected_train_samples, expected_test_samples, dataset_name="BP4D"):
+    train_counts, train_min, train_max, train_mean = _subject_sample_stats(train_dataset.data, dataset_name)
+    test_counts, test_min, test_max, test_mean = _subject_sample_stats(test_dataset.data, dataset_name)
 
     overlap_violations = {
         sid: cnt for sid, cnt in sampling_audit.overlap_by_subject.items() if cnt > 0
@@ -754,7 +774,11 @@ def run_sanity_checks(backbone, probe, train_dataset, test_dataset, sampling_aud
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Linear probe identity analysis for BP4D (FMAE/IAT)")
+    parser = argparse.ArgumentParser(description="Linear probe identity analysis (FMAE/IAT, BP4D/DISFA)")
+    parser.add_argument("--dataset", default="BP4D", choices=["BP4D", "DISFA"],
+                        help="Dataset to evaluate on (controls AU set, subject count, data root)")
+    parser.add_argument("--data_root", default=None,
+                        help="Override the dataset image root path (default: derived from --dataset)")
     parser.add_argument("--model_type", default="FMAE", choices=["FMAE", "IAT"])
     parser.add_argument("--model_path", default="models/FMAE_BP4D_fold1.pth")
     parser.add_argument("--train_json", default="BP4D/BP4D_train1.json")
@@ -774,6 +798,14 @@ def main():
     parser.add_argument("--output_csv", default="hfss/DFM/linear_probe_identity_results.csv")
     args = parser.parse_args()
 
+    # Resolve dataset config
+    ds_cfg = DATASET_CONFIGS[args.dataset]
+    data_root = args.data_root if args.data_root is not None else ds_cfg["data_root"]
+    num_subjects = ds_cfg["num_subjects"]
+    num_classes = ds_cfg["num_classes"]
+    dataset_fn = ds_cfg["dataset_fn"]
+    dataset_name = args.dataset
+
     device = resolve_device()
     set_global_seed(FIXED_SEED, str(device))
 
@@ -791,13 +823,14 @@ def main():
 
     try:
         print("=" * 70)
-        print("Linear Probe Identity Analysis - BP4D")
-        print(f"Model type: {args.model_type} | Model: {args.model_path} | Device: {device}")
-        print(f"Seed: {FIXED_SEED}")
+        print(f"Linear Probe Identity Analysis | Dataset: {dataset_name} | Model: {args.model_type}")
+        print(f"Subjects: {num_subjects} | AUs: {num_classes} | Data root: {data_root}")
+        print(f"Model: {args.model_path} | Device: {device} | Seed: {FIXED_SEED}")
         print(f"Log file: {log_file_path}")
         print("=" * 70)
 
-        backbone = load_backbone(args.model_path, args.model_type, device)
+        backbone = load_backbone(args.model_path, args.model_type, device,
+                                 num_classes=num_classes, num_subjects=num_subjects)
         feature_dim = backbone.head.in_features if hasattr(backbone, "head") else 1024
         print(f"   Backbone feature dim: {feature_dim}")
         print("   Feature extraction uses: backbone.forward_features(images) (pre-AU/ID heads)")
@@ -805,10 +838,12 @@ def main():
         print("\n[1] Building probe datasets (fixed per-subject sampling: 70 train / 30 test)")
         train_dataset, test_dataset, sampling_audit = build_fixed_samples_per_subject_split(
             [args.train_json, args.test_json],
-            FIXED_DATA_ROOT,
+            data_root,
             train_samples=70,
             test_samples=30,
             seed=FIXED_SEED,
+            dataset_fn=dataset_fn,
+            dataset_name=dataset_name,
         )
         train_loader = DataLoader(
             train_dataset,
@@ -830,8 +865,8 @@ def main():
         print(f"   Test samples:  {len(test_dataset)}")
 
         print("\n[2] Building AU evaluation dataset (subject-exclusive check)")
-        ensure_subject_exclusive_au_split(args.train_json, args.test_json)
-        au_eval_dataset = BP4D_AU_dataset(args.test_json, is_train=False, args=build_dataset_args(FIXED_DATA_ROOT))
+        ensure_subject_exclusive_au_split(args.train_json, args.test_json, dataset_name=dataset_name)
+        au_eval_dataset = dataset_fn(args.test_json, is_train=False, args=build_dataset_args(data_root))
         au_eval_loader = DataLoader(
             au_eval_dataset,
             batch_size=FIXED_BATCH_SIZE,
@@ -843,7 +878,7 @@ def main():
         print(f"   AU evaluation samples (official test split): {len(au_eval_dataset)}")
 
         print("\n[3] Training linear probe (online frozen-feature extraction)")
-        probe = LinearProbe(feature_dim=feature_dim, num_subjects=FIXED_NUM_SUBJECTS)
+        probe = LinearProbe(feature_dim=feature_dim, num_subjects=num_subjects)
         print(f"   Probe check: {probe}")
 
         effective_batch_size = FIXED_BATCH_SIZE
@@ -855,7 +890,7 @@ def main():
             f"weight_decay={args.probe_weight_decay}"
         )
 
-        run_sanity_checks(backbone, probe, train_dataset, test_dataset, sampling_audit, 70, 30)
+        run_sanity_checks(backbone, probe, train_dataset, test_dataset, sampling_audit, 70, 30, dataset_name=dataset_name)
 
         probe = train_linear_probe(
             backbone,
@@ -871,7 +906,7 @@ def main():
             {
                 "probe_state_dict": probe.state_dict(),
                 "feature_dim": feature_dim,
-                "num_subjects": FIXED_NUM_SUBJECTS,
+                "num_subjects": num_subjects,
                 "model_path": args.model_path,
                 "train_json": args.train_json,
                 "test_json": args.test_json,
@@ -958,27 +993,96 @@ if __name__ == "__main__":
     main()
 
 
-"""
-python linear_probe_identity.py \
-    --model_type FMAE \
-    --model_path models/FMAE_BP4D_fold1.pth \
-    --train_json BP4D/BP4D_train1.json \
-    --test_json BP4D/BP4D_test1.json \
-    --dfm_dir hfss/DFM \
-    --probe_blr 0.1 \
-    --probe_weight_decay 0.0 \
-    --probe_save_path hfss/DFM/linear_probe_identity.pth \
-    --probe_epochs 90 \
-    --output_csv hfss/DFM/linear_probe_identity_results.csv
+'''
+================================================================================
+RUN COMMANDS  —  run from project root on Snellius
+================================================================================
 
-python linear_probe_identity.py \
-    --model_type IAT \
-    --model_path models/FMAE_IAT_BP4D_fold1.pth \
-  --train_json BP4D/BP4D_train1.json \
-  --test_json BP4D/BP4D_test1.json \
-  --dfm_dir hfss/DFM \
-    --mask_source saved \
-        --probe_blr 0.1 \
-        --probe_weight_decay 0.0 \
-  --output_csv hfss/DFM/linear_probe_identity_results.csv
-"""
+Radial keep percentages (FIXED_PERCENTAGES_TO_KEEP, same as hfss_search_au.py):
+  100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 8, 4, 2 %
+
+--------------------------------------------------------------------------------
+BP4D — FMAE model (linear probe trains its own identity head)
+  Subjects: 41
+--------------------------------------------------------------------------------
+
+  Fold 1:
+    python linear_probe_identity.py \
+      --dataset BP4D --model_type FMAE \
+      --model_path models/FMAE_BP4D_fold1.pth \
+      --train_json BP4D/BP4D_train1.json \
+      --test_json BP4D/BP4D_test1.json \
+      --output_csv hfss/DFM/BP4D_FMAE_fold1_linear_probe_results.csv
+
+  Fold 2:  --model_path models/FMAE_BP4D_fold2.pth  --train_json BP4D/BP4D_train2.json  --test_json BP4D/BP4D_test2.json
+  Fold 3:  --model_path models/FMAE_BP4D_fold3.pth  --train_json BP4D/BP4D_train3.json  --test_json BP4D/BP4D_test3.json
+
+--------------------------------------------------------------------------------
+BP4D — IAT model (activates built-in ID head instead of training a new probe)
+  Subjects: 41
+--------------------------------------------------------------------------------
+
+  Fold 1:
+    python linear_probe_identity.py \
+      --dataset BP4D --model_type IAT \
+      --model_path models/FMAE_IAT_BP4D_fold1.pth \
+      --train_json BP4D/BP4D_train1.json \
+      --test_json BP4D/BP4D_test1.json \
+      --output_csv hfss/DFM/BP4D_IAT_fold1_linear_probe_results.csv
+
+  Fold 2:  --model_path models/FMAE_IAT_BP4D_fold2.pth  --train_json BP4D/BP4D_train2.json  --test_json BP4D/BP4D_test2.json
+  Fold 3:  --model_path models/FMAE_IAT_BP4D_fold3.pth  --train_json BP4D/BP4D_train3.json  --test_json BP4D/BP4D_test3.json
+
+--------------------------------------------------------------------------------
+DISFA — FMAE model
+  Subjects: 27   AUs: [1, 2, 4, 6, 9, 12, 25, 26]
+--------------------------------------------------------------------------------
+
+  Fold 1:
+    python linear_probe_identity.py \
+      --dataset DISFA --model_type FMAE \
+      --model_path models/FMAE_DISFA_fold1.pth \
+      --train_json DISFA/DISFA_train1.json \
+      --test_json DISFA/DISFA_test1.json \
+      --output_csv hfss/DFM/DISFA_FMAE_fold1_linear_probe_results.csv
+
+  Fold 2:  --model_path models/FMAE_DISFA_fold2.pth  --train_json DISFA/DISFA_train2.json  --test_json DISFA/DISFA_test2.json
+  Fold 3:  --model_path models/FMAE_DISFA_fold3.pth  --train_json DISFA/DISFA_train3.json  --test_json DISFA/DISFA_test3.json
+
+--------------------------------------------------------------------------------
+DISFA — IAT model
+  Subjects: 27   AUs: [1, 2, 4, 6, 9, 12, 25, 26]
+--------------------------------------------------------------------------------
+
+  Fold 1:
+    python linear_probe_identity.py \
+      --dataset DISFA --model_type IAT \
+      --model_path models/FMAE_IAT_DISFA_fold1.pth \
+      --train_json DISFA/DISFA_train1.json \
+      --test_json DISFA/DISFA_test1.json \
+      --output_csv hfss/DFM/DISFA_IAT_fold1_linear_probe_results.csv
+
+  Fold 2:  --model_path models/FMAE_IAT_DISFA_fold2.pth  --train_json DISFA/DISFA_train2.json  --test_json DISFA/DISFA_test2.json
+  Fold 3:  --model_path models/FMAE_IAT_DISFA_fold3.pth  --train_json DISFA/DISFA_train3.json  --test_json DISFA/DISFA_test3.json
+
+--------------------------------------------------------------------------------
+Optional flags (add to any command above)
+--------------------------------------------------------------------------------
+
+  --probe_epochs 90         number of linear probe training epochs (default: 90)
+  --probe_blr 0.1           base learning rate for LARS optimizer
+  --probe_weight_decay 0.0  weight decay for LARS
+  --mask_source saved       load radial masks from PKL files instead of generating them
+  --dfm_dir hfss/DFM        where to look for saved PKL masks (used with --mask_source saved)
+  --data_root <path>        override the default image folder
+  --probe_save_path <path>  where to save the trained probe weights
+
+--------------------------------------------------------------------------------
+Output locations
+--------------------------------------------------------------------------------
+
+  Logs:    hfss/logs/linear_probe_<timestamp>.txt
+  CSV:     as specified by --output_csv
+  Probe:   as specified by --probe_save_path (default: hfss/DFM/linear_probe_identity.pth)
+================================================================================
+'''
