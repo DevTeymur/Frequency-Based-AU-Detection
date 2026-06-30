@@ -32,16 +32,16 @@ sys.path.insert(0, str(FMAE_PATH))
 sys.path.insert(0, str(HFSS_PATH))
 
 # Import from FMAE
-import models_vit
-from util.datasets import BP4D_AU_dataset
+import models_vit # type: ignore
+from util.datasets import BP4D_AU_dataset, DISFA_AU_dataset # type: ignore
 
 # Import from HFSS (in hfss/hfss/ subdirectory)
 sys.path.insert(0, str(PROJECT_ROOT / "hfss" / "hfss"))
-from transforms_search_space import White_Mask, gen_freqs_list, sample_frequency, generate_mask
+from transforms_search_space import White_Mask, gen_freqs_list, sample_frequency, generate_mask # type: ignore
 
 
 # Config
-AU_LABELS = [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23, 24]
+AU_LABELS = [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23, 24]  # updated at runtime from DATASET_CONFIGS
 IMG_SIZE = 224
 PATCHES = {'stage1': 4, 'stage2': 8, 'stage3': 16, 'stage4': 28, 'stage5': 56, 'stage6': 112}
 DEFAULT_KEEP_RANGES = {
@@ -53,8 +53,24 @@ DEFAULT_KEEP_RANGES = {
     'stage6': (0.03, 0.10),
 }
 
+DATASET_CONFIGS = {
+    'BP4D': {
+        'au_labels':    [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23, 24],
+        'num_classes':  12,
+        'num_subjects': 41,
+        'data_root':    'BP4D/BP4D_cropped/',
+        'dataset_fn':   BP4D_AU_dataset,
+    },
+    'DISFA': {
+        'au_labels':    [1, 2, 4, 6, 9, 12, 25, 26],
+        'num_classes':  8,
+        'num_subjects': 27,
+        'data_root':    'DISFA/DISFA_cropped/',
+        'dataset_fn':   DISFA_AU_dataset,
+    },
+}
+
 # Fixed runtime defaults (kept out of CLI to reduce argument noise).
-FIXED_DATA_ROOT = 'BP4D/BP4D_cropped/'
 FIXED_TOP_N = 10
 FIXED_PROPORTION = 0.8
 FIXED_STOP_DROP_PCT = 5.0
@@ -66,7 +82,7 @@ FIXED_SEED = 42
 FIXED_RADIAL_STEPS = 10
 FIXED_RADIAL_START_KEEP_PCT =100.0
 FIXED_RADIAL_DIRECTION = 'big_to_small'  # 'big_to_small' | 'small_to_big'
-FIXED_PERCENTAGES_TO_KEEP = [8, 4, 2, 1]
+FIXED_PERCENTAGES_TO_KEEP = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 8, 4, 2]
 
 class TeeStream:
     """Write stream output to multiple targets (terminal + log file)."""
@@ -112,9 +128,9 @@ def parse_keep_ranges(config_str):
     return ranges
 
 
-def load_model(model_path, model_type='FMAE', device='cuda'):
+def load_model(model_path, model_type='FMAE', device='cuda', num_classes=12, num_subjects_iat=41):
     """Load AU detection model
-    
+
     Handles mixed checkpoint formats:
     - FMAE checkpoints work with FMAE model_type
     - IAT checkpoints work with IAT model_type
@@ -130,10 +146,10 @@ def load_model(model_path, model_type='FMAE', device='cuda'):
         model_type = 'IAT'
 
     grad_reverse = 1.0 if model_type == 'IAT' else 0.0
-    num_subjects = 41 if model_type == 'IAT' else 0
+    num_subjects = num_subjects_iat if model_type == 'IAT' else 0
 
     model = models_vit.vit_large_patch16(
-        num_classes=12,
+        num_classes=num_classes,
         num_subjects=num_subjects,
         drop_path_rate=0.0,
         global_pool=True,
@@ -976,8 +992,10 @@ def search_stage(
     return [r[5] for r in top_k], results, summary
 
 
-def build_eval_dataloader(test_json, data_root, num_samples, batch_size, num_workers, device):
+def build_eval_dataloader(test_json, data_root, num_samples, batch_size, num_workers, device, dataset_fn=None):
     """Shared data loading path used by random and radial search modes."""
+    if dataset_fn is None:
+        dataset_fn = BP4D_AU_dataset
     dataset_args = SimpleNamespace(
         root_path=data_root,
         input_size=IMG_SIZE,
@@ -987,7 +1005,7 @@ def build_eval_dataloader(test_json, data_root, num_samples, batch_size, num_wor
         remode='pixel',
         recount=1,
     )
-    dataset = BP4D_AU_dataset(test_json, is_train=False, args=dataset_args)
+    dataset = dataset_fn(test_json, is_train=False, args=dataset_args)
     if num_samples and num_samples < len(dataset):
         indices = np.random.choice(len(dataset), num_samples, replace=False)
         dataset = Subset(dataset, indices)
@@ -1386,14 +1404,18 @@ def run_radial_hfss_search(
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset', default='BP4D', choices=['BP4D', 'DISFA'],
+                        help='Dataset to evaluate on (controls AU set, subject count, data root)')
+    parser.add_argument('--data_root', default=None,
+                        help='Override the dataset image root path (default: derived from --dataset)')
     parser.add_argument('--model_type', default='FMAE', choices=['FMAE', 'IAT'])
     parser.add_argument('--model_path', default='models/FMAE_BP4D_fold1.pth')
     parser.add_argument('--test_json', default='BP4D/BP4D_test1.json')
     parser.add_argument('--num_candidates', type=int, default=200)
-    parser.add_argument('--num_samples', type=int, default=500, help='Number of training samples to use')
+    parser.add_argument('--num_samples', type=int, default=9999999, help='Number of training samples to use')
     parser.add_argument('--output_dir', default='hfss/DFM')
     parser.add_argument('--stages', nargs='+', default=['stage1', 'stage2', 'stage3'])
-    parser.add_argument('--search_mode', default='random', choices=['random', 'radial'],
+    parser.add_argument('--search_mode', default='radial', choices=['random', 'radial'],
                         help='Mask search mode: random (current HFSS) or radial (deterministic)')
     # --- Optional feature flags (disable by omitting the flag) ---
     parser.add_argument('--per_au_eval', action='store_true',
@@ -1419,8 +1441,16 @@ def main():
                         help='Direction of radial keep-ratio progression')
     args = parser.parse_args()
 
+    # Resolve dataset config and apply to module-level AU_LABELS
+    ds_cfg = DATASET_CONFIGS[args.dataset]
+    AU_LABELS.clear()
+    AU_LABELS.extend(ds_cfg['au_labels'])
+
     # Fixed runtime knobs (removed from CLI, values unchanged from previous defaults).
-    args.data_root = FIXED_DATA_ROOT
+    args.data_root = args.data_root if args.data_root is not None else ds_cfg['data_root']
+    args.num_classes = ds_cfg['num_classes']
+    args.num_subjects = ds_cfg['num_subjects']
+    args.dataset_fn = ds_cfg['dataset_fn']
     args.top_n = FIXED_TOP_N
     args.proportion = FIXED_PROPORTION
     args.stop_drop_pct = FIXED_STOP_DROP_PCT
@@ -1452,14 +1482,18 @@ def main():
     
     try:
         print("="*70)
-        print(f"HFSS Search for AU Detection - {args.model_type}")
+        print(f"HFSS Search for AU Detection - {args.model_type} | Dataset: {args.dataset}")
+        print(f"AUs ({len(AU_LABELS)}): {AU_LABELS}")
         print(f"Model: {args.model_path} | Device: {args.device}")
+        print(f"Data root: {args.data_root}")
         print(f"Seed: {args.seed}")
         print(f"Log file: {log_file_path}")
         print("="*70)
         
         # Load model
-        model = load_model(args.model_path, args.model_type, args.device)
+        model = load_model(args.model_path, args.model_type, args.device,
+                           num_classes=args.num_classes,
+                           num_subjects_iat=args.num_subjects)
         dataset, dataloader = build_eval_dataloader(
             test_json=args.test_json,
             data_root=args.data_root,
@@ -1467,6 +1501,7 @@ def main():
             batch_size=args.batch_size,
             num_workers=args.num_workers,
             device=args.device,
+            dataset_fn=args.dataset_fn,
         )
         print(f"✓ Loaded {len(dataset)} TEST samples (evaluating on unseen data)")
 
@@ -1520,94 +1555,93 @@ if __name__ == "__main__":
 
 
 '''
-Run from project root:
-cd /Users/tima/Documents/DASC/Thesis/Frequency-Based-AU-Detection
+================================================================================
+RUN COMMANDS  —  run from project root on Snellius
+================================================================================
 
---- RANDOM MODE ---
+Radial keep percentages (FIXED_PERCENTAGES_TO_KEEP):
+  100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 8, 4, 2 %
 
-1) QUICK SMOKE (macro, subset)
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 50 \
-    --num_candidates 20 --stages stage1 stage2
+--------------------------------------------------------------------------------
+BP4D — FMAE model (no identity adversarial training)
+  AUs: [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23, 24]   Subjects: 41
+--------------------------------------------------------------------------------
 
-2) FULL TEST SET, MACRO F1
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-    --num_candidates 200 --stages stage1 stage2 stage3
+  Fold 1:
+    python hfss_search_au.py \
+      --dataset BP4D --model_type FMAE \
+      --model_path models/FMAE_BP4D_fold1.pth \
+      --test_json BP4D/BP4D_test1.json \
+      --search_mode radial --per_au_search --per_au_eval
 
-3) FULL TEST SET, ALL AUs (per-AU search + eval)
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-    --num_candidates 200 --stages stage1 stage2 stage3 \
-    --per_au_search --per_au_eval
+  Fold 2:  --model_path models/FMAE_BP4D_fold2.pth  --test_json BP4D/BP4D_test2.json
+  Fold 3:  --model_path models/FMAE_BP4D_fold3.pth  --test_json BP4D/BP4D_test3.json
 
-4) FULL TEST SET, SINGLE AU (e.g. AU12)
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-    --num_candidates 200 --stages stage1 stage2 stage3 \
-    --per_au_search --target_au 12 --per_au_eval --visualize_masks
+  Completed log (fold 1):  hfss/logs/hfss_run_20260510_233437.txt
 
-5) FAST REFINEMENT (reuse precomputed stage1 masks)
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 200 \
-    --stages stage2 stage3 --per_au_search --target_au 12 \
-    --bootstrap_from_macro_stage1 --reuse_saved_stages
+--------------------------------------------------------------------------------
+BP4D — IAT model (with identity adversarial training)
+  AUs: [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23, 24]   Subjects: 41
+--------------------------------------------------------------------------------
 
---- RADIAL MODE ---
+  Fold 1:
+    python hfss_search_au.py \
+      --dataset BP4D --model_type IAT \
+      --model_path models/FMAE_IAT_BP4D_fold1.pth \
+      --test_json BP4D/BP4D_test1.json \
+      --search_mode radial --per_au_search --per_au_eval
 
-6) RADIAL, FULL TEST SET, MACRO F1
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-    --search_mode radial
+  Fold 2:  --model_path models/FMAE_IAT_BP4D_fold2.pth  --test_json BP4D/BP4D_test2.json
+  Fold 3:  --model_path models/FMAE_IAT_BP4D_fold3.pth  --test_json BP4D/BP4D_test3.json
 
-7) RADIAL, FULL TEST SET, ALL AUs
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-    --search_mode radial --per_au_search --per_au_eval
+  Completed log (fold 1):  hfss/logs/hfss_run_20260510_232928.txt
 
-python hfss_search_au.py --model_path models/FMAE_IAT_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-    --search_mode radial --per_au_search --per_au_eval
+--------------------------------------------------------------------------------
+DISFA — FMAE model
+  AUs: [1, 2, 4, 6, 9, 12, 25, 26]   Subjects: 27
+--------------------------------------------------------------------------------
 
-8) RADIAL, FULL TEST SET, SINGLE AU (e.g. AU12)
-python hfss_search_au.py --model_path models/FMAE_BP4D_fold1.pth \
-    --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-    --search_mode radial --per_au_search --target_au 12 \
-    --per_au_eval --visualize_masks
+  Fold 1:
+    python hfss_search_au.py \
+      --dataset DISFA --model_type FMAE \
+      --model_path models/FMAE_DISFA_fold1.pth \
+      --test_json DISFA/DISFA_test1.json \
+      --search_mode radial --per_au_search
 
-Notes:
-- CUDA unavailable? Append: --device cpu --num_workers 0  (device/workers are fixed constants; set in FIXED_* at top of file)
-- Logs saved under: hfss/logs/
-- Outputs under: hfss/DFM/  and  hfss/figures/
-- Per-AU outputs separated by target: hfss/DFM/AUxx/  and  hfss/figures/AUxx/
-- --stages and --num_candidates are ignored in radial mode (uses FIXED_RADIAL_STEPS=10)
+  Fold 2:  --model_path models/FMAE_DISFA_fold2.pth  --test_json DISFA/DISFA_test2.json
+  Fold 3:  --model_path models/FMAE_DISFA_fold3.pth  --test_json DISFA/DISFA_test3.json
+
+--------------------------------------------------------------------------------
+DISFA — IAT model (with identity adversarial training)
+  AUs: [1, 2, 4, 6, 9, 12, 25, 26]   Subjects: 27
+--------------------------------------------------------------------------------
+
+  Fold 1:
+    python hfss_search_au.py \
+      --dataset DISFA --model_type IAT \
+      --model_path models/FMAE_IAT_DISFA_fold1.pth \
+      --test_json DISFA/DISFA_test1.json \
+      --search_mode radial --per_au_search --per_au_eval
+
+  Fold 2:  --model_path models/FMAE_IAT_DISFA_fold2.pth  --test_json DISFA/DISFA_test2.json
+  Fold 3:  --model_path models/FMAE_IAT_DISFA_fold3.pth  --test_json DISFA/DISFA_test3.json
+
+--------------------------------------------------------------------------------
+Optional flags (add to any command above)
+--------------------------------------------------------------------------------
+
+  --num_samples 500       use a subset instead of full test set (faster smoke test)
+  --output_dir hfss/DFM   change where PKL masks and figures are saved
+  --visualize_masks       save ring/band/FFT visualizations for each best mask
+  --data_root <path>      override the default image folder (default: derived from --dataset)
+
+--------------------------------------------------------------------------------
+Output locations
+--------------------------------------------------------------------------------
+
+  Logs:     hfss/logs/hfss_run_<timestamp>.txt
+  Masks:    hfss/DFM/<model_type>_<stage>_DFMs.pkl
+            hfss/DFM/AU<xx>/  (per-AU mode)
+  Figures:  hfss/figures/
+================================================================================
 '''
-
-"""
-The search target is only the AU being optimized. For example, with --target_au 04, the search score is based on AU04 only.
-
-The reason you still see all AUs printed is that the script also runs a per-AU report for the same best mask. That extra printout is for debugging and analysis, not for the search objective. In hfss_search_au.py, this comes from the per-AU evaluation path that prints every AU in AU_LABELS.
-
-If you want, I can also show you the exact line that controls this output and how to turn it off.
-
-"""
-
-
-"""
-IAT
-
-python hfss_search_au.py --model_type IAT --model_path models/FMAE_IAT_BP4D_fold1.pth \
-  --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-  --search_mode radial --per_au_search --per_au_eval
-
-hfss_run_20260510_232928.txt - IAT model
-
-
-FMAE
-
-python hfss_search_au.py --model_type FMAE --model_path models/FMAE_BP4D_fold1.pth \
-  --test_json BP4D/BP4D_test1.json --num_samples 999999 \
-  --search_mode radial --per_au_search
-
-hfss_run_20260510_233437.txt - FMAE model
-"""
